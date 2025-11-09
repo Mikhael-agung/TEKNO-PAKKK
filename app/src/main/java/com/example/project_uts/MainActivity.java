@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
-        // Default fragment pertama → Dashboard
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new DashboardFragment())
@@ -29,26 +31,20 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
 
-            switch (item.getItemId()) {
-                case R.id.nav_dashboard:
-                    selectedFragment = new DashboardFragment();
-                    break;
-                case R.id.nav_komplain:
-                    selectedFragment = new KomplainListFragment();
-                    break;
-                case R.id.nav_diskusi:
-                    selectedFragment = new DiskusiTeknisiFragment();
-                    break;
-                case R.id.nav_profil:
-                    selectedFragment = new ProfilFragment();
-                    break;
+            if (item.getItemId() == R.id.nav_dashboard) {
+                selectedFragment = new DashboardFragment();
+            } else if (item.getItemId() == R.id.nav_komplain) {
+                selectedFragment = new KomplainListFragment();
+            } else if (item.getItemId() == R.id.nav_diskusi) {
+                selectedFragment = new DiskusiTeknisiFragment();
+            } else if (item.getItemId() == R.id.nav_profil) {
+                selectedFragment = new ProfilFragment();
             }
 
-            if (selectedFragment != null) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, selectedFragment)
-                        .commit();
-            }
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, selectedFragment)
+                    .commit();
+
             return true;
         });
     }
