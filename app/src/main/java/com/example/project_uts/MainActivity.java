@@ -10,15 +10,46 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+
+        // Default fragment pertama → Dashboard
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new DashboardFragment())
+                    .commit();
+        }
+
+        // Listener untuk klik menu
+        bottomNav.setOnItemSelectedListener(item -> {
+            Fragment selectedFragment = null;
+
+            switch (item.getItemId()) {
+                case R.id.nav_dashboard:
+                    selectedFragment = new DashboardFragment();
+                    break;
+                case R.id.nav_komplain:
+                    selectedFragment = new KomplainListFragment();
+                    break;
+                case R.id.nav_diskusi:
+                    selectedFragment = new DiskusiTeknisiFragment();
+                    break;
+                case R.id.nav_profil:
+                    selectedFragment = new ProfilFragment();
+                    break;
+            }
+
+            if (selectedFragment != null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, selectedFragment)
+                        .commit();
+            }
+            return true;
         });
     }
 }
