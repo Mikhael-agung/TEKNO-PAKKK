@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         }
 
-        // Listener untuk klik menu
+
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
 
