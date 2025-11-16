@@ -2,14 +2,15 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <!-- Background putih -->
-    <solid android:color="#000000"/>
+    <!-- Background -->
+    <solid android:color="#FFFFFF"/>
 
-    <!-- Border biru -->
+    <!-- Border -->
     <stroke
         android:width="2dp"
-        android:color="#000000"/>
+        android:color="#007BFF"/>
 
     <!-- Sudut rounded -->
     <corners android:radius="8dp"/>
+
 </shape>

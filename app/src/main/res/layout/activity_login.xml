@@ -66,17 +66,17 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- Tombol Daftar -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSignUp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Daftar"
         android:textColor="#007BFF"
-        android:backgroundTint="#FFFFFF"
-        android:layout_marginTop="12dp"
+        app:backgroundTint="@android:color/transparent"
         android:background="@drawable/btn_border"
         app:layout_constraintTop_toBottomOf="@id/btnLogin"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
