@@ -1,15 +1,50 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Build
+build/
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Java
+*.class
+*.dex
+
+# Generated files
+bin/
+gen/
+out/
+
+# Gradle
+.gradle/
+app/build/
+
+# Local config
 local.properties
+
+# Logs
+*.log
+
+# Android Studio - INI YANG PENTING!
+.idea/
+*.iml
+.navigation/
+captures/
+
+# Keystore
+*.jks
+*.keystore
+
+# Native build
+.cxx/
+.externalNativeBuild/
+
+# Google Services
+google-services.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+*.temp
