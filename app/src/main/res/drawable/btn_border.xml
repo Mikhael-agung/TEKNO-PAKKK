@@ -3,13 +3,16 @@
     android:shape="rectangle">
 
     <!-- Background putih -->
-    <solid android:color="#000000"/>
-
-    <!-- Border biru -->
+    <solid android:color="@android:color/white" />
     <stroke
-        android:width="2dp"
-        android:color="#000000"/>
+        android:width="5dp"
+        android:color="@android:color/holo_blue_bright" />
+    <corners android:radius="30dp" />
 
-    <!-- Sudut rounded -->
-    <corners android:radius="8dp"/>
+    <!-- Sedikit padding biar teks ga nempel border -->
+    <padding
+        android:left="8dp"
+        android:right="8dp"
+        android:top="4dp"
+        android:bottom="4dp" />
 </shape>
