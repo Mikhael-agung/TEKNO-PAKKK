@@ -204,5 +204,5 @@ For technical issues or feature requests, contact the development team.
 ---
 
 **Version**: 1.0  
-**Last Updated**: 2024  
-**Developed By**: Your Team Name
+**Last Updated**: 2025  
+**Developed By**: Dicky Pratama and Mikhael Agung
