@@ -23,7 +23,7 @@
             app:iconTint="#007BFF"
             android:textColor="#007BFF"
             style="@style/Widget.Material3.Button.TextButton"
-            android:backgroundTint="@android:color/transparent" />
+            android:background="@drawable/btn_border" />
 
         <TextView
             android:id="@+id/tvAppName"
@@ -122,15 +122,15 @@
         <!-- Submit Button - Pakai MaterialButton -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_submit"
+            style="@style/Widget.Material3.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="#007BFF"
             android:text="Kirim Komplain"
+            android:textAllCaps="false"
             android:textColor="#fff"
             app:icon="@android:drawable/ic_menu_send"
-            app:iconTint="@color/white"
-            android:textAllCaps="false"
-            style="@style/Widget.Material3.Button"
-            android:backgroundTint="#007BFF" />
+            app:iconTint="@color/white" />
 
     </LinearLayout>
 
