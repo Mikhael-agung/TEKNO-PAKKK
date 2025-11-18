@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/card_background_blue"
+    android:padding="16dp"
+    android:layout_margin="8dp">
+
+    <TextView
+        android:id="@+id/tvJudulDiskusi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Judul Komplain"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tvTeknisiPeminta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Diminta oleh: Teknisi"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/tvPelaporDiskusi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pelapor: Customer"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:id="@+id/tvWaktuDiskusi"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Waktu"
+            android:textSize="12sp"
+            android:textColor="#666666" />
+
+        <ImageView
+            android:id="@+id/btnWhatsAppDiskusi"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_whatsapp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

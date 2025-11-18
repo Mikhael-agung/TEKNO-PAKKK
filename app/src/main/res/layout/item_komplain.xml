@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/card_background_blue"
+    android:padding="16dp"
+    android:layout_margin="8dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/tvJudul"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Judul Komplain"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333333" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/btnMintaBantuan"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_help"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="6dp"
+                android:layout_marginEnd="8dp" />
+
+            <ImageView
+                android:id="@+id/btnWhatsApp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_whatsapp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="6dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvPelapor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Oleh: Pelapor"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="4dp">
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:background="@drawable/status_background" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/tvWaktu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Waktu"
+            android:textSize="12sp"
+            android:textColor="#666666" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvCatatan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Catatan: ..."
+        android:textSize="12sp"
+        android:textColor="#4CAF50"
+        android:visibility="gone"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvAlasanPending"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Alasan: ..."
+        android:textSize="12sp"
+        android:textColor="#FF9800"
+        android:visibility="gone"
+        android:layout_marginTop="4dp" />
+
+</LinearLayout>

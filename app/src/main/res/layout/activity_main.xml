@@ -18,7 +18,6 @@
         android:layout_gravity="bottom"
         app:itemIconTint="@color/black"
         app:itemTextColor="@color/black"
-        app:menu="@menu/bottom_nav_teknisi"
         app:labelVisibilityMode="labeled"
         />
 

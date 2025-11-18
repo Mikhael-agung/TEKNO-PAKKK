@@ -1,18 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#FFFFFF">
 
+    <!-- Header -->
     <TextView
-        android:id="@+id/tvKomplainList"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Daftar Komplain"
-        android:textSize="18sp"
-        android:padding="16dp"/>
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="#F8F9FA" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerKomplain"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <!-- Empty State -->
+    <LinearLayout
+        android:id="@+id/layoutEmpty"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="40dp"
+    android:visibility="gone">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="📝"
+        android:textSize="64sp"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Belum ada komplain"
+        android:textSize="18sp"
+        android:textColor="#666666"
+        android:textStyle="bold" />
+
 </LinearLayout>
+
+    <!-- List Komplain -->
+<androidx.recyclerview.widget.RecyclerView
+android:id="@+id/rvKomplain"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:padding="8dp" />
+
+    </LinearLayout>
