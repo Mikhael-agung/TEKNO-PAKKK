@@ -1,18 +1,17 @@
 package com.example.project_uts;
 
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.project_uts.fragment.CustomerFragment;
+import com.example.project_uts.fragment.DashboardCustomerFragment;
+import com.example.project_uts.fragment.HistoryComplainFragment;
+import com.example.project_uts.fragment.ProfilFragment;
 
 public class MainActivity extends AppCompatActivity {
 
+    private String userRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,31 +20,56 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new DashboardFragment())
-                    .commit();
+        userRole = getIntent().getStringExtra("role");
+        if (userRole == null) {
+            userRole = "customer"; // Default customer
         }
 
+        userRole = "customer";
+
+        // Set menu - selalu pakai menu customer
+        bottomNav.inflateMenu(R.menu.button_nav_customer);
+
+        // selalu dashboard customer
+        if (savedInstanceState == null) {
+            loadDefaultFragment();
+        }
 
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
+            int itemId = item.getItemId();
 
-            if (item.getItemId() == R.id.nav_dashboard) {
-                selectedFragment = new DashboardFragment();
-            } else if (item.getItemId() == R.id.nav_komplain) {
-                selectedFragment = new KomplainListFragment();
-            } else if (item.getItemId() == R.id.nav_diskusi) {
-                selectedFragment = new DiskusiTeknisiFragment();
-            } else if (item.getItemId() == R.id.nav_profil) {
+            // SELALU PAKAI FRAGMENT CUSTOMER
+            if (itemId == R.id.nav_dashboard) {
+                selectedFragment = new DashboardCustomerFragment();
+            } else if (itemId == R.id.nav_komplain) {
+                selectedFragment = new CustomerFragment();
+            } else if (itemId == R.id.nav_history) {
+                selectedFragment = new HistoryComplainFragment();
+            } else if (itemId == R.id.nav_profil) {
                 selectedFragment = new ProfilFragment();
             }
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, selectedFragment)
-                    .commit();
+            if (selectedFragment != null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, selectedFragment)
+                        .commit();
+            }
 
             return true;
         });
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+    }
+
+    private void loadDefaultFragment() {
+        // SELALU LOAD DASHBOARD CUSTOMER
+        Fragment defaultFragment = new DashboardCustomerFragment();
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, defaultFragment)
+                .commit();
     }
 }
