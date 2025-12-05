@@ -1,6 +1,7 @@
-package com.example.project_uts;
+package com.example.project_uts.fragment;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,10 +14,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.example.project_uts.R;
+import com.example.project_uts.models.Complaint;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class CustomerFragment extends Fragment {
 
@@ -24,6 +35,7 @@ public class CustomerFragment extends Fragment {
     private Spinner spKategori;
     private ImageView ivFoto;
     private Button btnPilihFoto, btnSubmit;
+    private FloatingActionButton fabBack;
     private Uri fotoUri;
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -34,29 +46,40 @@ public class CustomerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_customer_complain, container, false);
 
-        // Inisialisasi view
+        initViews(view);
+        setupKategoriSpinner();
+        setupClickListeners();
+
+        return view;
+    }
+
+    private void initViews(View view) {
         etJudul = view.findViewById(R.id.et_judul);
         etDeskripsi = view.findViewById(R.id.et_deskripsi);
         spKategori = view.findViewById(R.id.sp_kategori);
         ivFoto = view.findViewById(R.id.iv_foto);
         btnPilihFoto = view.findViewById(R.id.btn_pilih_foto);
         btnSubmit = view.findViewById(R.id.btn_submit);
-
-        // Setup spinner kategori
-        setupKategoriSpinner();
-
-        // Setup click listeners
-        btnPilihFoto.setOnClickListener(v -> pilihFoto());
-        btnSubmit.setOnClickListener(v -> submitKomplain());
-
-        return view;
+        fabBack = view.findViewById(R.id.fab_back);
     }
 
     private void setupKategoriSpinner() {
-        String[] kategori = {"Pilih Kategori", "Elektronik", "Perabotan", "Kendaraan", "Lainnya"};
+        String[] kategori = {
+                "Pilih Kategori",
+                "Elektronik (TV, Laptop, dll)",
+                "AC & Pendingin",
+                "Kulkas & Freezer",
+                "Mesin Cuci",
+                "Perbaikan Pipa & Air",
+                "Listrik & Lampu",
+                "Perabotan Rumah",
+                "Internet & Jaringan",
+                "Smartphone & Tablet",
+                "Lainnya"
+        };
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
@@ -64,6 +87,34 @@ public class CustomerFragment extends Fragment {
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spKategori.setAdapter(adapter);
+    }
+
+    private void setupClickListeners() {
+        // Back button - SOLUSI REKOMENDASI
+        fabBack.setOnClickListener(v -> {
+            navigateToDashboard();
+        });
+
+        btnPilihFoto.setOnClickListener(v -> pilihFoto());
+        btnSubmit.setOnClickListener(v -> submitKomplain());
+    }
+
+    /**
+     * NAVIGASI KE DASHBOARD + UPDATE BOTTOM NAV
+     */
+    private void navigateToDashboard() {
+        try {
+            // 1. Update bottom navigation selected item
+            BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottom_navigation);
+            if (bottomNav != null) {
+                bottomNav.setSelectedItemId(R.id.nav_dashboard);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Fallback jika bottom nav tidak ditemukan
+            requireActivity().onBackPressed();
+        }
     }
 
     private void pilihFoto() {
@@ -88,21 +139,75 @@ public class CustomerFragment extends Fragment {
         String kategori = spKategori.getSelectedItem().toString();
 
         // Validasi
-        if (judul.isEmpty() || deskripsi.isEmpty() || kategori.equals("Pilih Kategori")) {
-            Toast.makeText(requireContext(), "Harap lengkapi semua field", Toast.LENGTH_SHORT).show();
+        if (judul.isEmpty()) {
+            etJudul.setError("Judul komplain harus diisi");
             return;
         }
 
-        // TODO: Implement API call dengan Multipart
-        // Untuk sekarang tampilkan Toast dulu
-        Toast.makeText(requireContext(), "Komplain berhasil dikirim!", Toast.LENGTH_SHORT).show();
+        if (deskripsi.isEmpty()) {
+            etDeskripsi.setError("Deskripsi masalah harus diisi");
+            return;
+        }
 
-        // Reset form
-        resetForm();
+        if (kategori.equals("Pilih Kategori")) {
+            Toast.makeText(requireContext(), "Pilih kategori komplain", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // Optional: Redirect ke Status Komplain setelah submit
-        // ((BottomNavigationView) requireActivity().findViewById(R.id.bottom_navigation))
-        //     .setSelectedItemId(R.id.nav_komplain);
+        // Simulasi proses pengiriman
+        boolean isSuccess = Math.random() > 0.5;
+
+        if (isSuccess) {
+            showSuccessDialog(judul, kategori);
+        } else {
+            showErrorDialog();
+        }
+    }
+
+    /**
+     * Tampilkan dialog sukses
+     */
+    private void showSuccessDialog(String judul, String kategori) {
+        Dialog dialog = new Dialog(requireContext());
+        dialog.setContentView(R.layout.success_dialog);
+        dialog.setCancelable(false);
+
+        TextView tvMessage = dialog.findViewById(R.id.tv_message);
+        tvMessage.setText("Komplain \"" + judul + "\" berhasil dikirim!\n\nTeknisi akan segera menghubungi Anda via WhatsApp.");
+
+        Button btnOk = dialog.findViewById(R.id.btn_ok);
+        btnOk.setOnClickListener(v -> {
+            dialog.dismiss();
+            resetForm();
+            navigateToDashboard(); // KE DASHBOARD + UPDATE NAV
+        });
+
+        dialog.show();
+    }
+
+    /**
+     * Tampilkan dialog error
+     */
+    private void showErrorDialog() {
+        Dialog dialog = new Dialog(requireContext());
+        dialog.setContentView(R.layout.error_dialog);
+        dialog.setCancelable(false);
+
+        TextView tvMessage = dialog.findViewById(R.id.tv_message);
+        tvMessage.setText("Gagal mengirim komplain. Silakan coba lagi.");
+
+        Button btnTryAgain = dialog.findViewById(R.id.btn_try_again);
+        btnTryAgain.setOnClickListener(v -> {
+            dialog.dismiss();
+            submitKomplain();
+        });
+
+        Button btnCancel = dialog.findViewById(R.id.btn_cancel);
+        btnCancel.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void resetForm() {
