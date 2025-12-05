@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import com.example.project_uts.R;
-import com.example.project_uts.activity.MainActivity;
+import com.example.project_uts.MainActivity;
 import com.google.android.material.button.MaterialButton;
 
 public class DashboardCustomerFragment extends Fragment {
@@ -86,8 +86,8 @@ public class DashboardCustomerFragment extends Fragment {
 
         // Statistics Cards juga bisa diklik (optional)
         View pendingCard = getView().findViewById(R.id.card_pending); // Tambah ID di XML
-        View progressCard = getView().findViewById(R.id.card_progress); // Tambah ID di XML
-        View completedCard = getView().findViewById(R.id.card_completed); // Tambah ID di XML
+        View progressCard = getView().findViewById(R.id.card_Progress); // Tambah ID di XML
+        View completedCard = getView().findViewById(R.id.card_Completed); // Tambah ID di XML
 
         if (pendingCard != null) {
             pendingCard.setOnClickListener(v -> navigateToHistoryWithFilter("pending"));
