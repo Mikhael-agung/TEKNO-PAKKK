@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-public class DashboardFragment extends Fragment {
+public class DashboardTeknisiFragment extends Fragment {
 
     private TextView tvNamaTeknisi, tvCompletedCount, tvPendingCount, tvReadyCount;
     private ImageView ivFotoTeknisi;
@@ -21,7 +21,7 @@ public class DashboardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_dashboard, container, false); // ← SIMPAN DI VARIABLE
+        rootView = inflater.inflate(R.layout.fragment_dashboard_teknisi, container, false); // ← SIMPAN DI VARIABLE
 
         initViews();
         setupDashboard();

@@ -1,44 +1,50 @@
 package com.example.project_uts;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Komplain {
     private String id;
-    private String judul;
-    private String pelapor;
+
+    @SerializedName("user_id")
+    private String userId;
+
+    private String title;
+    private String description;
+
+    @SerializedName("image_path")
+    private String imagePath;
+
+    @SerializedName("created_at")
+    private String createdAt;
+
+    @SerializedName("updated_at")
+    private String updatedAt;
+
+    // Tambahan untuk status (kalau ambil dari endpoint by ID)
     private String status;
-    private String waktu;
-    private String fotoUrl;
-    private String deskripsi;
-    private String phoneNumber;
-    private String teknisiNote;
-    private String fotoPerbaikan;
-    private String alasanPending;
 
-    public Komplain(String id, String judul, String pelapor, String status, String waktu,
-                    String fotoUrl, String deskripsi, String phoneNumber, String teknisiNote,
-                    String fotoPerbaikan, String alasanPending) {
-        this.id = id;
-        this.judul = judul;
-        this.pelapor = pelapor;
-        this.status = status;
-        this.waktu = waktu;
-        this.fotoUrl = fotoUrl;
-        this.deskripsi = deskripsi;
-        this.phoneNumber = phoneNumber;
-        this.teknisiNote = teknisiNote;
-        this.fotoPerbaikan = fotoPerbaikan;
-        this.alasanPending = alasanPending;
-    }
-
-    // Getter methods
+    // Getter & Setter
     public String getId() { return id; }
-    public String getJudul() { return judul; }
-    public String getPelapor() { return pelapor; }
+    public void setId(String id) { this.id = id; }
+
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getImagePath() { return imagePath; }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+
+    public String getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
+
     public String getStatus() { return status; }
-    public String getWaktu() { return waktu; }
-    public String getFotoUrl() { return fotoUrl; }
-    public String getDeskripsi() { return deskripsi; }
-    public String getPhoneNumber() { return phoneNumber; }
-    public String getTeknisiNote() { return teknisiNote; }
-    public String getFotoPerbaikan() { return fotoPerbaikan; }
-    public String getAlasanPending() { return alasanPending; }
+    public void setStatus(String status) { this.status = status; }
 }

@@ -1,115 +1,96 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@drawable/card_background_blue"
-    android:padding="16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    app:cardBackgroundColor="#f0f0f0">
 
     <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp">
+        android:layout_height="wrap_content">
 
+        <!-- Judul -->
         <TextView
             android:id="@+id/tvJudul"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Judul Komplain"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#333333" />
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <!-- Pelapor -->
+        <TextView
+            android:id="@+id/tvPelapor"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="Oleh: Pelapor"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="8dp"/>
 
-            <ImageView
-                android:id="@+id/btnMintaBantuan"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_help"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="6dp"
-                android:layout_marginEnd="8dp" />
+        <!-- Status + Waktu -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
 
-            <ImageView
-                android:id="@+id/btnWhatsApp"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_whatsapp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="6dp" />
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Komplain"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:background="#F44336"
+                android:textColor="#FFFFFF"/>
 
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:id="@+id/tvWaktu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Waktu"
+                android:textSize="12sp"
+                android:textColor="#666666"/>
         </LinearLayout>
 
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvPelapor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Oleh: Pelapor"
-        android:textSize="14sp"
-        android:textColor="#666666"
-        android:layout_marginBottom="8dp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="4dp">
-
-        <TextView
-            android:id="@+id/tvStatus"
-            android:layout_width="wrap_content"
+        <!-- Tombol aksi -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Status"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="4dp"
-            android:background="@drawable/status_background" />
+            android:orientation="vertical"
+            android:layout_marginTop="12dp">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            <Button
+                android:id="@+id/btnAmbil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ambil"
+                style="@style/Widget.MaterialComponents.Button"
+                app:backgroundTint="#2196F3" />
 
-        <TextView
-            android:id="@+id/tvWaktu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Waktu"
-            android:textSize="12sp"
-            android:textColor="#666666" />
-
+            <Button
+                android:id="@+id/btnChat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Chat with Customer"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_marginTop="8dp"/>
+        </LinearLayout>
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvCatatan"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Catatan: ..."
-        android:textSize="12sp"
-        android:textColor="#4CAF50"
-        android:visibility="gone"
-        android:layout_marginTop="4dp" />
-
-    <TextView
-        android:id="@+id/tvAlasanPending"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Alasan: ..."
-        android:textSize="12sp"
-        android:textColor="#FF9800"
-        android:visibility="gone"
-        android:layout_marginTop="4dp" />
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

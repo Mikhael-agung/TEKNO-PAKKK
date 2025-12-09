@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="#f0f0f0">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Judul Komplain -->
+        <TextView
+            android:id="@+id/tvJudulCompleted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Judul Komplain"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Pelapor -->
+        <TextView
+            android:id="@+id/tvPelaporCompleted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pelapor: Customer"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="4dp"/>
+
+        <!-- Status + Waktu -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/tvStatusCompleted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="✅ Completed"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#4CAF50"
+                android:layout_marginEnd="12dp"/>
+
+            <TextView
+                android:id="@+id/tvWaktuCompleted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="07 Desember 2025 • 13:30"
+                android:textSize="12sp"
+                android:textColor="#757575"/>
+        </LinearLayout>
+
+        <!-- Catatan Teknisi -->
+        <TextView
+            android:id="@+id/tvCatatanCompleted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Catatan: MCB diganti, sistem listrik normal kembali"
+            android:textSize="14sp"
+            android:textColor="#444444"
+            android:lineSpacingExtra="4dp"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -28,6 +28,7 @@ public class DiskusiTeknisiFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_diskusi_teknisi, container, false);
 
+        // Ambil role user dari SharedPreferences
         SharedPreferences preferences = requireActivity().getSharedPreferences("user_pref", Context.MODE_PRIVATE);
         userRole = preferences.getString("role", "customer");
 
@@ -54,11 +55,8 @@ public class DiskusiTeknisiFragment extends Fragment {
             layoutEmpty.setVisibility(View.GONE);
             rvDiskusi.setVisibility(View.VISIBLE);
 
-            DiskusiAdapter adapter = new DiskusiAdapter(diskusiList, new DiskusiAdapter.OnItemClickListener() {
-                @Override
-                public void onWhatsAppClick(DiskusiTeknisi diskusi) {
-                    openWhatsAppToTechnician(diskusi);
-                }
+            DiskusiAdapter adapter = new DiskusiAdapter(diskusiList, diskusi -> {
+                openBantuToTechnician(diskusi);
             });
             rvDiskusi.setAdapter(adapter);
         }
@@ -67,7 +65,7 @@ public class DiskusiTeknisiFragment extends Fragment {
     private List<DiskusiTeknisi> getDiskusiData() {
         List<DiskusiTeknisi> diskusiList = new ArrayList<>();
 
-        // Hanya tampilkan untuk teknisi
+        // Hanya teknisi yang bisa lihat diskusi
         if (!"teknisi".equals(userRole)) {
             Toast.makeText(getContext(), "Hanya teknisi yang bisa melihat diskusi", Toast.LENGTH_SHORT).show();
             return diskusiList;
@@ -79,14 +77,11 @@ public class DiskusiTeknisiFragment extends Fragment {
 
         if (!diskusiIds.isEmpty()) {
             String[] ids = diskusiIds.split(",");
-
             for (String id : ids) {
                 String diskusiData = preferences.getString(id, "");
                 if (!diskusiData.isEmpty()) {
                     DiskusiTeknisi diskusi = parseDiskusiFromString(diskusiData);
-                    if (diskusi != null) {
-                        diskusiList.add(diskusi);
-                    }
+                    if (diskusi != null) diskusiList.add(diskusi);
                 }
             }
         }
@@ -116,7 +111,7 @@ public class DiskusiTeknisiFragment extends Fragment {
         return null;
     }
 
-    private void openWhatsAppToTechnician(DiskusiTeknisi diskusi) {
+    private void openBantuToTechnician(DiskusiTeknisi diskusi) {
         try {
             String phoneNumber = diskusi.getNoTelpTeknisi();
 

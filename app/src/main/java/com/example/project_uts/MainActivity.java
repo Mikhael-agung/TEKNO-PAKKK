@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (itemId == R.id.nav_dashboard) {
                 // HANYA TEKNISI DULU
-                selectedFragment = new DashboardFragment();
+                selectedFragment = new DashboardTeknisiFragment();
             } else if (itemId == R.id.nav_komplain) {
                 selectedFragment = new KomplainListFragment();
             } else if (itemId == R.id.nav_diskusi) {
@@ -59,10 +59,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadDefaultFragment() {
         // HANYA LOAD DASHBOARD TEKNISI
-        Fragment defaultFragment = new DashboardFragment();
+        Fragment defaultFragment = new DashboardTeknisiFragment();
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, defaultFragment)
                 .commit();
     }
+
+
 }

@@ -66,12 +66,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private void setupDummyData() {
         // Dummy Customer
-        dummyUsers.put("customer", new User("Budi Santoso", "budi@customer.com", "1234", "customer", "081234567890"));
-        dummyUsers.put("john", new User("John Doe", "john@customer.com", "1234", "customer", "081111111111"));
+//        dummyUsers.put("customer", new User("Budi Santoso", "budi@customer.com", "1234", "customer", "085232978270"));
+//        dummyUsers.put("john", new User("John Doe", "john@customer.com", "1234", "customer", "085232978270"));
 
         // Dummy Teknisi
-        dummyUsers.put("teknisi", new User("Ahmad Teknisi", "ahmad@teknisi.com", "1234", "teknisi", "082222222222"));
-        dummyUsers.put("sari", new User("Sari Handayani", "sari@teknisi.com", "1234", "teknisi", "083333333333"));
+        dummyUsers.put("teknisi", new User("Dicky YP", "DickyYP@teknisi.com", "1234", "teknisi", "+628978845390"));
+        dummyUsers.put("Agung", new User("M Agung", "Agung@teknisi.com", "1234", "teknisi", "+6285232978270"));
     }
 
     private void saveUserData(User user) {

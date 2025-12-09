@@ -6,6 +6,7 @@
     android:padding="16dp">
 
     <TextView
+        android:paddingTop="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Forum Diskusi Teknisi"

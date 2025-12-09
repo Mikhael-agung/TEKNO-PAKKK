@@ -3,7 +3,7 @@ package com.example.project_uts;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,12 +17,12 @@ public class DiskusiAdapter extends RecyclerView.Adapter<DiskusiAdapter.ViewHold
     private OnItemClickListener listener;
 
     public interface OnItemClickListener {
-        void onWhatsAppClick(DiskusiTeknisi diskusi);
+        void onBantuClick(DiskusiTeknisi diskusi);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvJudul, tvTeknisiPeminta, tvWaktu, tvPelapor;
-        ImageView btnWhatsApp;
+        Button btnBantu;
 
         public ViewHolder(View view) {
             super(view);
@@ -30,7 +30,7 @@ public class DiskusiAdapter extends RecyclerView.Adapter<DiskusiAdapter.ViewHold
             tvTeknisiPeminta = view.findViewById(R.id.tvTeknisiPeminta);
             tvWaktu = view.findViewById(R.id.tvWaktuDiskusi);
             tvPelapor = view.findViewById(R.id.tvPelaporDiskusi);
-            btnWhatsApp = view.findViewById(R.id.btnWhatsAppDiskusi);
+            btnBantu = view.findViewById(R.id.btnBantuDiskusi);
         }
     }
 
@@ -56,13 +56,12 @@ public class DiskusiAdapter extends RecyclerView.Adapter<DiskusiAdapter.ViewHold
         holder.tvPelapor.setText("Pelapor: " + diskusi.getPelapor());
         holder.tvWaktu.setText(diskusi.getWaktu());
 
-        holder.btnWhatsApp.setOnClickListener(v -> {
-            listener.onWhatsAppClick(diskusi);
+        holder.btnBantu.setOnClickListener(v -> {
+            listener.onBantuClick(diskusi);
         });
 
-        // Klik item untuk detail
         holder.itemView.setOnClickListener(v -> {
-            // Bisa tambah detail kalo mau
+            // TODO: bisa tambahin detail kalau mau
         });
     }
 
