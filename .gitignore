@@ -1,9 +1,10 @@
-# Build
+# Build outputs
 build/
 *.apk
 *.aar
 *.ap_
 *.aab
+*.jar
 
 # Java
 *.class
@@ -16,19 +17,24 @@ out/
 
 # Gradle
 .gradle/
-app/build/
+gradle-app.setting
+caches/          # 👈 TAMBAH INI
+**/transforms/   # 👈 TAMBAH INI
+**/transformed/  # 👈 TAMBAH INI
 
 # Local config
 local.properties
 
 # Logs
 *.log
+logs/
 
-# Android Studio - INI YANG PENTING!
+# Android Studio
 .idea/
 *.iml
 .navigation/
 captures/
+.DS_Store
 
 # Keystore
 *.jks
@@ -37,6 +43,7 @@ captures/
 # Native build
 .cxx/
 .externalNativeBuild/
+.cxx/
 
 # Google Services
 google-services.json
@@ -48,3 +55,15 @@ Thumbs.db
 # Temp files
 *.tmp
 *.temp
+*.swp
+
+# Environment files
+.env
+.env.*
+
+# Cache
+.cache/
+*.orig
+
+# Firebase
+firebase-debug.log
