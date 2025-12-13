@@ -52,10 +52,10 @@ public class DashboardCustomerFragment extends Fragment {
         // Buttons
         btnBuatKomplain = view.findViewById(R.id.btn_buat_komplain);
 
-        // Quick Action Cards
-        cardHome = view.findViewById(R.id.card_home); // Pastikan ada ID di XML
-        cardHistory = view.findViewById(R.id.card_history); // Pastikan ada ID di XML
-        cardProfile = view.findViewById(R.id.card_profile); // Pastikan ada ID di XML
+//        // Quick Action Cards
+        cardHome = view.findViewById(R.id.card_home);
+        cardHistory = view.findViewById(R.id.card_history);
+        cardProfile = view.findViewById(R.id.card_profile);
     }
 
     private void setupClickListeners() {

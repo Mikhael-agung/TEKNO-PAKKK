@@ -1,1 +1,69 @@
-/build
+# Build outputs
+build/
+*.apk
+*.aar
+*.ap_
+*.aab
+*.jar
+
+# Java
+*.class
+*.dex
+
+# Generated files
+bin/
+gen/
+out/
+
+# Gradle
+.gradle/
+gradle-app.setting
+caches/          # 👈 TAMBAH INI
+**/transforms/   # 👈 TAMBAH INI
+**/transformed/  # 👈 TAMBAH INI
+
+# Local config
+local.properties
+
+# Logs
+*.log
+logs/
+
+# Android Studio
+.idea/
+*.iml
+.navigation/
+captures/
+.DS_Store
+
+# Keystore
+*.jks
+*.keystore
+
+# Native build
+.cxx/
+.externalNativeBuild/
+.cxx/
+
+# Google Services
+google-services.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+*.temp
+*.swp
+
+# Environment files
+.env
+.env.*
+
+# Cache
+.cache/
+*.orig
+
+# Firebase
+firebase-debug.log

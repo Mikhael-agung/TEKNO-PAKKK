@@ -23,7 +23,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private List<Complaint> complaints;
     private OnItemClickListener listener;
 
-    // Nomor WhatsApp teknisi (ganti dengan nomor real)
     private static final String WHATSAPP_NUMBER = "6281234567890"; // Format: 62 tanpa +
 
     public HistoryAdapter(List<Complaint> complaints, OnItemClickListener listener) {

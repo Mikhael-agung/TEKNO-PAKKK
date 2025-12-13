@@ -34,6 +34,8 @@
                 app:tint="#007BFF" />
 
             <!-- App Title - Center di sisa space -->
+
+            <!-- Spacer untuk balance (optional) -->
             <TextView
                 android:id="@+id/tvAppName"
                 android:layout_width="0dp"
@@ -45,7 +47,6 @@
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
-            <!-- Spacer untuk balance (optional) -->
             <View
                 android:layout_width="48dp"
                 android:layout_height="48dp"

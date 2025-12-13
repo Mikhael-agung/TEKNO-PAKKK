@@ -72,6 +72,15 @@
 
             </LinearLayout>
 
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="24dp"
+                android:visibility="gone" />
+
             <!-- Complaint List -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_history_complaints"
