@@ -10,9 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import androidx.cardview.widget.CardView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +33,7 @@ import androidx.fragment.app.Fragment;
 import com.example.project_uts.R;
 import com.example.project_uts.models.Complaint;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
@@ -45,6 +48,8 @@ public class CustomerFragment extends Fragment {
     private Button btnPilihFoto, btnSubmit;
     private FloatingActionButton fabBack;
     private Uri fotoUri;
+    private MaterialButton btnHapusFoto;
+    private CardView cardFotoPreview;
     private static final int PICK_IMAGE_REQUEST = 1;
 
     public CustomerFragment() {
@@ -71,6 +76,9 @@ public class CustomerFragment extends Fragment {
         btnPilihFoto = view.findViewById(R.id.btn_pilih_foto);
         btnSubmit = view.findViewById(R.id.btn_submit);
         fabBack = view.findViewById(R.id.fab_back);
+        cardFotoPreview = view.findViewById(R.id.card_foto_preview);
+        btnHapusFoto = view.findViewById(R.id.btn_hapus_foto);
+
     }
 
     private void setupKategoriSpinner() {
@@ -105,6 +113,7 @@ public class CustomerFragment extends Fragment {
 
         btnPilihFoto.setOnClickListener(v -> pilihFoto());
         btnSubmit.setOnClickListener(v -> submitKomplain());
+        btnHapusFoto.setOnClickListener(v -> hapusFoto());
     }
 
     /**
@@ -137,7 +146,14 @@ public class CustomerFragment extends Fragment {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             fotoUri = data.getData();
             ivFoto.setImageURI(fotoUri);
-            ivFoto.setVisibility(View.VISIBLE);
+
+            // TAMPILKAN CARD FOTO PREVIEW
+            if (cardFotoPreview != null) {
+                cardFotoPreview.setVisibility(View.VISIBLE);
+            }
+
+            // Konfirmasi
+            Toast.makeText(requireContext(), "Foto berhasil dipilih", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -273,11 +289,25 @@ public class CustomerFragment extends Fragment {
         dialog.show();
     }
 
+    /**
+     * Hapus foto yang sudah dipilih
+     */
+    private void hapusFoto() {
+        if (cardFotoPreview != null) {
+            cardFotoPreview.setVisibility(View.GONE);
+        }
+        ivFoto.setImageDrawable(null);
+        fotoUri = null;
+        Toast.makeText(requireContext(), "Foto dihapus", Toast.LENGTH_SHORT).show();
+    }
     private void resetForm() {
         etJudul.setText("");
         etDeskripsi.setText("");
         spKategori.setSelection(0);
         ivFoto.setVisibility(View.GONE);
         fotoUri = null;
+        if (cardFotoPreview != null) {
+            cardFotoPreview.setVisibility(View.GONE);
+        }
     }
 }
