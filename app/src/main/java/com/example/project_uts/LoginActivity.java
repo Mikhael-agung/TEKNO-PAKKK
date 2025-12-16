@@ -1,12 +1,15 @@
 package com.example.project_uts;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.project_uts.models.User;
 import com.example.project_uts.network.ApiClient;
 import com.example.project_uts.network.ApiService;
 import com.example.project_uts.network.AuthManage;
@@ -19,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
+    private static final String TAG = "LoginActivity";
 
     private EditText etUsername, etPassword;
     private Button btnLogin, btnDaftar;
@@ -66,9 +70,52 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void redirectToMainActivity() {
+        Log.d(TAG, "=== REDIRECTING TO MAINACTIVITY ===");
+
+        // 1. Debug semua data sebelum redirect
+        Log.d(TAG, "=== DEBUG DATA BEFORE REDIRECT ===");
+
+        // Debug AuthManage
+        if (authManage != null) {
+            authManage.printAllPreferences();
+
+            // Cek token dan user
+            String token = authManage.getToken();
+            User user = authManage.getUser();
+            Log.d(TAG, "AuthManage - Token exists: " + (token != null));
+            Log.d(TAG, "AuthManage - User exists: " + (user != null));
+            if (user != null) {
+                Log.d(TAG, "AuthManage - User details: " +
+                        user.getFull_name() + ", " + user.getEmail() + ", " + user.getRole());
+            }
+        }
+
+        // Debug legacy preferences
+        debugLegacyPreferences();
+
+        // 2. Commit semua pending operations
+        Log.d(TAG, "Committing all pending operations...");
+
+        // 3. Create intent dengan flags
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+
+        // FLAG PENTING: Clear task agar tidak bisa back ke login
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        // 4. Tambahkan extra data untuk debugging di MainActivity
+        intent.putExtra("from_login", true);
+        intent.putExtra("login_time", System.currentTimeMillis());
+
+        // 5. Start activity dan finish
+        Log.d(TAG, "Starting MainActivity...");
         startActivity(intent);
+
+        // 6. Finish LoginActivity
+        Log.d(TAG, "Finishing LoginActivity...");
         finish();
+
+        // 7. Force garbage collection (optional)
+        System.gc();
     }
 
     private void loginUser() {
@@ -112,7 +159,11 @@ public class LoginActivity extends AppCompatActivity {
                         String token = loginResponse.getData().getToken();
                         com.example.project_uts.models.User user = loginResponse.getData().getUser();
 
+                        // 1. SIMPAN KE AUTHMANAGE (UNTUK TOKEN DAN DATA USER)
                         authManage.saveAuthData(token, user);
+
+                        // 2. SIMPAN KE SHAREDPREFERENCES LAMA UNTUK KOMPATIBILITAS
+                        saveToLegacyPreferences(user);
 
                         // Login berhasil
                         redirectToMainActivity();
@@ -149,25 +200,51 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    // FALLBACK API JIKA TIDAK RESPONSIVE
+    // METHOD BARU: Simpan ke SharedPreferences lama untuk kompatibilitas
+    private void saveToLegacyPreferences(com.example.project_uts.models.User user) {
+        // 1. Untuk DashboardFragment (menggunakan "user_prefs")
+        SharedPreferences prefs1 = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor1 = prefs1.edit();
+        editor1.putString("user_name", user.getFull_name());
+        editor1.putString("user_email", user.getEmail());
+        editor1.putBoolean("isLoggedIn", true);
+        editor1.apply();
+
+        // 2. Untuk ProfilFragment (menggunakan "user_pref")
+        SharedPreferences prefs2 = getSharedPreferences("user_pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor2 = prefs2.edit();
+        editor2.putString("nama", user.getFull_name());
+        editor2.putString("email", user.getEmail());
+        editor2.putString("role", user.getRole());
+        editor2.putString("username", user.getUsername());
+        editor2.putBoolean("isLoggedIn", true);
+        editor2.apply();
+
+        Log.d("LoginActivity", "Saved to legacy prefs: " + user.getFull_name() + ", " + user.getEmail());
+    }
+
+    // PERBAIKI fallbackLogin juga
     private void fallbackLogin(String username, String password) {
         // Simple authentication fallback (sama seperti sebelumnya)
         String role = checkLogin(username, password);
 
         if (role != null) {
-            // Simpan ke SharedPreferences lama (untuk compatibility)
-            getSharedPreferences("user_pref", MODE_PRIVATE)
-                    .edit()
-                    .putString("username", username)
-                    .putString("role", role)
-                    .putString("nama", getDisplayName(username, role))
-                    .putString("email", username + "@example.com")
-                    .putBoolean("isLoggedIn", true)
-                    .apply();
+            // Buat user object untuk AuthManage
+            com.example.project_uts.models.User user = new com.example.project_uts.models.User();
+            user.setUsername(username);
+            user.setEmail(username + "@example.com");
+            user.setFull_name(getDisplayName(username, role));
+            user.setRole(role);
+
+            // 1. Simpan ke AuthManage (dengan token dummy)
+            authManage.saveAuthData("dummy_token_fallback", user);
+
+            // 2. Simpan ke SharedPreferences lama
+            saveToLegacyPreferences(user);
 
             // Login berhasil
             redirectToMainActivity();
-            Toast.makeText(this, "Login berhasil sebagai " + role, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Login berhasil sebagai " + role + " (offline)", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Username atau password salah", Toast.LENGTH_SHORT).show();
         }
@@ -194,5 +271,23 @@ public class LoginActivity extends AppCompatActivity {
             case "admin": return "Administrator";
             default: return "User " + username;
         }
+    }
+
+    private void debugLegacyPreferences() {
+        Log.d(TAG, "=== LEGACY PREFERENCES DEBUG ===");
+
+        // user_prefs (untuk DashboardFragment)
+        SharedPreferences prefs1 = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        Log.d(TAG, "user_prefs - user_name: " + prefs1.getString("user_name", "NOT FOUND"));
+        Log.d(TAG, "user_prefs - user_email: " + prefs1.getString("user_email", "NOT FOUND"));
+        Log.d(TAG, "user_prefs - isLoggedIn: " + prefs1.getBoolean("isLoggedIn", false));
+
+        // user_pref (untuk ProfilFragment)
+        SharedPreferences prefs2 = getSharedPreferences("user_pref", MODE_PRIVATE);
+        Log.d(TAG, "user_pref - nama: " + prefs2.getString("nama", "NOT FOUND"));
+        Log.d(TAG, "user_pref - email: " + prefs2.getString("email", "NOT FOUND"));
+        Log.d(TAG, "user_pref - role: " + prefs2.getString("role", "NOT FOUND"));
+        Log.d(TAG, "user_pref - username: " + prefs2.getString("username", "NOT FOUND"));
+        Log.d(TAG, "user_pref - isLoggedIn: " + prefs2.getBoolean("isLoggedIn", false));
     }
 }

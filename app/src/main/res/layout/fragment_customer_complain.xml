@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f5f5f5"
-    android:layout_marginTop="30dp"
+    android:layout_marginTop="3dp"
     android:padding="12dp">
 
     <LinearLayout
@@ -20,22 +20,20 @@
             android:gravity="center_vertical"
             android:layout_marginBottom="16dp">
 
-                <!-- Back button-->
+            <!-- Back button-->
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_arrow_back"
-                app:backgroundTint="#FFFFFF"
-                app:borderWidth="1dp"
-                app:elevation="2dp"
-                app:fabSize="mini"
-                app:maxImageSize="24dp"
-                app:tint="#007BFF" />
+                android:src="@drawable/ic_arrow_back"
+            app:backgroundTint="#FFFFFF"
+            app:borderWidth="1dp"
+            app:elevation="2dp"
+            app:fabSize="mini"
+            app:maxImageSize="24dp"
+            app:tint="#007BFF" />
 
-            <!-- App Title - Center di sisa space -->
-
-            <!-- Spacer untuk balance (optional) -->
+            <!-- App Title -->
             <TextView
                 android:id="@+id/tvAppName"
                 android:layout_width="0dp"
@@ -47,6 +45,7 @@
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
+            <!-- Spacer untuk balance -->
             <View
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -111,7 +110,7 @@
             android:background="@drawable/btn_border"
             android:padding="12dp" />
 
-        <!-- Foto Button -->
+        <!-- Foto Button - FIX STYLE CONFLICT -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_pilih_foto"
             android:layout_width="match_parent"
@@ -119,12 +118,12 @@
             android:layout_marginBottom="16dp"
             android:text="Pilih Foto Barang Rusak"
             android:textColor="#007BFF"
+            android:textSize="15dp"
+            android:backgroundTint="@android:color/transparent"
             app:icon="@android:drawable/ic_menu_camera"
             app:iconTint="#007BFF"
             app:strokeColor="#007BFF"
-            app:strokeWidth="1dp"
-            style="@style/Widget.Material3.Button.OutlinedButton" />
-
+            app:strokeWidth="1dp" />
         <!-- Foto Preview -->
         <ImageView
             android:id="@+id/iv_foto"

@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:text="SELESAI"
                 android:textColor="#ffffff"
-                android:textSize="10sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:background="@drawable/badge_success"
                 android:paddingHorizontal="12dp"
@@ -93,7 +93,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="📅"
-                    android:textSize="12sp" />
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/tv_date"
@@ -101,7 +101,7 @@
                     android:layout_height="wrap_content"
                     android:text="15 Jan 2024"
                     android:textColor="#666"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:layout_marginStart="8dp" />
 
             </LinearLayout>
@@ -184,26 +184,26 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="10"
                 android:layout_marginEnd="8dp"
-                android:textSize="10dp"
+                android:textSize="15dp"
                 android:text="Lihat Detail"
                 android:textColor="#007BFF"
                 app:strokeColor="#007BFF"
                 app:strokeWidth="1dp"
                 app:cornerRadius="8dp"
-                style="@style/Widget.Material3.Button.OutlinedButton" />
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_chat"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="10"
-                android:textSize="10dp"
+                android:textSize="15dp"
                 android:text="Chat"
                 android:textColor="#4CAF50"
                 app:strokeColor="#4CAF50"
                 app:strokeWidth="1dp"
                 app:cornerRadius="8dp"
-                style="@style/Widget.Material3.Button.OutlinedButton" />
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
         </LinearLayout>
 

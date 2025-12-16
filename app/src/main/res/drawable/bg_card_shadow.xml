@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@android:color/white" />
+    <corners android:radius="8dp" />
+
+    <!-- Shadow -->
+    <padding
+        android:left="2dp"
+        android:top="2dp"
+        android:right="2dp"
+        android:bottom="4dp" />
+
+    <!-- Gradient shadow effect -->
+    <gradient
+        android:startColor="#10000000"
+        android:endColor="@android:color/transparent"
+        android:angle="90" />
+</shape>

@@ -2,6 +2,10 @@ package com.example.project_uts.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class Complaint {
     @SerializedName("id")
     private String id;
@@ -12,7 +16,7 @@ public class Complaint {
     @SerializedName("kategori")
     private String kategori;
 
-    @SerializedName("created_at") // BE masih pakai created_at
+    @SerializedName("created_at")
     private String created_at;
 
     @SerializedName("status")
@@ -79,6 +83,19 @@ public class Complaint {
         this.resolution_notes = resolution_notes;
     }
 
+    public String getFormattedDate() {
+        if (created_at == null) return "";
+        try {
+            // Format: "2024-12-10T10:30:00.000Z" → "15 Des 2024"
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMM yyyy", new Locale("id", "ID"));
+
+            Date date = inputFormat.parse(created_at.split("\\.")[0]);
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            return getTanggal(); // fallback ke format lama
+        }
+    }
     public String getUpdated_at() { return updated_at; }
     public void setUpdated_at(String updated_at) {
         this.updated_at = updated_at;

@@ -2,6 +2,7 @@ package com.example.project_uts.network;
 
 import com.example.project_uts.models.ApiResponse;
 import com.example.project_uts.models.Complaint;
+import com.example.project_uts.models.ComplaintResponse;
 import com.example.project_uts.models.LoginResponse;
 import com.example.project_uts.models.RegisterResponse;
 import com.example.project_uts.models.User;
@@ -28,9 +29,9 @@ public interface ApiService {
     @POST("api/auth/logout")
     Call<ApiResponse<Void>> logout();
 
-    // 📋 COMPLAINT ENDPOINTS
+    // COMPLAINT ENDPOINTS
     @GET("api/complaints")
-    Call<ApiResponse<List<Complaint>>> getComplaints(
+    Call<ApiResponse<ComplaintResponse>> getComplaints(
             @Query("page") int page,
             @Query("limit") int limit
     );
@@ -50,7 +51,7 @@ public interface ApiService {
             @Body Map<String, String> statusData
     );
 
-    // 👤 USER ENDPOINTS
+    // user endpoint
     @GET("api/users/me")
     Call<ApiResponse<User>> getProfile();
 

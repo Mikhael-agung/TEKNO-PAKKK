@@ -16,6 +16,14 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.example.project_uts.network.ApiClient;
+import com.example.project_uts.network.ApiService;
+import com.example.project_uts.network.AuthManage;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -154,14 +162,69 @@ public class CustomerFragment extends Fragment {
             return;
         }
 
-        // Simulasi proses pengiriman
-        boolean isSuccess = Math.random() > 0.5;
+        // 1. Ambil user_id dari AuthManager
+        AuthManage authManage = new AuthManage(requireContext());
+        String userId = authManage.getUserId();
 
-        if (isSuccess) {
-            showSuccessDialog(judul, kategori);
-        } else {
-            showErrorDialog();
+        if (userId == null) {
+            Toast.makeText(requireContext(), "User tidak ditemukan, silakan login ulang", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        // 2. Disable button selama proses
+        btnSubmit.setEnabled(false);
+        btnSubmit.setText("Mengirim...");
+
+        // 3. Siapkan data untuk API
+        Map<String, String> complaintData = new HashMap<>();
+        complaintData.put("judul", judul);
+        complaintData.put("kategori", kategori);
+        complaintData.put("deskripsi", deskripsi);
+        complaintData.put("user_id", userId); // PENTING: Kirim user_id
+
+        // 4. Jika ada foto, perlu multipart request (nanti)
+        // Untuk sekarang, tanpa foto dulu
+
+        // 5. Panggil API
+        ApiService apiService = ApiClient.getApiService();
+        Call<com.example.project_uts.models.ApiResponse<Complaint>> call = apiService.createComplaint(complaintData);
+
+        call.enqueue(new Callback<com.example.project_uts.models.ApiResponse<Complaint>>() {
+            @Override
+            public void onResponse(Call<com.example.project_uts.models.ApiResponse<Complaint>> call,
+                                   Response<com.example.project_uts.models.ApiResponse<Complaint>> response) {
+
+                btnSubmit.setEnabled(true);
+                btnSubmit.setText("Kirim Komplain");
+
+                if (response.isSuccessful() && response.body() != null) {
+                    com.example.project_uts.models.ApiResponse<Complaint> apiResponse = response.body();
+
+                    if (apiResponse.isSuccess()) {
+                        showSuccessDialog(judul, kategori);
+                    } else {
+                        showErrorDialog("Gagal: " + apiResponse.getMessage());
+                    }
+                } else {
+                    String errorMsg = "Error: " + response.code();
+                    if (response.errorBody() != null) {
+                        try {
+                            errorMsg = response.errorBody().string();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    showErrorDialog(errorMsg);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<com.example.project_uts.models.ApiResponse<Complaint>> call, Throwable t) {
+                btnSubmit.setEnabled(true);
+                btnSubmit.setText("Kirim Komplain");
+                showErrorDialog("Koneksi gagal: " + t.getMessage());
+            }
+        });
     }
 
     /**
@@ -188,18 +251,18 @@ public class CustomerFragment extends Fragment {
     /**
      * Tampilkan dialog error
      */
-    private void showErrorDialog() {
+    private void showErrorDialog(String message) {
         Dialog dialog = new Dialog(requireContext());
         dialog.setContentView(R.layout.error_dialog);
         dialog.setCancelable(false);
 
         TextView tvMessage = dialog.findViewById(R.id.tv_message);
-        tvMessage.setText("Gagal mengirim komplain. Silakan coba lagi.");
+        tvMessage.setText(message); // Pakai parameter message
 
         Button btnTryAgain = dialog.findViewById(R.id.btn_try_again);
         btnTryAgain.setOnClickListener(v -> {
             dialog.dismiss();
-            submitKomplain();
+            submitKomplain(); // Coba lagi
         });
 
         Button btnCancel = dialog.findViewById(R.id.btn_cancel);
