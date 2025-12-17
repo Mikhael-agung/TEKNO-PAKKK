@@ -1,4 +1,4 @@
-package com.example.project_uts;
+package com.example.project_uts.Teknisi.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+
+import com.example.project_uts.R;
+
 public class DashboardTeknisiFragment extends Fragment {
 
     private TextView tvNamaTeknisi, tvCompletedCount, tvPendingCount, tvReadyCount;

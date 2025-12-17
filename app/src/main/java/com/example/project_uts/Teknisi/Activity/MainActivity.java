@@ -1,10 +1,15 @@
-package com.example.project_uts;
+package com.example.project_uts.Teknisi.Activity;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.project_uts.R;
+import com.example.project_uts.Teknisi.Fragment.DashboardTeknisiFragment;
+import com.example.project_uts.Teknisi.Fragment.DiskusiTeknisiFragment;
+import com.example.project_uts.Teknisi.Fragment.KomplainListFragment;
+import com.example.project_uts.Teknisi.Fragment.ProfilFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -14,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_teknisi);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 

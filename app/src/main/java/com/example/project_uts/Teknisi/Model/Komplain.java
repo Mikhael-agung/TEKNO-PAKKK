@@ -1,4 +1,4 @@
-package com.example.project_uts;
+package com.example.project_uts.Teknisi.Model;
 
 import com.google.gson.annotations.SerializedName;
 

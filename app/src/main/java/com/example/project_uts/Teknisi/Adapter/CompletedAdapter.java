@@ -1,4 +1,4 @@
-package com.example.project_uts;
+package com.example.project_uts.Teknisi.Adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,6 +6,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.project_uts.R;
+import com.example.project_uts.Teknisi.Model.Komplain;
+
 import java.util.List;
 
 public class CompletedAdapter extends RecyclerView.Adapter<CompletedAdapter.ViewHolder> {
@@ -20,7 +24,7 @@ public class CompletedAdapter extends RecyclerView.Adapter<CompletedAdapter.View
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_completed, parent, false);
+                .inflate(R.layout.item_completed_teknisi, parent, false);
         return new ViewHolder(view);
     }
 

@@ -1,4 +1,4 @@
-package com.example.project_uts;
+package com.example.project_uts.Teknisi.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,9 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.project_uts.LoginActivity;
+import com.example.project_uts.R;
+
 public class ProfilFragment extends Fragment {
 
     private TextView tvNama, tvEmail, tvRole;
@@ -21,7 +24,7 @@ public class ProfilFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profil, container, false);
+        View view = inflater.inflate(R.layout.fragment_profil_teknisi, container, false);
 
         tvNama = view.findViewById(R.id.tvNama);
         tvEmail = view.findViewById(R.id.tvEmail);

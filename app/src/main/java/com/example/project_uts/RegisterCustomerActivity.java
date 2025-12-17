@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.project_uts.Teknisi.Activity.MainActivity;
+
 public class RegisterCustomerActivity extends AppCompatActivity {
 
     private EditText etNama, etEmail, etNoTelp, etPassword, etKonfirmasiPassword;

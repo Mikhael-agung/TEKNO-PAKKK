@@ -25,7 +25,7 @@
 
         <!-- MainActivity -->
         <activity
-            android:name=".MainActivity"
+            android:name=".Teknisi.Activity.MainActivity"
             android:exported="false" />
 
         <activity
@@ -33,7 +33,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".KomplainDetailActivity"
+            android:name=".Teknisi.Activity.KomplainDetailActivity"
             android:exported="false" />
 
     </application>

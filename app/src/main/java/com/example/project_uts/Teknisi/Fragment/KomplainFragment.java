@@ -1,4 +1,4 @@
-package com.example.project_uts;
+package com.example.project_uts.Teknisi.Fragment;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.project_uts.ApiClient;
+import com.example.project_uts.ApiService;
+import com.example.project_uts.R;
+import com.example.project_uts.Teknisi.Adapter.KomplainAdapter;
+import com.example.project_uts.Teknisi.Model.ComplaintStatus;
+import com.example.project_uts.Teknisi.Model.Komplain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +36,7 @@ public class KomplainFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_komplain, container, false);
+        View view = inflater.inflate(R.layout.fragment_komplain_teknisi, container, false);
 
         rvKomplain = view.findViewById(R.id.rvKomplain);
         rvKomplain.setLayoutManager(new LinearLayoutManager(getContext()));

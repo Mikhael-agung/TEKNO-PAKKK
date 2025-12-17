@@ -1,9 +1,13 @@
-package com.example.project_uts;
+package com.example.project_uts.Teknisi.Adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+import com.example.project_uts.Teknisi.Fragment.CompletedFragment;
+import com.example.project_uts.Teknisi.Fragment.KomplainFragment;
+import com.example.project_uts.Teknisi.Fragment.ProgressFragment;
 
 public class KomplainPagerAdapter extends FragmentStateAdapter {
 

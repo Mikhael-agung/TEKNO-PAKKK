@@ -1,4 +1,4 @@
-package com.example.project_uts;
+package com.example.project_uts.Teknisi.Activity;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +13,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.project_uts.ApiClient;
+import com.example.project_uts.ApiService;
+import com.example.project_uts.R;
+import com.example.project_uts.Teknisi.Adapter.HistoryTeknisiAdapter;
+import com.example.project_uts.Teknisi.Model.ComplaintStatusRequest;
+import com.example.project_uts.Teknisi.Model.HistoryTeknisi;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,7 +47,7 @@ public class KomplainDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_komplain_detail); // pakai layout XML kamu
+        setContentView(R.layout.activity_komplain_detail_teknisi); // pakai layout XML kamu
 
         // Bind views
         btnPending = findViewById(R.id.btnPending);

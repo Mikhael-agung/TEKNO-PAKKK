@@ -1,4 +1,4 @@
-package com.example.project_uts;
+package com.example.project_uts.Teknisi.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,10 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.project_uts.R;
+import com.example.project_uts.Teknisi.Adapter.DiskusiAdapter;
+import com.example.project_uts.Teknisi.Model.DiskusiTeknisi;
 
 import java.util.ArrayList;
 import java.util.List;

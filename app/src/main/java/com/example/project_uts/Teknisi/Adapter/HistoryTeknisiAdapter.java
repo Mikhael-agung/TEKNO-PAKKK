@@ -1,4 +1,4 @@
-package com.example.project_uts;
+package com.example.project_uts.Teknisi.Adapter;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.project_uts.R;
+import com.example.project_uts.Teknisi.Model.HistoryTeknisi;
 
 import java.util.List;
 

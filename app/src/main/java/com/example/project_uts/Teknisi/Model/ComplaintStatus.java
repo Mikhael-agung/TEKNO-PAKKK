@@ -1,4 +1,4 @@
-package com.example.project_uts;
+package com.example.project_uts.Teknisi.Model;
 
 public class ComplaintStatus {
     private String status;

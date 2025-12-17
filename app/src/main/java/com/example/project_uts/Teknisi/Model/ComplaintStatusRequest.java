@@ -1,4 +1,4 @@
-package com.example.project_uts;
+package com.example.project_uts.Teknisi.Model;
  // sesuaikan dengan paket kamu
 
 public class ComplaintStatusRequest {

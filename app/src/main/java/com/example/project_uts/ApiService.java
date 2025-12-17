@@ -1,5 +1,9 @@
 package com.example.project_uts;
 
+import com.example.project_uts.Teknisi.Model.ComplaintStatus;
+import com.example.project_uts.Teknisi.Model.ComplaintStatusRequest;
+import com.example.project_uts.Teknisi.Model.Komplain;
+
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -23,8 +27,6 @@ public interface ApiService {
             @Body ComplaintStatusRequest request
     );
 
-    @GET("api/complaints/{id}")
-    Call<ComplaintResponse> getComplaintById(@Path("id") String id);
 
     @POST("api/complaints/{id}/statuses")
     Call<Void> updateStatus(
