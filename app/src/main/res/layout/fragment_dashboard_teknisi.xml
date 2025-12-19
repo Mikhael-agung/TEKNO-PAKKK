@@ -231,7 +231,7 @@
                     android:layout_height="40dp"
                     android:background="#E8F4FF"
                     android:gravity="center"
-                    android:cornerRadius="20dp">
+                    app:cornerRadius="20dp">
 
                     <ImageView
                         android:layout_width="20dp"
