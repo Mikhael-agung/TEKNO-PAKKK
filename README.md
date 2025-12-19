@@ -1,163 +1,208 @@
-# 📱 Service Complaint App
+# 📱 Service Complaint App - Documentation
 
 ## 🎯 Overview
-A mobile application for handling customer service complaints and technician assignments with real-time communication features. Built with Java and Android Studio.
+A mobile application for handling customer complaints and technician assignments with real-time communication features.
 
-## 👥 Role-Based System
+## 👥 Role-Based Access
 
-### **User Roles:**
+### **Authentication & Roles**
+- **All Users**: Login, Profile, Complaint Details
 - **Customer**: Create complaints, track status, chat with technicians
-- **Teknisi**: Handle complaints, daily attendance, send work reports, chat with customers
+- **Teknisi**: Attendance, handle complaints, send reports, chat with customers
 
-## 📱 Features
+## 📋 Project Structure
 
-### **Customer Features:**
-- 📝 Create new complaints with photos
-- 📋 Track complaint status  
-- 💬 Real-time chat with technicians
-- 📊 View complaint history
-- 👤 User profile management
+### **Activities & Fragments**
 
-### **Technician Features:**
-- ✅ Daily attendance system
-- 📥 View assigned complaints
-- 🔧 Update complaint status
-- 📋 Send work reports with photos
-- 💬 Chat with customers
-- 👤 Technician profile
+| Halaman / Fragment | Tipe | Role | Description |
+|-------------------|------|------|-------------|
+| `LoginActivity` | Activity | All | User authentication |
+| `DashboardActivity` | Activity | All | Role-based main dashboard |
+| `KomplainFormFragment` | Fragment | Customer | Create new complaints |
+| `StatusKomplainFragment` | Fragment | Customer | Track complaint status |
+| `KomplainListFragment` | Fragment | Teknisi | List of assigned complaints |
+| `KomplainDetailFragment` | Fragment | All | Complaint details & discussion |
+| `AbsenFragment` | Fragment | Teknisi | Daily attendance |
+| `ProfilFragment` | Fragment | All | User profile management |
+| `DiskusiTeknisiFragment` | Fragment | Teknisi | Technician discussions |
 
-## 🏗️ Project Structure
+## 🔐 Authentication Flow
 
-```
-app/src/main/
-├── java/com/example/project_uts/
-│   ├── activity/
-│   │   ├── MainActivity.java          # Main activity with role-based navigation
-│   │   └── LoginActivity.java         # User authentication
-│   ├── fragment/
-│   │   ├── CustomerFragment.java      # Complaint creation form
-│   │   ├── DashboardFragment.java     # Role-based dashboard
-│   │   ├── KomplainListFragment.java  # Complaint list for technicians
-│   │   ├── DiskusiTeknisiFragment.java # Discussion/chat interface
-│   │   ├── ProfilFragment.java        # User profile management
-│   │   └── HistoryComplainFragment.java # Complaint history
-│   ├── adapter/
-│   │   ├── KomplainAdapter.java       # Complaint list adapter
-│   │   ├── ChatAdapter.java           # Chat message adapter
-│   │   └── HistoryAdapter.java        # History list adapter
-│   ├── model/
-│   │   ├── Komplain.java              # Complaint data model
-│   │   ├── ChatMessage.java           # Chat message model
-│   │   └── Complaint.java             # History complaint model
-│   └── api/
-│       └── ApiClient.java             # API service client
-└── res/
-    ├── layout/                         # UI layout files
-    ├── drawable/                       # Icons and shapes
-    └── menu/                           # Navigation menus
+### **Login Process**
+```java
+// LoginActivity
+Input: username & password
+POST → /login
+Response: { userId, role }
+Store: SharedPreferences
+Navigate → DashboardActivity
 ```
 
-## 🔄 Workflow
+### **Role Detection & Navigation**
+```java
+// DashboardActivity - Role-Based Menu
+if (role == "customer") {
+    showMenu: Komplain Baru, Status Komplain, Profil
+} else if (role == "teknisi") {
+    showMenu: Absen, Daftar Komplain, Profil
+}
+```
 
-### **Customer Journey:**
-```
-Login → Dashboard → Create Complaint → Track Status → Chat with Technician
+## 📱 Customer Flow
+
+### **1. 📸 Komplain Baru - `KomplainFormFragment`**
+```java
+// Input Fields:
+- Judul (required)
+- Deskripsi (required) 
+- Kategori (dropdown)
+- Foto barang rusak (optional)
+
+// API:
+Multipart POST → /complains
+Body: { judul, deskripsi, kategori, foto, status: "open" }
 ```
 
-### **Technician Journey:**
+### **2. 📋 Status Komplain - `StatusKomplainFragment`**
+```java
+// API:
+GET → /complains?userId={userId}
+
+// Display:
+- List of user's complaints
+- Click → KomplainDetailFragment
 ```
-Login → Attendance → View Complaints → Process Complaint → Send Report → Chat with Customer
+
+### **3. 💬 Diskusi Komplain - `KomplainDetailFragment`**
+```java
+// Features:
+- Chat with assigned technician
+- View complaint details
+- Cannot change status or send reports
 ```
+
+## 🔧 Technician Flow
+
+### **1. ✅ Absen Harian - `AbsenFragment`**
+```java
+// API:
+POST → /attendance
+Body: { teknisiId, timestamp }
+```
+
+### **2. 📥 Daftar Komplain - `KomplainListFragment`**
+```java
+// API:
+GET → /complains?status=open
+
+// Display:
+- List of open complaints
+- Click → KomplainDetailFragment
+```
+
+### **3. 🔧 Detail Komplain - `KomplainDetailFragment`**
+```java
+// Features:
+- View complaint details + photos
+- Update status: open → in_progress → done
+- Send work report: description + result photos
+- Chat with customer
+- Discuss with other technicians (all technicians can view)
+```
+
+## 🗂️ API Endpoints
+
+### **Authentication**
+- `POST /login` - User login
+- `POST /logout` - User logout
+
+### **Complaints**
+- `GET /complains?userId={id}` - Get user complaints
+- `GET /complains?status={status}` - Get complaints by status
+- `POST /complains` - Create new complaint (Multipart)
+- `PUT /complains/{id}` - Update complaint status
+- `GET /complains/{id}` - Get complaint details
+
+### **Attendance**
+- `POST /attendance` - Technician attendance
+
+### **Chat/Discussion**
+- `GET /messages?complaintId={id}` - Get messages
+- `POST /messages` - Send new message
 
 ## 🎨 UI/UX Features
 
-- **Material Design 3** components
-- **Role-based navigation** with BottomNavigationView
-- **Responsive layouts** with ConstraintLayout
-- **Image upload** with preview functionality
-- **Real-time chat** interface
-- **Form validation** and error handling
+### **Navigation**
+- Bottom Navigation (role-based)
+- Fragment transactions with back stack
+- Intent for activity navigation
+
+### **Design Patterns**
+- Material Design components
+- Multipart file upload for images
+- Real-time chat interface
+- Role-based UI adaptation
 
 ## 🛠️ Technical Stack
 
 - **Language**: Java
-- **Minimum SDK**: API 21 (Android 5.0)
 - **Architecture**: MVC with Fragments
-- **UI**: Material Components, ConstraintLayout
-- **Navigation**: BottomNavigationView, FragmentManager
+- **Network**: Retrofit + OkHttp
+- **Storage**: SharedPreferences, Multipart File Upload
+- **Navigation**: BottomNavigationView + FragmentManager
 
-## 📋 API Integration
+## 📁 Project Architecture
 
-### **Planned Endpoints:**
-- `POST /login` - User authentication
-- `POST /complaints` - Create new complaint
-- `GET /complaints` - Get complaints list
-- `PUT /complaints/{id}` - Update complaint status
-- `POST /messages` - Send chat messages
-- `POST /attendance` - Technician attendance
+```
+app/
+├── src/main/java/com/example/project_uts/
+│   ├── activity/
+│   │   ├── LoginActivity.java
+│   │   └── DashboardActivity.java
+│   ├── fragment/
+│   │   ├── KomplainFormFragment.java
+│   │   ├── StatusKomplainFragment.java
+│   │   ├── KomplainListFragment.java
+│   │   ├── KomplainDetailFragment.java
+│   │   ├── AbsenFragment.java
+│   │   ├── ProfilFragment.java
+│   │   └── DiskusiTeknisiFragment.java
+│   ├── adapter/
+│   │   ├── KomplainAdapter.java
+│   │   └── ChatAdapter.java
+│   ├── model/
+│   │   ├── User.java
+│   │   ├── Komplain.java
+│   │   └── ChatMessage.java
+│   └── api/
+│       └── ApiClient.java
+```
+
+## 🔄 Workflow Summary
+
+### **Customer Journey**
+```
+Login → Dashboard → Buat Komplain → Lihat Status → Chat dengan Teknisi
+```
+
+### **Technician Journey**  
+```
+Login → Dashboard → Absen → Lihat Daftar Komplain → Proses Komplain → Kirim Laporan → Chat dengan Customer
+```
 
 ## 🚀 Getting Started
 
-### **Prerequisites:**
-- Android Studio Arctic Fox or later
-- Java JDK 11+
-- Android SDK API 21+
-
-### **Installation:**
-1. Clone the repository
-2. Open in Android Studio
-3. Sync project with Gradle files
-4. Build and run on emulator or device
-
-### **Build Instructions:**
-```bash
-./gradlew assembleDebug
-```
-
-## 🔧 Development
-
-### **Code Style:**
-- Follow Android Java style guide
-- Use meaningful variable names
-- Add comments for complex logic
-- Maintain consistent formatting
-
-### **Branch Strategy:**
-- `main` - Production ready code
-- `staging` - Testing and integration
-- `feature/*` - Feature development
-- `bugfix/*` - Bug fixes
-
-## 📝 TODO / Upcoming Features
-
-- [ ] Firebase integration for real-time data
-- [ ] Push notifications
-- [ ] Image compression for uploads
-- [ ] Offline support
-- [ ] Payment integration
-- [ ] Rating system for technicians
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+1. **Clone repository**
+2. **Configure API endpoints in `ApiClient.java`**
+3. **Build and run on Android Studio**
+4. **Test with different user roles**
 
 ## 📞 Support
 
-For support and questions:
-- Create an issue in the repository
-- Contact the development team
-- Check the project documentation
+For technical issues or feature requests, contact the development team.
 
 ---
 
-**Version**: 1.0.0  
+**Version**: 1.0  
 **Last Updated**: 2025  
 **Developed By**: Dicky Pratama and Mikhael Agung

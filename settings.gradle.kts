@@ -21,4 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Project-UTS"
 include(":app")
- 

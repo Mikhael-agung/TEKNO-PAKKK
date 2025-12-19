@@ -1,0 +1,50 @@
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:strokeWidth="2dp"
+    app:strokeColor="#FF9800"> <!-- default Pending warna oranye -->
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Status -->
+        <TextView
+            android:id="@+id/tvStatusHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pending"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#FF9800"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Alasan / Catatan -->
+        <TextView
+            android:id="@+id/tvReasonHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Menunggu sparepart..."
+            android:textSize="14sp"
+            android:textColor="#424242"
+            android:lineSpacingExtra="4dp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Waktu -->
+        <TextView
+            android:id="@+id/tvTimeHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="07 Desember 2025 • 14:30 WIB"
+            android:textSize="12sp"
+            android:textColor="#757575"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
