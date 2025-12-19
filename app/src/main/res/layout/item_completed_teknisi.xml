@@ -36,6 +36,28 @@
             android:textColor="#666666"
             android:layout_marginBottom="4dp"/>
 
+        <!-- Alamat -->
+        <TextView
+            android:id="@+id/tvAlamatCompleted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Alamat: Ruang Meeting Lt.2"
+            android:textSize="13sp"
+            android:textColor="#444444"
+            android:layout_marginBottom="4dp"/>
+
+        <!-- Ringkasan Deskripsi -->
+        <TextView
+            android:id="@+id/tvDeskripsiCompleted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="AC tidak dingin sejak kemarin..."
+            android:textSize="13sp"
+            android:textColor="#777777"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:layout_marginBottom="8dp"/>
+
         <!-- Status + Waktu -->
         <LinearLayout
             android:layout_width="match_parent"

@@ -1,6 +1,7 @@
 package com.example.project_uts.Teknisi.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,10 +37,28 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Komplain komplain = progressList.get(position);
+
         holder.tvJudul.setText(komplain.getTitle());
-        holder.tvPelapor.setText("Pelapor: " + komplain.getUserId());
-        holder.tvStatus.setText(komplain.getStatus());
+        holder.tvPelapor.setText("Pelapor: " + komplain.getUserId()); // kalau sudah join nama
         holder.tvWaktu.setText(komplain.getCreatedAt());
+
+        // Status handling
+        String status = komplain.getStatus();
+        holder.tvStatus.setText(status);
+
+        if ("on_progress".equalsIgnoreCase(status)) {
+            holder.tvStatus.setBackgroundColor(Color.parseColor("#2196F3")); // biru
+            holder.btnMintaBantuan.setVisibility(View.VISIBLE);
+            holder.btnDetail.setVisibility(View.VISIBLE);
+            // misal tombol khusus "Pending" di-hide
+            // holder.btnPending.setVisibility(View.GONE);
+        } else if ("pending".equalsIgnoreCase(status)) {
+            holder.tvStatus.setBackgroundColor(Color.parseColor("#FF9800")); // oranye
+            holder.btnMintaBantuan.setVisibility(View.VISIBLE);
+            holder.btnDetail.setVisibility(View.VISIBLE);
+            // kalau ada tombol "On Progress" → hide
+            // holder.btnOnProgress.setVisibility(View.GONE);
+        }
 
         // tombol aksi
         holder.btnCustomer.setOnClickListener(v -> {
@@ -52,6 +71,7 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.ViewHo
             // buka detail activity
         });
     }
+
 
     @Override
     public int getItemCount() {

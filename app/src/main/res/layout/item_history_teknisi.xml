@@ -1,78 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#FFFFFF"
-    android:layout_margin="8dp">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:strokeWidth="2dp"
+    app:strokeColor="#FF9800"> <!-- default Pending warna oranye -->
 
     <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp">
-
-        <!-- Icon Status -->
-        <TextView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:text="⏳"
-            android:textSize="14sp"
-            android:gravity="center"
-            android:layout_marginEnd="12dp" />
+        android:layout_height="wrap_content">
 
         <!-- Status -->
         <TextView
             android:id="@+id/tvStatusHistory"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Pending"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:textColor="#FF9800" />
+            android:textColor="#FF9800"
+            android:layout_marginBottom="8dp"/>
 
-    </LinearLayout>
-
-    <!-- Alasan / Catatan -->
-    <TextView
-        android:id="@+id/tvReasonHistory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Menunggu sparepart yang sedang dalam pengiriman dari supplier utama"
-        android:textSize="14sp"
-        android:textColor="#424242"
-        android:lineSpacingExtra="4dp"
-        android:layout_marginBottom="8dp" />
-
-    <!-- Garis Pemisah -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#EEEEEE"
-        android:layout_marginVertical="8dp" />
-
-    <!-- Waktu -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
+        <!-- Alasan / Catatan -->
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/tvReasonHistory"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="🕒"
-            android:textSize="12sp"
-            android:layout_marginEnd="6dp" />
+            android:text="Menunggu sparepart..."
+            android:textSize="14sp"
+            android:textColor="#424242"
+            android:lineSpacingExtra="4dp"
+            android:layout_marginBottom="8dp"/>
 
+        <!-- Waktu -->
         <TextView
             android:id="@+id/tvTimeHistory"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="07 Desember 2025 • 14:30 WIB"
             android:textSize="12sp"
-            android:textColor="#757575" />
+            android:textColor="#757575"/>
     </LinearLayout>
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>
