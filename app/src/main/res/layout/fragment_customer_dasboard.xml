@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA"
+    android:background="#213448"
     android:orientation="vertical">
 
     <!-- ScrollView untuk bagian ATAS saja -->
@@ -120,7 +120,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Statistik Komplain"
-                android:textColor="#2C3E50"
+                android:textColor="#FCF8F8"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"

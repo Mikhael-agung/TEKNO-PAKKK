@@ -1,5 +1,15 @@
+
+.gradle/
+caches/
+daemon/
+native/
+wrapper/
+**/*.lock
+**/fileContent/
+
 # Build outputs
 build/
+**/build/
 *.apk
 *.aar
 *.ap_
@@ -15,12 +25,15 @@ bin/
 gen/
 out/
 
-# Gradle
-.gradle/
-gradle-app.setting
-caches/          # 👈 TAMBAH INI
-**/transforms/   # 👈 TAMBAH INI
-**/transformed/  # 👈 TAMBAH INI
+# Transforms
+**/transforms/
+**/transformed/
+
+# Android Studio
+.idea/
+*.iml
+.navigation/
+captures/
 
 # Local config
 local.properties
@@ -29,21 +42,9 @@ local.properties
 *.log
 logs/
 
-# Android Studio
-.idea/
-*.iml
-.navigation/
-captures/
-.DS_Store
-
-# Keystore
-*.jks
-*.keystore
-
 # Native build
 .cxx/
 .externalNativeBuild/
-.cxx/
 
 # Google Services
 google-services.json
@@ -52,18 +53,13 @@ google-services.json
 .DS_Store
 Thumbs.db
 
-# Temp files
+# Temp / cache
 *.tmp
 *.temp
 *.swp
-
-# Environment files
-.env
-.env.*
-
-# Cache
 .cache/
 *.orig
 
-# Firebase
-firebase-debug.log
+# Env
+.env
+.env.*

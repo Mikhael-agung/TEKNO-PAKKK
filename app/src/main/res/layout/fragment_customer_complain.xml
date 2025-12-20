@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f8f9fa"
+    android:background="#132440"
     android:fillViewport="true">
 
     <LinearLayout
@@ -34,6 +34,8 @@
                     android:layout_height="40dp"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="-1dp"
                     android:src="@drawable/ic_arrow_back"
                     app:backgroundTint="@android:color/white"
                     app:elevation="6dp"
@@ -236,6 +238,223 @@
                         android:padding="12dp" />
 
                 </LinearLayout>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#E8F4FF"
+                    android:layout_marginBottom="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <!-- Header Alamat -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="12dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@android:drawable/ic_menu_mapmode"
+                                app:tint="#007BFF" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Alamat Layanan"
+                                android:textColor="#007BFF"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:layout_marginStart="12dp" />
+
+                        </LinearLayout>
+
+                        <!-- Info Text -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Teknisi akan datang ke alamat ini untuk perbaikan"
+                            android:textColor="#666"
+                            android:textSize="12sp"
+                            android:layout_marginBottom="16dp" />
+
+                        <!-- Alamat Lengkap -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxCornerRadiusBottomEnd="8dp"
+                            app:boxCornerRadiusBottomStart="8dp"
+                            app:boxCornerRadiusTopEnd="8dp"
+                            app:boxCornerRadiusTopStart="8dp"
+                            app:boxStrokeColor="#007BFF"
+                            android:layout_marginBottom="12dp">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/et_alamat"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Alamat lengkap (jalan, no rumah, RT/RW)"
+                                android:maxLines="2" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Row: Provinsi & Kota -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="12dp">
+
+                            <!-- Provinsi -->
+<!--                            <com.google.android.material.textfield.TextInputLayout-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_weight="1"-->
+<!--                                android:layout_marginEnd="8dp"-->
+<!--                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
+<!--                                app:boxCornerRadiusBottomEnd="8dp"-->
+<!--                                app:boxCornerRadiusBottomStart="8dp"-->
+<!--                                app:boxCornerRadiusTopEnd="8dp"-->
+<!--                                app:boxCornerRadiusTopStart="8dp"-->
+<!--                                app:boxStrokeColor="#007BFF">-->
+
+<!--                                <com.google.android.material.textfield.TextInputEditText-->
+<!--                                    android:id="@+id/et_provinsi"-->
+<!--                                    android:layout_width="match_parent"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:hint="Provinsi" />-->
+
+<!--                            </com.google.android.material.textfield.TextInputLayout>-->
+
+                            <!-- Kota -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                app:boxCornerRadiusBottomEnd="8dp"
+                                app:boxCornerRadiusBottomStart="8dp"
+                                app:boxCornerRadiusTopEnd="8dp"
+                                app:boxCornerRadiusTopStart="8dp"
+                                app:boxStrokeColor="#007BFF">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/et_kota"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Kota/Kabupaten" />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                        </LinearLayout>
+
+                        <!-- Row: Kecamatan & Kode Pos -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="12dp">
+
+                            <!-- Kecamatan -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="8dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                app:boxCornerRadiusBottomEnd="8dp"
+                                app:boxCornerRadiusBottomStart="8dp"
+                                app:boxCornerRadiusTopEnd="8dp"
+                                app:boxCornerRadiusTopStart="8dp"
+                                app:boxStrokeColor="#007BFF">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/et_kecamatan"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Kecamatan" />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <!-- Kode Pos -->
+<!--                            <com.google.android.material.textfield.TextInputLayout-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_weight="1"-->
+<!--                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
+<!--                                app:boxCornerRadiusBottomEnd="8dp"-->
+<!--                                app:boxCornerRadiusBottomStart="8dp"-->
+<!--                                app:boxCornerRadiusTopEnd="8dp"-->
+<!--                                app:boxCornerRadiusTopStart="8dp"-->
+<!--                                app:boxStrokeColor="#007BFF">-->
+
+<!--                                <com.google.android.material.textfield.TextInputEditText-->
+<!--                                    android:id="@+id/et_kode_pos"-->
+<!--                                    android:layout_width="match_parent"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:hint="Kode Pos"-->
+<!--                                    android:inputType="number" />-->
+
+<!--                            </com.google.android.material.textfield.TextInputLayout>-->
+
+                        </LinearLayout>
+
+                        <!-- Nomor Telepon -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxCornerRadiusBottomEnd="8dp"
+                            app:boxCornerRadiusBottomStart="8dp"
+                            app:boxCornerRadiusTopEnd="8dp"
+                            app:boxCornerRadiusTopStart="8dp"
+                            app:boxStrokeColor="#007BFF"
+                            android:layout_marginBottom="12dp">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/et_telepon_alamat"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Nomor telepon di alamat ini"
+                                android:inputType="phone" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Catatan Alamat -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxCornerRadiusBottomEnd="8dp"
+                            app:boxCornerRadiusBottomStart="8dp"
+                            app:boxCornerRadiusTopEnd="8dp"
+                            app:boxCornerRadiusTopStart="8dp"
+                            app:boxStrokeColor="#007BFF">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/et_catatan_alamat"
+                                android:layout_width="match_parent"
+                                android:layout_height="80dp"
+                                android:gravity="top"
+                                android:hint="Catatan alamat (contoh: rumah warna biru, pagar hitam)"
+                                android:inputType="textMultiLine"
+                                android:maxLines="3" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
 
                 <!-- Foto Upload Section -->
                 <androidx.cardview.widget.CardView

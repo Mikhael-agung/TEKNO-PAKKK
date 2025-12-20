@@ -106,7 +106,6 @@ public class CustomerFragment extends Fragment {
     }
 
     private void setupClickListeners() {
-        // Back button - SOLUSI REKOMENDASI
         fabBack.setOnClickListener(v -> {
             navigateToDashboard();
         });
@@ -121,7 +120,6 @@ public class CustomerFragment extends Fragment {
      */
     private void navigateToDashboard() {
         try {
-            // 1. Update bottom navigation selected item
             BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottom_navigation);
             if (bottomNav != null) {
                 bottomNav.setSelectedItemId(R.id.nav_dashboard);
@@ -147,12 +145,10 @@ public class CustomerFragment extends Fragment {
             fotoUri = data.getData();
             ivFoto.setImageURI(fotoUri);
 
-            // TAMPILKAN CARD FOTO PREVIEW
             if (cardFotoPreview != null) {
                 cardFotoPreview.setVisibility(View.VISIBLE);
             }
 
-            // Konfirmasi
             Toast.makeText(requireContext(), "Foto berhasil dipilih", Toast.LENGTH_SHORT).show();
         }
     }
@@ -196,7 +192,7 @@ public class CustomerFragment extends Fragment {
         complaintData.put("judul", judul);
         complaintData.put("kategori", kategori);
         complaintData.put("deskripsi", deskripsi);
-        complaintData.put("user_id", userId); // PENTING: Kirim user_id
+        complaintData.put("user_id", userId);
 
         // 4. Jika ada foto, perlu multipart request (nanti)
         // Untuk sekarang, tanpa foto dulu
@@ -258,7 +254,7 @@ public class CustomerFragment extends Fragment {
         btnOk.setOnClickListener(v -> {
             dialog.dismiss();
             resetForm();
-            navigateToDashboard(); // KE DASHBOARD + UPDATE NAV
+            navigateToDashboard();
         });
 
         dialog.show();
@@ -278,7 +274,7 @@ public class CustomerFragment extends Fragment {
         Button btnTryAgain = dialog.findViewById(R.id.btn_try_again);
         btnTryAgain.setOnClickListener(v -> {
             dialog.dismiss();
-            submitKomplain(); // Coba lagi
+            submitKomplain(); 
         });
 
         Button btnCancel = dialog.findViewById(R.id.btn_cancel);
