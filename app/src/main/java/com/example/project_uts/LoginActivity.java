@@ -3,106 +3,291 @@ package com.example.project_uts;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.project_uts.Teknisi.Activity.MainActivity;
+import com.example.project_uts.models.User;
+import com.example.project_uts.network.ApiClient;
+import com.example.project_uts.network.ApiService;
+import com.example.project_uts.network.AuthManage;
+import com.example.project_uts.models.LoginResponse;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
-    EditText etUsername, etPassword;
-    Button btnLogin, btnDaftar;
+    private static final String TAG = "LoginActivity";
 
-    // Data dummy lengkap
-    private Map<String, User> dummyUsers = new HashMap<>();
+    private EditText etUsername, etPassword;
+    private Button btnLogin, btnDaftar;
+    private AuthManage authManage;
+    private ApiService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+
+        // Initialize ApiClient dan AuthManager
+        ApiClient.init(getApplicationContext());
+        authManage = new AuthManage(this);
+        apiService = ApiClient.getApiService();
+
+        // Cek jika user sudah login dengan AuthManager (not SharedPreferences)
+        if (authManage.isLoggedIn()) {
+            redirectToMainActivity();
+            return;
+        }
+
         setContentView(R.layout.activity_login);
 
+        // Initialize views
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
-        btnLogin   = findViewById(R.id.btnLogin);
-        btnDaftar  = findViewById(R.id.btnDaftar);
+        btnLogin = findViewById(R.id.btnLogin);
+        btnDaftar = findViewById(R.id.btnDaftar);
 
-        // Setup dummy data
-        setupDummyData();
+        // Login button click
+        btnLogin.setOnClickListener(v -> loginUser());
 
-        btnLogin.setOnClickListener(v -> {
-            String username = etUsername.getText().toString();
-            String password = etPassword.getText().toString();
+        // Daftar button click
+        btnDaftar.setOnClickListener(v -> {
+            Toast.makeText(this, "Fitur pendaftaran coming soon!", Toast.LENGTH_SHORT).show();
+        });
 
-            btnDaftar.setOnClickListener( view -> {
-                Intent intent = new Intent(LoginActivity.this, RegisterCustomerActivity.class);
-                startActivity(intent);
-            });
+        // Auto-fill for development
+        etUsername.setText("customer1");
+        etPassword.setText("123");
+    }
 
-            if(username.isEmpty() || password.isEmpty()){
-                Toast.makeText(LoginActivity.this, "Isi semua field dulu!", Toast.LENGTH_SHORT).show();
-            } else {
-                // Cek di dummy data
-                if (dummyUsers.containsKey(username) && dummyUsers.get(username).getPassword().equals(password)) {
-                    User user = dummyUsers.get(username);
+    private void redirectToMainActivity() {
+        Log.d(TAG, "=== REDIRECTING TO MAINACTIVITY ===");
 
-                    // Simpan data user ke SharedPreferences
-                    saveUserData(user);
+        // 1. Debug semua data sebelum redirect
+        Log.d(TAG, "=== DEBUG DATA BEFORE REDIRECT ===");
 
-                    Toast.makeText(LoginActivity.this, "Login berhasil sebagai " + user.getRole() + "!", Toast.LENGTH_SHORT).show();
+        // Debug AuthManage
+        if (authManage != null) {
+            authManage.printAllPreferences();
 
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra("role", user.getRole());
-                    startActivity(intent);
-                    finish();
+            // Cek token dan user
+            String token = authManage.getToken();
+            User user = authManage.getUser();
+            Log.d(TAG, "AuthManage - Token exists: " + (token != null));
+            Log.d(TAG, "AuthManage - User exists: " + (user != null));
+            if (user != null) {
+                Log.d(TAG, "AuthManage - User details: " +
+                        user.getFull_name() + ", " + user.getEmail() + ", " + user.getRole());
+            }
+        }
+
+        // Debug legacy preferences
+        debugLegacyPreferences();
+
+        // 2. Commit semua pending operations
+        Log.d(TAG, "Committing all pending operations...");
+
+        // 3. Create intent dengan flags
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+
+        // FLAG PENTING: Clear task agar tidak bisa back ke login
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        // 4. Tambahkan extra data untuk debugging di MainActivity
+        intent.putExtra("from_login", true);
+        intent.putExtra("login_time", System.currentTimeMillis());
+
+        // 5. Start activity dan finish
+        Log.d(TAG, "Starting MainActivity...");
+        startActivity(intent);
+
+        // 6. Finish LoginActivity
+        Log.d(TAG, "Finishing LoginActivity...");
+        finish();
+
+        // 7. Force garbage collection (optional)
+        System.gc();
+    }
+
+    private void loginUser() {
+        String username = etUsername.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+
+        // Validasi input
+        if (username.isEmpty()) {
+            etUsername.setError("Username harus diisi");
+            return;
+        }
+
+        if (password.isEmpty()) {
+            etPassword.setError("Password harus diisi");
+            return;
+        }
+
+        // Show loading
+        btnLogin.setEnabled(false);
+        btnLogin.setText("Loading...");
+
+        // Siapkan data untuk API
+        Map<String, String> credentials = new HashMap<>();
+        credentials.put("username", username);
+        credentials.put("password", password);
+
+        // Panggil API Login dengan Retrofit
+        Call<LoginResponse> call = apiService.login(credentials);
+
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                btnLogin.setEnabled(true);
+                btnLogin.setText("Login");
+
+                if (response.isSuccessful() && response.body() != null) {
+                    LoginResponse loginResponse = response.body();
+
+                    if (loginResponse.isSuccess()) {
+                        // Simpan token dan user data
+                        String token = loginResponse.getData().getToken();
+                        com.example.project_uts.models.User user = loginResponse.getData().getUser();
+
+                        // 1. SIMPAN KE AUTHMANAGE (UNTUK TOKEN DAN DATA USER)
+                        authManage.saveAuthData(token, user);
+
+                        // 2. SIMPAN KE SHAREDPREFERENCES LAMA UNTUK KOMPATIBILITAS
+                        saveToLegacyPreferences(user);
+
+                        // Login berhasil
+                        redirectToMainActivity();
+                        Toast.makeText(LoginActivity.this,
+                                "Login berhasil sebagai " + user.getRole(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(LoginActivity.this,
+                                loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(LoginActivity.this, "Username/Password salah!", Toast.LENGTH_SHORT).show();
+                    // Handle error response
+                    if (response.code() == 401) {
+                        Toast.makeText(LoginActivity.this,
+                                "Username atau password salah", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Fallback ke login lokal jika API error
+                        fallbackLogin(username, password);
+                        Toast.makeText(LoginActivity.this,
+                                "API error, menggunakan mode offline", Toast.LENGTH_SHORT).show();
+                    }
                 }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                btnLogin.setEnabled(true);
+                btnLogin.setText("Login");
+
+                // Fallback ke login lokal jika network error
+                fallbackLogin(username, password);
+                Toast.makeText(LoginActivity.this,
+                        "Koneksi gagal, menggunakan mode offline", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void setupDummyData() {
-        // Dummy Customer
-//        dummyUsers.put("customer", new User("Budi Santoso", "budi@customer.com", "1234", "customer", "085232978270"));
-//        dummyUsers.put("john", new User("John Doe", "john@customer.com", "1234", "customer", "085232978270"));
+    // METHOD BARU: Simpan ke SharedPreferences lama untuk kompatibilitas
+    private void saveToLegacyPreferences(com.example.project_uts.models.User user) {
+        // 1. Untuk DashboardFragment (menggunakan "user_prefs")
+        SharedPreferences prefs1 = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor1 = prefs1.edit();
+        editor1.putString("user_name", user.getFull_name());
+        editor1.putString("user_email", user.getEmail());
+        editor1.putBoolean("isLoggedIn", true);
+        editor1.apply();
 
-        // Dummy Teknisi
-        dummyUsers.put("teknisi", new User("Dicky YP", "DickyYP@teknisi.com", "1234", "teknisi", "+628978845390"));
-        dummyUsers.put("Agung", new User("M Agung", "Agung@teknisi.com", "1234", "teknisi", "+6285232978270"));
+        // 2. Untuk ProfilFragment (menggunakan "user_pref")
+        SharedPreferences prefs2 = getSharedPreferences("user_pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor2 = prefs2.edit();
+        editor2.putString("nama", user.getFull_name());
+        editor2.putString("email", user.getEmail());
+        editor2.putString("role", user.getRole());
+        editor2.putString("username", user.getUsername());
+        editor2.putBoolean("isLoggedIn", true);
+        editor2.apply();
+
+        Log.d("LoginActivity", "Saved to legacy prefs: " + user.getFull_name() + ", " + user.getEmail());
     }
 
-    private void saveUserData(User user) {
-        SharedPreferences preferences = getSharedPreferences("user_pref", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("nama", user.getNama());
-        editor.putString("email", user.getEmail());
-        editor.putString("no_telp", user.getNoTelp());
-        editor.putString("role", user.getRole());
-        editor.putBoolean("is_logged_in", true);
-        editor.apply();
-    }
+    // PERBAIKI fallbackLogin juga
+    private void fallbackLogin(String username, String password) {
+        // Simple authentication fallback (sama seperti sebelumnya)
+        String role = checkLogin(username, password);
 
-    // Model Class User
-    private static class User {
-        private String nama, email, password, role, noTelp;
+        if (role != null) {
+            // Buat user object untuk AuthManage
+            com.example.project_uts.models.User user = new com.example.project_uts.models.User();
+            user.setUsername(username);
+            user.setEmail(username + "@example.com");
+            user.setFull_name(getDisplayName(username, role));
+            user.setRole(role);
 
-        public User(String nama, String email, String password, String role, String noTelp) {
-            this.nama = nama;
-            this.email = email;
-            this.password = password;
-            this.role = role;
-            this.noTelp = noTelp;
+            // 1. Simpan ke AuthManage (dengan token dummy)
+            authManage.saveAuthData("dummy_token_fallback", user);
+
+            // 2. Simpan ke SharedPreferences lama
+            saveToLegacyPreferences(user);
+
+            // Login berhasil
+            redirectToMainActivity();
+            Toast.makeText(this, "Login berhasil sebagai " + role + " (offline)", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Username atau password salah", Toast.LENGTH_SHORT).show();
         }
+    }
 
-        public String getNama() { return nama; }
-        public String getEmail() { return email; }
-        public String getPassword() { return password; }
-        public String getRole() { return role; }
-        public String getNoTelp() { return noTelp; }
+    private String checkLogin(String username, String password) {
+        // Simple authentication fallback
+        if ("customer1".equals(username) && "123".equals(password)) {
+            return "customer";
+        }
+        else if ("teknisi1".equals(username) && "123".equals(password)) {
+            return "teknisi";
+        }
+        else if ("admin".equals(username) && "123".equals(password)) {
+            return "admin";
+        }
+        return null;
+    }
+
+    private String getDisplayName(String username, String role) {
+        switch (username) {
+            case "customer1": return "Customer User";
+            case "teknisi1": return "Teknisi Handal";
+            case "admin": return "Administrator";
+            default: return "User " + username;
+        }
+    }
+
+    private void debugLegacyPreferences() {
+        Log.d(TAG, "=== LEGACY PREFERENCES DEBUG ===");
+
+        // user_prefs (untuk DashboardFragment)
+        SharedPreferences prefs1 = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        Log.d(TAG, "user_prefs - user_name: " + prefs1.getString("user_name", "NOT FOUND"));
+        Log.d(TAG, "user_prefs - user_email: " + prefs1.getString("user_email", "NOT FOUND"));
+        Log.d(TAG, "user_prefs - isLoggedIn: " + prefs1.getBoolean("isLoggedIn", false));
+
+        // user_pref (untuk ProfilFragment)
+        SharedPreferences prefs2 = getSharedPreferences("user_pref", MODE_PRIVATE);
+        Log.d(TAG, "user_pref - nama: " + prefs2.getString("nama", "NOT FOUND"));
+        Log.d(TAG, "user_pref - email: " + prefs2.getString("email", "NOT FOUND"));
+        Log.d(TAG, "user_pref - role: " + prefs2.getString("role", "NOT FOUND"));
+        Log.d(TAG, "user_pref - username: " + prefs2.getString("username", "NOT FOUND"));
+        Log.d(TAG, "user_pref - isLoggedIn: " + prefs2.getBoolean("isLoggedIn", false));
     }
 }
