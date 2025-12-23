@@ -1,9 +1,20 @@
-# Build
+
+.gradle/
+caches/
+daemon/
+native/
+wrapper/
+**/*.lock
+**/fileContent/
+
+# Build outputs
 build/
+**/build/
 *.apk
 *.aar
 *.ap_
 *.aab
+*.jar
 
 # Java
 *.class
@@ -14,25 +25,22 @@ bin/
 gen/
 out/
 
-# Gradle
-.gradle/
-app/build/
+# Transforms
+**/transforms/
+**/transformed/
+
+# Android Studio
+.idea/
+*.iml
+.navigation/
+captures/
 
 # Local config
 local.properties
 
 # Logs
 *.log
-
-# Android Studio - INI YANG PENTING!
-.idea/
-*.iml
-.navigation/
-captures/
-
-# Keystore
-*.jks
-*.keystore
+logs/
 
 # Native build
 .cxx/
@@ -45,6 +53,13 @@ google-services.json
 .DS_Store
 Thumbs.db
 
-# Temp files
+# Temp / cache
 *.tmp
 *.temp
+*.swp
+.cache/
+*.orig
+
+# Env
+.env
+.env.*

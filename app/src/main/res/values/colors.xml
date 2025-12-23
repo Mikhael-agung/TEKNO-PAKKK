@@ -17,4 +17,13 @@
 
     <color name="gray_light">#F5F5F5</color>
     <color name="gray_dark">#616161</color>
+    <color name="colorFilterStroke">#CCCCCC</color>
+    <color name="colorFilterText">#666666</color>
+    <color name="colorPrimary">#3498DB</color>
+    <color name="colorDitolak">#C0392B</color> <!-- Dark red -->
+    <color name="colorDitolakLight">#FFF5F5</color> <!-- Light red background -->
+    <color name="status_completed">#4CAF50</color>
+    <color name="status_progress">#2196F3</color>
+    <color name="status_pending">#FF9800</color>
+    <color name="status_default">#666666</color>
 </resources>

@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment;
 
 import com.example.project_uts.LoginActivity;
 import com.example.project_uts.R;
+import com.example.project_uts.models.User;
+import com.example.project_uts.network.AuthManage;
 
 public class ProfilFragment extends Fragment {
 
@@ -22,8 +24,7 @@ public class ProfilFragment extends Fragment {
     private Button btnLogout;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profil, container, false);
 
         tvNama = view.findViewById(R.id.tvNama);
@@ -39,20 +40,43 @@ public class ProfilFragment extends Fragment {
     }
 
     private void loadUserData() {
-        SharedPreferences preferences = requireActivity().getSharedPreferences("user_pref", Context.MODE_PRIVATE);
+        if (!isAdded()) return;
 
-        String nama = preferences.getString("nama", "Nama User");
-        String email = preferences.getString("email", "email@example.com");
-        String role = preferences.getString("role", "customer");
-        String username = preferences.getString("username", "user");
+        // GANTI SharedPreferences dengan AuthManage
+        AuthManage authManage = new AuthManage(requireContext());
+        User user = authManage.getUser();
 
-        tvNama.setText(nama);
-        tvEmail.setText(email);
-        tvRole.setText(role);
-        tvUsername.setText(username);
+        if (user != null) {
+            // PAKAI getFull_name() - BUKAN getName()
+            tvNama.setText(user.getFull_name());
+            tvEmail.setText(user.getEmail());
+            tvRole.setText(user.getRole());
+            tvUsername.setText(user.getUsername());
 
-        // Set role color based on role
-        setRoleColor(role);
+            setRoleColor(user.getRole());
+
+            // SIMPAN juga ke preferences lama untuk kompatibilitas
+            SharedPreferences preferences = requireActivity().getSharedPreferences("user_pref", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("nama", user.getFull_name());  // full_name bukan name
+            editor.putString("email", user.getEmail());
+            editor.putString("role", user.getRole());
+            editor.putString("username", user.getUsername());
+            editor.apply();
+        } else {
+            // Fallback ke SharedPreferences lama
+            SharedPreferences preferences = requireActivity().getSharedPreferences("user_pref", Context.MODE_PRIVATE);
+            String nama = preferences.getString("nama", "Nama User");
+            String email = preferences.getString("email", "email@example.com");
+            String role = preferences.getString("role", "customer");
+            String username = preferences.getString("username", "user");
+
+            tvNama.setText(nama);
+            tvEmail.setText(email);
+            tvRole.setText(role);
+            tvUsername.setText(username);
+            setRoleColor(role);
+        }
     }
 
     private void setRoleColor(String role) {
@@ -76,18 +100,15 @@ public class ProfilFragment extends Fragment {
 
     private void setupLogout() {
         btnLogout.setOnClickListener(v -> {
-            // Clear shared preferences
+            // 1. Clear AuthManager (PENTING!)
+            AuthManage authManage = new AuthManage(requireContext());
+            authManage.logout(requireContext()); // Panggil method logout yang baru
+
+            // 2. Clear shared preferences lama (backup)
             SharedPreferences preferences = requireActivity().getSharedPreferences("user_pref", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.clear();
-            editor.apply();
+            preferences.edit().clear().apply();
 
-            // Redirect to Login Activity
-            Intent intent = new Intent(requireActivity(), LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            requireActivity().finish();
-
+            // 3. Toast
             Toast.makeText(requireActivity(), "Logout berhasil", Toast.LENGTH_SHORT).show();
         });
     }
