@@ -6,11 +6,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -36,10 +36,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class CustomerFragment extends Fragment {
 
     private EditText etJudul, etDeskripsi;
@@ -51,6 +47,11 @@ public class CustomerFragment extends Fragment {
     private MaterialButton btnHapusFoto;
     private CardView cardFotoPreview;
     private static final int PICK_IMAGE_REQUEST = 1;
+    private EditText etAlamat;
+    private EditText etKota;
+    private EditText etKecamatan;
+    private EditText etTelepon;
+    private EditText etCatatan;
 
     public CustomerFragment() {
         // Required empty public constructor
@@ -78,6 +79,11 @@ public class CustomerFragment extends Fragment {
         fabBack = view.findViewById(R.id.fab_back);
         cardFotoPreview = view.findViewById(R.id.card_foto_preview);
         btnHapusFoto = view.findViewById(R.id.btn_hapus_foto);
+        etAlamat = view.findViewById(R.id.et_alamat);
+        etKota = view.findViewById(R.id.et_kota);
+        etKecamatan = view.findViewById(R.id.et_kecamatan);
+        etTelepon = view.findViewById(R.id.et_telepon_alamat);
+        etCatatan = view.findViewById(R.id.et_catatan_alamat);
 
     }
 
@@ -157,6 +163,8 @@ public class CustomerFragment extends Fragment {
         String judul = etJudul.getText().toString().trim();
         String deskripsi = etDeskripsi.getText().toString().trim();
         String kategori = spKategori.getSelectedItem().toString();
+        String finalJudul = judul;
+        String finalKategori = kategori;
 
         // Validasi
         if (judul.isEmpty()) {
@@ -193,6 +201,11 @@ public class CustomerFragment extends Fragment {
         complaintData.put("kategori", kategori);
         complaintData.put("deskripsi", deskripsi);
         complaintData.put("user_id", userId);
+        complaintData.put("alamat", etAlamat.getText().toString());
+        complaintData.put("kota", etKota.getText().toString());
+        complaintData.put("kecamatan", etKecamatan.getText().toString());
+        complaintData.put("telepon_alamat", etTelepon.getText().toString());
+        complaintData.put("catatan_alamat", etCatatan.getText().toString());
 
         // 4. Jika ada foto, perlu multipart request (nanti)
         // Untuk sekarang, tanpa foto dulu
@@ -206,35 +219,51 @@ public class CustomerFragment extends Fragment {
             public void onResponse(Call<com.example.project_uts.models.ApiResponse<Complaint>> call,
                                    Response<com.example.project_uts.models.ApiResponse<Complaint>> response) {
 
-                btnSubmit.setEnabled(true);
-                btnSubmit.setText("Kirim Komplain");
+                requireActivity().runOnUiThread(() -> {
+                    btnSubmit.setEnabled(true);
+                    btnSubmit.setText("Kirim Komplain");
+                });
 
                 if (response.isSuccessful() && response.body() != null) {
                     com.example.project_uts.models.ApiResponse<Complaint> apiResponse = response.body();
 
                     if (apiResponse.isSuccess()) {
-                        showSuccessDialog(judul, kategori);
+                        Complaint complaint = apiResponse.getData();
+                        Log.d("CREATE_COMPLAINT", "Success! ID: " + complaint.getId());
+                        Log.d("CREATE_COMPLAINT", "Alamat: " + complaint.getAlamat());
+                        Log.d("CREATE_COMPLAINT", "Kota: " + complaint.getKota());
+
+                        requireActivity().runOnUiThread(() -> {
+                            showSuccessDialog(complaint.getJudul(), complaint.getKategori());
+                        });
+
                     } else {
                         showErrorDialog("Gagal: " + apiResponse.getMessage());
                     }
                 } else {
-                    String errorMsg = "Error: " + response.code();
+                    String tempErrorMsg = "Error: " + response.code();
                     if (response.errorBody() != null) {
                         try {
-                            errorMsg = response.errorBody().string();
+                            tempErrorMsg = response.errorBody().string();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
-                    showErrorDialog(errorMsg);
+                    final String finalErrorMsg = tempErrorMsg;
+                    requireActivity().runOnUiThread(() -> {
+                        showErrorDialog(finalErrorMsg);
+                    });
                 }
             }
 
             @Override
             public void onFailure(Call<com.example.project_uts.models.ApiResponse<Complaint>> call, Throwable t) {
-                btnSubmit.setEnabled(true);
-                btnSubmit.setText("Kirim Komplain");
-                showErrorDialog("Koneksi gagal: " + t.getMessage());
+                final String failureMsg = "Koneksi gagal: " + t.getMessage();
+                requireActivity().runOnUiThread(() -> {
+                    btnSubmit.setEnabled(true);
+                    btnSubmit.setText("Kirim Komplain");
+                    showErrorDialog(failureMsg);
+                });
             }
         });
     }

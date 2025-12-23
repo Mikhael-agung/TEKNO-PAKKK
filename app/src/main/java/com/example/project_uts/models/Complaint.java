@@ -16,8 +16,8 @@ public class Complaint {
     @SerializedName("kategori")
     private String kategori;
 
-    @SerializedName("created_at")
-    private String created_at;
+    @SerializedName("tanggal")
+    private String tanggal;
 
     @SerializedName("status")
     private String status;
@@ -37,6 +37,21 @@ public class Complaint {
     @SerializedName("updated_at")
     private String updated_at;
 
+    @SerializedName("alamat")
+    private String alamat;
+
+    @SerializedName("kota")
+    private String kota;
+
+    @SerializedName("kecamatan")
+    private String kecamatan;
+
+    @SerializedName("telepon_alamat")
+    private String telepon_alamat;
+
+    @SerializedName("catatan_alamat")
+    private String catatan_alamat;
+
     public Complaint() {}
 
     // Getter dan Setter
@@ -49,20 +64,20 @@ public class Complaint {
     public String getKategori() { return kategori; }
     public void setKategori(String kategori) { this.kategori = kategori; }
 
-    public String getCreated_at() { return created_at; }
-    public void setCreated_at(String created_at) { this.created_at = created_at; }
+    public String getCreated_at() { return tanggal; }
+    public void setCreated_at(String created_at) { this.tanggal = created_at; }
 
     // Helper method untuk FE (getTanggal)
     public String getTanggal() {
         // Format dari "2024-12-10T10:30:00.000Z" ke "10 Dec 2024"
-        if (created_at == null) return "";
+        if (tanggal == null) return "";
         try {
-            String datePart = created_at.split("T")[0];
+            String datePart = tanggal.split("T")[0];
             // Format: YYYY-MM-DD to DD-MM-YYYY
             String[] parts = datePart.split("-");
             return parts[2] + "/" + parts[1] + "/" + parts[0];
         } catch (Exception e) {
-            return created_at;
+            return tanggal;
         }
     }
 
@@ -71,6 +86,21 @@ public class Complaint {
 
     public String getDeskripsi() { return deskripsi; }
     public void setDeskripsi(String deskripsi) { this.deskripsi = deskripsi; }
+
+    public String getAlamat() { return alamat; }
+    public void setAlamat(String alamat) { this.alamat = alamat; }
+
+    public String getKota() { return kota; }
+    public void setKota(String kota) { this.kota = kota; }
+
+    public String getKecamatan() { return kecamatan; }
+    public void setKecamatan(String kecamatan) { this.kecamatan = kecamatan; }
+
+    public String getTelepon_alamat() { return telepon_alamat; }
+    public void setTelepon_alamat(String telepon_alamat) { this.telepon_alamat = telepon_alamat; }
+
+    public String getCatatan_alamat() { return catatan_alamat; }
+    public void setCatatan_alamat(String catatan_alamat) { this.catatan_alamat = catatan_alamat; }
 
     public String getUser_id() { return user_id; }
     public void setUser_id(String user_id) { this.user_id = user_id; }
@@ -84,13 +114,13 @@ public class Complaint {
     }
 
     public String getFormattedDate() {
-        if (created_at == null) return "";
+        if (tanggal == null) return "";
         try {
             // Format: "2024-12-10T10:30:00.000Z" → "15 Des 2024"
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
             SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMM yyyy", new Locale("id", "ID"));
 
-            Date date = inputFormat.parse(created_at.split("\\.")[0]);
+            Date date = inputFormat.parse(tanggal.split("\\.")[0]);
             return outputFormat.format(date);
         } catch (Exception e) {
             return getTanggal(); // fallback ke format lama
