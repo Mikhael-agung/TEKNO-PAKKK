@@ -3,7 +3,6 @@
     package="com.example.project_uts">
 
     <uses-permission android:name="android.permission.INTERNET" />
-<!--    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
 
     <application
         android:allowBackup="true"
@@ -12,7 +11,7 @@
         android:theme="@style/AppTheme"
         android:networkSecurityConfig="@xml/network_security_config">
 
-        <!-- LOGIN ACTIVITY - Jadi Activity Pertama -->
+        <!-- LOGIN ACTIVITY - Entry Point -->
         <activity
             android:name=".LoginActivity"
             android:exported="true"
@@ -23,11 +22,27 @@
             </intent-filter>
         </activity>
 
-        <!-- MAIN ACTIVITY -->
+        <!-- CUSTOMER MAIN ACTIVITY -->
         <activity
             android:name=".MainActivity"
             android:exported="false"
             android:theme="@style/AppTheme" />
+
+        <!-- TEKNISI MAIN ACTIVITY -->
+        <activity
+            android:name=".Teknisi.Activity.MainActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+
+        <!-- REGISTER ACTIVITY (if exists) -->
+        <activity
+            android:name=".RegisterCustomerActivity"
+            android:exported="false" />
+
+        <!-- SPLASH ACTIVITY (if exists) -->
+<!--        <activity-->
+<!--            android:name=".SplashActivity"-->
+<!--            android:exported="false" />-->
 
     </application>
 

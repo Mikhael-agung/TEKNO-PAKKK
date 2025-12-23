@@ -72,50 +72,45 @@ public class LoginActivity extends AppCompatActivity {
     private void redirectToMainActivity() {
         Log.d(TAG, "=== REDIRECTING TO MAINACTIVITY ===");
 
-        // 1. Debug semua data sebelum redirect
-        Log.d(TAG, "=== DEBUG DATA BEFORE REDIRECT ===");
-
-        // Debug AuthManage
-        if (authManage != null) {
-            authManage.printAllPreferences();
-
-            // Cek token dan user
-            String token = authManage.getToken();
-            User user = authManage.getUser();
-            Log.d(TAG, "AuthManage - Token exists: " + (token != null));
-            Log.d(TAG, "AuthManage - User exists: " + (user != null));
-            if (user != null) {
-                Log.d(TAG, "AuthManage - User details: " +
-                        user.getFull_name() + ", " + user.getEmail() + ", " + user.getRole());
-            }
+        // get role from  authmanage
+        User user = authManage.getUser();
+        String role = "customer"; // default
+        if (user != null && user.getRole() != null) {
+            role = user.getRole();
         }
 
-        // Debug legacy preferences
-        debugLegacyPreferences();
+        Log.d(TAG, "Redirecting with role: " + role);
 
-        // 2. Commit semua pending operations
-        Log.d(TAG, "Committing all pending operations...");
+        Intent intent;
 
-        // 3. Create intent dengan flags
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        if ("teknisi".equalsIgnoreCase(role)) {
+            Log.d(TAG, "Launching TEKNISI MainActivity");
+            intent = new Intent(LoginActivity.this,
+                    com.example.project_uts.Teknisi.Activity.MainActivity.class);
+        } else {
+            Log.d(TAG, "Launching CUSTOMER MainActivity");
+            intent = new Intent(LoginActivity.this, MainActivity.class);
+        }
 
         // FLAG PENTING: Clear task agar tidak bisa back ke login
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        // 4. Tambahkan extra data untuk debugging di MainActivity
+        // PASS USER DATA
+        if (user != null) {
+            intent.putExtra("role", user.getRole());
+            intent.putExtra("user_id", user.getId());
+            intent.putExtra("username", user.getUsername());
+            intent.putExtra("full_name", user.getFull_name());
+            intent.putExtra("email", user.getEmail());
+        }
+
+        // DEBUG INFO
         intent.putExtra("from_login", true);
         intent.putExtra("login_time", System.currentTimeMillis());
 
-        // 5. Start activity dan finish
-        Log.d(TAG, "Starting MainActivity...");
+        // START ACTIVITY
         startActivity(intent);
-
-        // 6. Finish LoginActivity
-        Log.d(TAG, "Finishing LoginActivity...");
         finish();
-
-        // 7. Force garbage collection (optional)
-        System.gc();
     }
 
     private void loginUser() {

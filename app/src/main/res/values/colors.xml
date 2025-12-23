@@ -22,8 +22,6 @@
     <color name="colorPrimary">#3498DB</color>
     <color name="colorDitolak">#C0392B</color> <!-- Dark red -->
     <color name="colorDitolakLight">#FFF5F5</color> <!-- Light red background -->
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
     <color name="status_completed">#4CAF50</color>
     <color name="status_progress">#2196F3</color>
     <color name="status_pending">#FF9800</color>

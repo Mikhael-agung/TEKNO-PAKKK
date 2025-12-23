@@ -1,6 +1,8 @@
 package com.example.project_uts.Teknisi.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -13,24 +15,41 @@ import com.example.project_uts.Teknisi.Fragment.ProfilFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-
     private String userRole;
+    private static final String TAG = "MainActivity_Teknisi";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_teknisi);
 
+        Log.d(TAG, "=== TEKNISI ACTIVITY STARTED ===");
+
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
         // Ambil role dari intent
         userRole = getIntent().getStringExtra("role");
         if (userRole == null) {
-            userRole = "teknisi"; // Default ke teknisi aja dulu
+            userRole = "teknisi"; // Default ke teknisi
         }
 
-        // SET HANYA TEKNISI DULU - COMMENT CUSTOMER
+        Log.d(TAG, "Role from intent: " + userRole);
+
+        // validasi role
+        if (!"teknisi".equalsIgnoreCase(userRole)) {
+            Log.w(TAG, "Wrong activity! User is " + userRole + ", redirecting...");
+            Intent intent = new Intent(this,
+                    com.example.project_uts.MainActivity.class);
+            intent.putExtras(getIntent());
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+        // SET HANYA TEKNISI MENU
+        bottomNav.getMenu().clear(); // Clear existing items
         bottomNav.inflateMenu(R.menu.bottom_nav_teknisi);
+        Log.d(TAG, "Menu inflated with " + bottomNav.getMenu().size() + " items");
 
         // Load default fragment
         if (savedInstanceState == null) {
@@ -41,8 +60,9 @@ public class MainActivity extends AppCompatActivity {
             Fragment selectedFragment = null;
             int itemId = item.getItemId();
 
+            Log.d(TAG, "Menu item clicked: " + item.getTitle());
+
             if (itemId == R.id.nav_dashboard) {
-                // HANYA TEKNISI DULU
                 selectedFragment = new DashboardTeknisiFragment();
             } else if (itemId == R.id.nav_komplain) {
                 selectedFragment = new KomplainListFragment();
@@ -63,13 +83,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadDefaultFragment() {
-        // HANYA LOAD DASHBOARD TEKNISI
+        Log.d(TAG, "Loading default fragment: DashboardTeknisiFragment");
         Fragment defaultFragment = new DashboardTeknisiFragment();
-
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, defaultFragment)
                 .commit();
     }
-
-
 }
