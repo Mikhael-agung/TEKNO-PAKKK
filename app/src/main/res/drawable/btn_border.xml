@@ -2,15 +2,17 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <!-- Background -->
-    <solid android:color="#FFFFFF"/>
-
-    <!-- Border -->
+    <!-- Background putih -->
+    <solid android:color="@android:color/white" />
     <stroke
         android:width="2dp"
-        android:color="#007BFF"/>
+        android:color="#007BFF" />
+    <corners android:radius="30dp" />
 
-    <!-- Sudut rounded -->
-    <corners android:radius="8dp"/>
-
+    <!-- Sedikit padding biar teks ga nempel border -->
+<!--    <padding-->
+<!--        android:left="8dp"-->
+<!--        android:right="8dp"-->
+<!--        android:top="4dp"-->
+<!--        android:bottom="4dp" />-->
 </shape>

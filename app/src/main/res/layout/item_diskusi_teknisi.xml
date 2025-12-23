@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardBackgroundColor="#f0f0f0">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Judul Komplain -->
+        <TextView
+            android:id="@+id/tvJudulDiskusi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Judul Komplain"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Info teknisi & pelapor -->
+        <TextView
+            android:id="@+id/tvTeknisiPeminta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Diminta oleh: Teknisi"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/tvPelaporDiskusi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pelapor: Customer"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Waktu -->
+        <TextView
+            android:id="@+id/tvWaktuDiskusi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Waktu"
+            android:textSize="12sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Tombol Bantu -->
+        <Button
+            android:id="@+id/btnBantuDiskusi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bantu"
+            style="@style/Widget.MaterialComponents.Button"
+            app:backgroundTint="#4CAF50"/>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

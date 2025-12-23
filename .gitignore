@@ -1,15 +1,65 @@
+
+.gradle/
+caches/
+daemon/
+native/
+wrapper/
+**/*.lock
+**/fileContent/
+
+# Build outputs
+build/
+**/build/
+*.apk
+*.aar
+*.ap_
+*.aab
+*.jar
+
+# Java
+*.class
+*.dex
+
+# Generated files
+bin/
+gen/
+out/
+
+# Transforms
+**/transforms/
+**/transformed/
+
+# Android Studio
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+.navigation/
+captures/
+
+# Local config
 local.properties
+
+# Logs
+*.log
+logs/
+
+# Native build
+.cxx/
+.externalNativeBuild/
+
+# Google Services
+google-services.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp / cache
+*.tmp
+*.temp
+*.swp
+.cache/
+*.orig
+
+# Env
+.env
+.env.*
