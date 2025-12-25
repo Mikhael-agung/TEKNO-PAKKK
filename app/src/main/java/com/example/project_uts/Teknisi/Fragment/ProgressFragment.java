@@ -11,12 +11,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.project_uts.ApiClient;
-import com.example.project_uts.ApiService;
 import com.example.project_uts.R;
 import com.example.project_uts.Teknisi.Adapter.ProgressAdapter;
 import com.example.project_uts.Teknisi.Model.ComplaintStatus;
 import com.example.project_uts.Teknisi.Model.Komplain;
+import com.example.project_uts.network.ApiClient;
+import com.example.project_uts.network.ApiService;
 
 import java.util.ArrayList;
 import java.util.List;

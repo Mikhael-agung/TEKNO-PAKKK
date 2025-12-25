@@ -14,18 +14,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.project_uts.ApiClient;
-import com.example.project_uts.ApiService;
 import com.example.project_uts.R;
 import com.example.project_uts.Teknisi.Adapter.HistoryTeknisiAdapter;
 import com.example.project_uts.Teknisi.Model.ComplaintStatusRequest;
 import com.example.project_uts.Teknisi.Model.HistoryTeknisi;
+import com.example.project_uts.models.ApiResponse;
+import com.example.project_uts.models.Complaint;
+import com.example.project_uts.network.ApiClient;
+import com.example.project_uts.network.ApiService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,7 +51,7 @@ public class KomplainDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_komplain_detail_teknisi); // pakai layout XML kamu
+        setContentView(R.layout.activity_komplain_detail_teknisi);
 
         // Bind views
         btnPending = findViewById(R.id.btnPending);
@@ -87,7 +91,6 @@ public class KomplainDetailActivity extends AppCompatActivity {
         tvStatusDetail.setText(status);
         tvWaktuDetail.setText(waktu);
         tvDeskripsiDetail.setText(deskripsi);
-        // kalau ada foto dari API, bisa load pakai Glide/Picasso ke ivFotoBarang
 
         // Tombol Pending
         btnPending.setOnClickListener(v -> {
@@ -108,7 +111,9 @@ public class KomplainDetailActivity extends AppCompatActivity {
         btnSavePending.setOnClickListener(v -> {
             String alasan = etAlasanPendingDetail.getText().toString().trim();
             if (!alasan.isEmpty()) {
-                updateStatusToServer("Pending", alasan);
+                updateStatusToServer("pending", alasan);
+            } else {
+                Toast.makeText(KomplainDetailActivity.this, "Harap isi alasan pending", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -116,48 +121,136 @@ public class KomplainDetailActivity extends AppCompatActivity {
         btnSaveCompleted.setOnClickListener(v -> {
             String catatanTeknisi = etTeknisiNote.getText().toString().trim();
             if (!catatanTeknisi.isEmpty()) {
-                updateStatusToServer("Completed", catatanTeknisi);
+                updateStatusToServer("completed", catatanTeknisi);
+            } else {
+                Toast.makeText(KomplainDetailActivity.this, "Harap isi catatan teknisi", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void updateStatusToServer(String status, String note) {
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        // bikin body request
-        ComplaintStatusRequest req = new ComplaintStatusRequest(status, "tech_001", note);
+        ApiService apiService = ApiClient.getApiService();
+        Map<String, String> statusMap = new HashMap<>();
+        String backendStatus;
 
-        apiService.updateStatus(komplainId, req).enqueue(new Callback<Void>() {
+        if (status.equalsIgnoreCase("Mulai Kerja") ||
+                status.equalsIgnoreCase("Mulai kerja")) {
+            backendStatus = "on_progress";
+        } else if (status.equalsIgnoreCase("tunda") ||
+                status.equalsIgnoreCase("kendala")) {
+            backendStatus = "pending";
+        } else if (status.equalsIgnoreCase("selesai")) {
+            backendStatus = "completed";
+        } else {
+            // Fallback ke method helper
+            backendStatus = mapStatusToBackendFormat(status);
+        }
+
+        final String backendStatusFinal = backendStatus;
+
+        statusMap.put("status", backendStatusFinal);
+        statusMap.put("alasan", note);
+
+        Log.d("API_DEBUG", "Updating status: " + backendStatusFinal + ", alasan: " + note);
+        Log.d("API_DEBUG", "Complaint ID: " + komplainId);
+
+        apiService.updateStatus(komplainId, statusMap).enqueue(new Callback<ApiResponse<Complaint>>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    String time = new SimpleDateFormat("dd MMMM yyyy • HH:mm", Locale.getDefault()).format(new Date());
-                    historyList.add(new HistoryTeknisi(status, note, time));
-                    historyAdapter.notifyDataSetChanged();
-                    tvStatusDetail.setText(status);
+            public void onResponse(Call<ApiResponse<Complaint>> call, Response<ApiResponse<Complaint>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<Complaint> apiResponse = response.body();
 
-                    layoutPendingReason.setVisibility(View.GONE);
-                    layoutCompletedInfo.setVisibility(View.GONE);
-                    etAlasanPendingDetail.setText("");
-                    etTeknisiNote.setText("");
+                    if (apiResponse.isSuccess()) {
+                        // Success - update UI
+                        Complaint updatedComplaint = apiResponse.getData();
 
-                    if (status.equals("Completed")) {
-                        btnPending.setVisibility(View.GONE);
-                        btnCompleted.setVisibility(View.GONE);
+                        // Add to history list
+                        String time = new SimpleDateFormat("dd MMMM yyyy • HH:mm", Locale.getDefault()).format(new Date());
+                        historyList.add(new HistoryTeknisi(backendStatusFinal, note, time));
+                        historyAdapter.notifyDataSetChanged();
+
+                        // Update status display
+                        tvStatusDetail.setText(backendStatusFinal);
+
+                        layoutPendingReason.setVisibility(View.GONE);
+                        layoutCompletedInfo.setVisibility(View.GONE);
+                        etAlasanPendingDetail.setText("");
+                        etTeknisiNote.setText("");
+
+                        // Jika status completed, hide action buttons
+                        if (backendStatusFinal.equals("completed")) {
+                            btnPending.setVisibility(View.GONE);
+                            btnCompleted.setVisibility(View.GONE);
+                        }
+
+                        Toast.makeText(KomplainDetailActivity.this,
+                                "Status berhasil diupdate", Toast.LENGTH_SHORT).show();
+
+                        Log.d("API_DEBUG", "Status update successful: " + apiResponse.getMessage());
+
+                    } else {
+                        Toast.makeText(KomplainDetailActivity.this,
+                                "Gagal: " + apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("API_ERROR", "API Error: " + apiResponse.getMessage());
+                    }
+                } else {
+                    // HTTP error
+                    String errorMsg = "Gagal update status";
+                    if (response.code() == 403) {
+                        errorMsg = "Akses ditolak. Pastikan Anda adalah teknisi.";
+                    } else if (response.code() == 404) {
+                        errorMsg = "Komplain tidak ditemukan";
                     }
 
-                    Toast.makeText(KomplainDetailActivity.this, "Status berhasil diupdate", Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.e("API_RESPONSE", "Update gagal: " + response.code());
+                    Toast.makeText(KomplainDetailActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                    Log.e("API_RESPONSE", "Update gagal. Code: " + response.code() +
+                            ", Message: " + (response.errorBody() != null ? response.errorBody().toString() : "No error body"));
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Log.e("API_ERROR", t.getMessage());
-                Toast.makeText(KomplainDetailActivity.this, "Gagal update status", Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<ApiResponse<Complaint>> call, Throwable t) {
+                Log.e("API_ERROR", "Network error: " + t.getMessage(), t);
+                Toast.makeText(KomplainDetailActivity.this,
+                        "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    /**
+     * Helper method untuk mapping status dari UI ke format backend
+     */
+    private String mapStatusToBackendFormat(String uiStatus) {
+        // UI mungkin kirim: "Pending", "Completed", "Progress", dll
+        // Backend expect: "pending", "completed", "on_progress", "complaint"
+
+        String lowerStatus = uiStatus.toLowerCase();
+
+        switch (lowerStatus) {
+            case "pending":
+            case "menunggu":
+                return "pending";
+
+            case "completed":
+            case "selesai":
+            case "done":
+                return "completed";
+
+            case "progress":
+            case "proses":
+            case "diproses":
+            case "onprogress":
+                return "on_progress";
+
+            case "complaint":
+            case "pengaduan":
+            case "new":
+                return "complaint";
+
+            default:
+                // Return as-is jika tidak diketahui
+                return lowerStatus;
+        }
+    }
 }

@@ -55,6 +55,17 @@
             android:layout_marginBottom="16dp" />
 
         <EditText
+            android:id="@+id/etUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Username"
+            android:textColor="#333333"
+            android:textColorHint="#999999"
+            android:background="@drawable/edittext_border"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp" />
+
+        <EditText
             android:id="@+id/etNoTelp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -89,6 +100,14 @@
             android:background="@drawable/edittext_border"
             android:padding="16dp"
             android:layout_marginBottom="32dp" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone" />
 
         <!-- Tombol Daftar -->
         <Button

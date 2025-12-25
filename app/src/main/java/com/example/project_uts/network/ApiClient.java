@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import java.util.concurrent.TimeUnit;
 
 public class ApiClient {
-    private static final String BASE_URL = "http://10.0.2.2:3000/";
+    private static final String BASE_URL = "https://be-teknoserve-production.up.railway.app/";
     private static Retrofit retrofit = null;
     private static Context appContext; // Rename untuk clarity
 
