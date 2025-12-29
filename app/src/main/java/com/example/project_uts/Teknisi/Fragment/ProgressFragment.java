@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -13,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project_uts.R;
 import com.example.project_uts.Teknisi.Adapter.ProgressAdapter;
-import com.example.project_uts.Teknisi.Model.ComplaintStatus;
 import com.example.project_uts.Teknisi.Model.Komplain;
+import com.example.project_uts.Teknisi.Model.TeknisiComplaintsResponse;
 import com.example.project_uts.network.ApiClient;
 import com.example.project_uts.network.ApiService;
 
@@ -30,6 +31,7 @@ public class ProgressFragment extends Fragment {
     private RecyclerView rvProgress;
     private ProgressAdapter adapter;
     private List<Komplain> progressList = new ArrayList<>();
+    private ApiService apiService;
 
     public ProgressFragment() {}
 
@@ -38,11 +40,14 @@ public class ProgressFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_progress_teknisi, container, false);
 
+        // INIT API SERVICE
+        apiService = ApiClient.getApiService();
+
         rvProgress = view.findViewById(R.id.rvProgress);
         rvProgress.setLayoutManager(new LinearLayoutManager(getContext()));
+
         adapter = new ProgressAdapter(getContext(), progressList);
         rvProgress.setAdapter(adapter);
-
 
         fetchProgressComplaints();
 
@@ -50,42 +55,60 @@ public class ProgressFragment extends Fragment {
     }
 
     private void fetchProgressComplaints() {
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        apiService.getComplaints().enqueue(new Callback<List<Komplain>>() {
+        Call<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> call =
+                apiService.getProgressComplaints(1, 50);
+
+        call.enqueue(new Callback<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>>() {
             @Override
-            public void onResponse(Call<List<Komplain>> call, Response<List<Komplain>> response) {
+            public void onResponse(Call<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> call,
+                                   Response<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> response) {
+
+                if (!isAdded() || getContext() == null) {
+                    return;
+                }
+
                 if (response.isSuccessful() && response.body() != null) {
-                    progressList.clear();
-                    for (Komplain k : response.body()) {
-                        apiService.getComplaintStatuses(k.getId()).enqueue(new Callback<List<ComplaintStatus>>() {
-                            @Override
-                            public void onResponse(Call<List<ComplaintStatus>> call, Response<List<ComplaintStatus>> resp) {
-                                if (resp.isSuccessful() && resp.body() != null && !resp.body().isEmpty()) {
-                                    ComplaintStatus latest = resp.body().get(0);
+                    if (response.body().isSuccess()) {
+                        TeknisiComplaintsResponse data = response.body().getData();
 
-                                    // Filter dua status: On Progress dan Pending
-                                    if ("On Progress".equalsIgnoreCase(latest.getStatus()) ||
-                                            "Pending".equalsIgnoreCase(latest.getStatus())) {
+                        if (data != null && data.getComplaints() != null) {
+                            progressList.clear();
+                            progressList.addAll(data.getComplaints());
+                            adapter.notifyDataSetChanged();
 
-                                        k.setStatus(latest.getStatus());
-                                        progressList.add(k);
-                                        adapter.notifyDataSetChanged();
-                                    }
-                                }
+                            Log.d("ProgressFragment", "Loaded " + data.getComplaints().size() + " complaints");
+                        }
+
+                        if (data == null || data.getComplaints() == null || data.getComplaints().isEmpty()) {
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() ->
+                                        Toast.makeText(getActivity(),
+                                                "Tidak ada komplain dalam progress",
+                                                Toast.LENGTH_SHORT).show()
+                                );
                             }
-
-                            @Override
-                            public void onFailure(Call<List<ComplaintStatus>> call, Throwable t) {
-                                Log.e("API_ERROR", "Gagal ambil status: " + t.getMessage());
-                            }
-                        });
+                        }
+                    } else {
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() ->
+                                    Toast.makeText(getActivity(),
+                                            "Error: " + response.body().getMessage(),
+                                            Toast.LENGTH_SHORT).show()
+                            );
+                        }
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Komplain>> call, Throwable t) {
-                Log.e("API_ERROR", "Gagal ambil complaints: " + t.getMessage());
+            public void onFailure(Call<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> call, Throwable t) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() ->
+                            Toast.makeText(getActivity(),
+                                    "Network error: " + t.getMessage(),
+                                    Toast.LENGTH_SHORT).show()
+                    );
+                }
             }
         });
     }

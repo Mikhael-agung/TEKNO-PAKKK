@@ -14,7 +14,7 @@ public class AuthManage {
     private static final String PREF_NAME = "auth_pref";
     private static final String KEY_TOKEN = "jwt_token";
     private static final String KEY_USER = "user_data";
-    private static final String TAG = "AuthManage";  // Ubah jadi AuthManage, bukan LoginActivity
+    private static final String TAG = "AuthManage";
 
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;

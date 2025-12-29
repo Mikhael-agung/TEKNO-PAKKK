@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         // Auto-fill for development
-        etUsername.setText("customer1");
+        etUsername.setText("teknisi");
         etPassword.setText("123");
     }
 
