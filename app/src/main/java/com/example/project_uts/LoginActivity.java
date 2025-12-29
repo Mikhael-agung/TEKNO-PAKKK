@@ -61,11 +61,12 @@ public class LoginActivity extends AppCompatActivity {
 
         // Daftar button click
         btnDaftar.setOnClickListener(v -> {
-            Toast.makeText(this, "Fitur pendaftaran coming soon!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(LoginActivity.this, RegisterCustomerActivity.class);
+            startActivity(intent);
         });
 
         // Auto-fill for development
-        etUsername.setText("customer1");
+        etUsername.setText("teknisi");
         etPassword.setText("123");
     }
 

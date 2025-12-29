@@ -12,6 +12,7 @@ import com.example.project_uts.Teknisi.Fragment.DashboardTeknisiFragment;
 import com.example.project_uts.Teknisi.Fragment.DiskusiTeknisiFragment;
 import com.example.project_uts.Teknisi.Fragment.KomplainListFragment;
 import com.example.project_uts.Teknisi.Fragment.ProfilFragment;
+import com.example.project_uts.network.ApiClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,17 +26,19 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "=== TEKNISI ACTIVITY STARTED ===");
 
+        ApiClient.init(getApplicationContext());
+        Log.d(TAG, "ApiClient initialized for teknisi");
+
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
-        // Ambil role dari intent
+        // Mengabil role dari intent
         userRole = getIntent().getStringExtra("role");
         if (userRole == null) {
-            userRole = "teknisi"; // Default ke teknisi
+            userRole = "teknisi"; // Default teknisi
         }
 
         Log.d(TAG, "Role from intent: " + userRole);
 
-        // validasi role
         if (!"teknisi".equalsIgnoreCase(userRole)) {
             Log.w(TAG, "Wrong activity! User is " + userRole + ", redirecting...");
             Intent intent = new Intent(this,
@@ -46,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // SET HANYA TEKNISI MENU
-        bottomNav.getMenu().clear(); // Clear existing items
+        // set hanya menu teknisi
+        bottomNav.getMenu().clear();
         bottomNav.inflateMenu(R.menu.bottom_nav_teknisi);
         Log.d(TAG, "Menu inflated with " + bottomNav.getMenu().size() + " items");
 

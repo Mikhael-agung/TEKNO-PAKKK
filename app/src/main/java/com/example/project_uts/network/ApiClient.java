@@ -8,43 +8,65 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import java.util.concurrent.TimeUnit;
+import com.example.project_uts.network.AppConfig;
 
 public class ApiClient {
-    private static final String BASE_URL = "http://10.0.2.2:3000/";
+    private static final String TAG = "ApiClient";
+    private static final String BASE_URL = "https://be-teknoserve-production.up.railway.app/";
     private static Retrofit retrofit = null;
-    private static Context appContext; // Rename untuk clarity
+    private static Context appContext;
 
     public static void init(Context context) {
-        appContext = context.getApplicationContext(); // Pakai Application Context
-        Log.d("ApiClient", "Initialized with context");
+        appContext = context.getApplicationContext();
+        Log.d(TAG, "ApiClient initialized with context");
+
+        // Reset retrofit untuk force re-create dengan context baru
+        retrofit = null;
     }
 
     public static ApiService getApiService() {
         if (retrofit == null) {
-            if (appContext == null) {
-                Log.e("ApiClient", "Context is NULL! Call init() first.");
-                throw new IllegalStateException("ApiClient not initialized. Call init() first.");
-            }
-
-            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(new AuthInterceptor(appContext)) // ← PAKAI appContext
-                    .addInterceptor(logging)
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
-                    .build();
-
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(client)
-                    .build();
-
-            Log.d("ApiClient", "Retrofit instance created");
+            createRetrofitInstance();
         }
         return retrofit.create(ApiService.class);
+    }
+
+    // HAPUS getApiServiceTeknisi() - PAKAI getApiService() SAJA
+    // public static ApiServiceTeknisi getApiServiceTeknisi() { ... }
+
+    private static void createRetrofitInstance() {
+        if (appContext == null) {
+            Log.e(TAG, "Context is NULL! Call init() first.");
+            throw new IllegalStateException("ApiClient not initialized. Call init() first.");
+        }
+
+        Log.d(TAG, "Creating Retrofit instance...");
+
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.HEADERS); // Ubah ke HEADERS untuk lihat Authorization
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new AuthInterceptor(appContext))
+                .addInterceptor(logging)
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build();
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build();
+
+        Log.d(TAG, "Retrofit instance created successfully");
+    }
+
+    // Method untuk debugging
+    public static void printDebugInfo() {
+        Log.d(TAG, "=== API CLIENT DEBUG ===");
+        Log.d(TAG, "Context: " + (appContext != null ? "SET" : "NULL"));
+        Log.d(TAG, "Retrofit: " + (retrofit != null ? "CREATED" : "NULL"));
+        Log.d(TAG, "Base URL: " + BASE_URL);
     }
 }
