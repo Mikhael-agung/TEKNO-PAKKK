@@ -23,7 +23,7 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
-    // ==================== AUTH ENDPOINTS ====================
+    //  AUTH ENDPOINTS
     @POST("api/auth/login")
     Call<LoginResponse> login(@Body Map<String, String> credentials);
 
@@ -33,7 +33,7 @@ public interface ApiService {
     @POST("api/auth/logout")
     Call<ApiResponse<Void>> logout();
 
-    // ==================== CUSTOMER ENDPOINTS ====================
+    // CUSTOMER ENDPOINTS
     @GET("api/complaints")
     Call<ApiResponse<ComplaintResponse>> getComplaints(
             @Query("page") int page,
@@ -55,14 +55,20 @@ public interface ApiService {
             @Body Map<String, String> statusData
     );
 
-    // ==================== USER ENDPOINTS ====================
+    @GET("api/complaints/user-complaints")
+    Call<ApiResponse<ComplaintResponse>> getUserComplaints(
+            @Query("page") int page,
+            @Query("limit") int limit
+    );
+
+    // USER ENDPOINTS
     @GET("api/users/me")
     Call<ApiResponse<User>> getProfile();
 
     @PUT("api/users/me")
     Call<ApiResponse<User>> updateProfile(@Body Map<String, String> userData);
 
-    // ==================== TEKNISI ENDPOINTS ====================
+    //  TEKNISI ENDPOINTS
     @GET("api/teknisi/dashboard/stats")
     Call<ApiResponse<Map<String, Object>>> getDashboardStats();
 

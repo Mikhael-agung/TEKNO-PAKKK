@@ -47,7 +47,7 @@ public class KomplainAdapter extends RecyclerView.Adapter<KomplainAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Komplain komplain = komplainList.get(position);
 
-        holder.tvJudul.setText(komplain.getTitle());
+        holder.tvJudul.setText(komplain.getJudul());
         // UPDATE: Tampilkan nama customer jika ada
         if (komplain.getUser() != null && komplain.getUser().getFull_name() != null) {
             holder.tvPelapor.setText("Pelapor: " + komplain.getUser().getFull_name());

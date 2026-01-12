@@ -2,24 +2,24 @@ package com.example.project_uts.Teknisi.Model;
 
 public class Komplain {
     private String id;
-    private String title;
-    private String description;
+    private String judul;
+    private String Deskripsi;
     private String status;
     private String createdAt;
     private String userId;
 
-    // TAMBAH INI untuk dapat nama customer
+
     private User user;
 
     // Getter & Setter
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public String getJudul() { return judul; }
+    public void setJudul(String judul) { this.judul = judul; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDeskripsi() { return Deskripsi; }
+    public void setDeskripsi(String deskripsi) { this.Deskripsi = deskripsi; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
@@ -39,6 +39,7 @@ public class Komplain {
         private String id;
         private String full_name;
         private String email;
+        private String phone;
 
         public String getId() { return id; }
         public void setId(String id) { this.id = id; }
@@ -48,5 +49,8 @@ public class Komplain {
 
         public String getEmail() { return email; }
         public void setEmail(String email) { this.email = email; }
+
+        public String getPhone() {return phone;}
+        public void setPhone(String phone) {this.phone = phone; }
     }
 }

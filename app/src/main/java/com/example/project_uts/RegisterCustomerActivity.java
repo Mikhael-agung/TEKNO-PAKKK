@@ -26,7 +26,7 @@ import retrofit2.Response;
 
 public class RegisterCustomerActivity extends AppCompatActivity {
 
-    // TAMBAH etUsername
+
     private EditText etNama, etEmail, etUsername, etNoTelp, etPassword, etKonfirmasiPassword;
     private Button btnDaftar, btnSignIn;
     private ProgressBar progressBar;
@@ -51,7 +51,7 @@ public class RegisterCustomerActivity extends AppCompatActivity {
     private void initViews() {
         etNama = findViewById(R.id.etNama);
         etEmail = findViewById(R.id.etEmail);
-        etUsername = findViewById(R.id.etUsername); // ← TAMBAH INI
+        etUsername = findViewById(R.id.etUsername);
         etNoTelp = findViewById(R.id.etNoTelp);
         etPassword = findViewById(R.id.etPassword);
         etKonfirmasiPassword = findViewById(R.id.etKonfirmasiPassword);
@@ -78,7 +78,7 @@ public class RegisterCustomerActivity extends AppCompatActivity {
         // Collect form data
         String full_name = etNama.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
-        String username = etUsername.getText().toString().trim(); // ← USER INPUT
+        String username = etUsername.getText().toString().trim();
         String phone = etNoTelp.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
         String konfirmasiPassword = etKonfirmasiPassword.getText().toString().trim();
@@ -91,11 +91,10 @@ public class RegisterCustomerActivity extends AppCompatActivity {
         // Show loading
         setLoading(true);
 
-        // Prepare request body - HANYA password, BUKAN konfirmasiPassword
         Map<String, String> userData = new HashMap<>();
         userData.put("username", username);
         userData.put("email", email);
-        userData.put("password", password); // ← HANYA INI
+        userData.put("password", password);
         userData.put("full_name", full_name);
         userData.put("phone", phone);
         userData.put("role", "customer");
@@ -150,7 +149,6 @@ public class RegisterCustomerActivity extends AppCompatActivity {
             return false;
         }
 
-        // VALIDASI USERNAME BARU
         if (username.isEmpty()) {
             etUsername.setError("Username harus diisi");
             etUsername.requestFocus();
@@ -187,7 +185,7 @@ public class RegisterCustomerActivity extends AppCompatActivity {
             return false;
         }
 
-        // CLIENT-SIDE VALIDATION ONLY
+        // client-side validation only
         if (!password.equals(konfirmasiPassword)) {
             etKonfirmasiPassword.setError("Password tidak cocok");
             etKonfirmasiPassword.requestFocus();

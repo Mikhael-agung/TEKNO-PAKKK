@@ -27,9 +27,6 @@ public class User {
     @SerializedName("updated_at")
     private String updated_at;
 
-    // JANGAN tambah field yang tidak ada di BE!
-    // password_hash tidak perlu karena BE tidak kirim
-
     public User() {}
 
     // Getter dan Setter
@@ -50,9 +47,6 @@ public class User {
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
-
-    public String getCreated_at() { return created_at; }
-    public void setCreated_at(String created_at) { this.created_at = created_at; }
 
     public String getUpdated_at() { return updated_at; }
     public void setUpdated_at(String updated_at) { this.updated_at = updated_at; }

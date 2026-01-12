@@ -20,7 +20,7 @@ public class ApiClient {
         appContext = context.getApplicationContext();
         Log.d(TAG, "ApiClient initialized with context");
 
-        // Reset retrofit untuk force re-create dengan context baru
+
         retrofit = null;
     }
 
@@ -31,9 +31,6 @@ public class ApiClient {
         return retrofit.create(ApiService.class);
     }
 
-    // HAPUS getApiServiceTeknisi() - PAKAI getApiService() SAJA
-    // public static ApiServiceTeknisi getApiServiceTeknisi() { ... }
-
     private static void createRetrofitInstance() {
         if (appContext == null) {
             Log.e(TAG, "Context is NULL! Call init() first.");
@@ -43,7 +40,7 @@ public class ApiClient {
         Log.d(TAG, "Creating Retrofit instance...");
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.HEADERS); // Ubah ke HEADERS untuk lihat Authorization
+        logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new AuthInterceptor(appContext))
