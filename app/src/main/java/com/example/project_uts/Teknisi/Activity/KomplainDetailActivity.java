@@ -182,7 +182,6 @@ public class KomplainDetailActivity extends AppCompatActivity {
                         if (backendStatusFinal.equals("completed")) {
                             btnPending.setVisibility(View.GONE);
                             btnCompleted.setVisibility(View.GONE);
-
                         }
 
                         Toast.makeText(KomplainDetailActivity.this,

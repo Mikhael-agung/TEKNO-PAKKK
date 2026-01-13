@@ -7,8 +7,6 @@ public class Komplain {
     private String status;
     private String createdAt;
     private String userId;
-
-
     private User user;
 
     // Getter & Setter

@@ -19,8 +19,6 @@ public class ApiClient {
     public static void init(Context context) {
         appContext = context.getApplicationContext();
         Log.d(TAG, "ApiClient initialized with context");
-
-
         retrofit = null;
     }
 
