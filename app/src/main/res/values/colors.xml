@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Existing colors tetap -->
     <color name="primary_color">#007BFF</color>
     <color name="primary_dark">#1976D2</color>
     <color name="accent_color">#FF4081</color>
@@ -14,16 +15,25 @@
     <color name="gray">#9E9E9E</color>
 
     <!-- Additional Colors -->
-
+    <color name="Dark_mode_discord">#252525</color>
     <color name="gray_light">#F5F5F5</color>
     <color name="gray_dark">#616161</color>
     <color name="colorFilterStroke">#CCCCCC</color>
     <color name="colorFilterText">#666666</color>
     <color name="colorPrimary">#3498DB</color>
-    <color name="colorDitolak">#C0392B</color> <!-- Dark red -->
-    <color name="colorDitolakLight">#FFF5F5</color> <!-- Light red background -->
+    <color name="colorDitolak">#C0392B</color>
+    <color name="colorDitolakLight">#FFF5F5</color>
     <color name="status_completed">#4CAF50</color>
     <color name="status_progress">#2196F3</color>
     <color name="status_pending">#FF9800</color>
     <color name="status_default">#666666</color>
+
+    <!-- Discord Dark Mode Colors -->
+    <color name="discord_bg">#252525</color>
+    <color name="discord_card">#2D2D2D</color>
+    <color name="discord_text_primary">#E0E0E0</color>
+    <color name="discord_text_secondary">#9E9E9E</color>
+    <color name="discord_text_tertiary">#8E9297</color>
+    <color name="discord_bg_secondary">#2F3136</color>
+
 </resources>

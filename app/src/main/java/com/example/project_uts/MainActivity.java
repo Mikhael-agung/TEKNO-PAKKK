@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
-        // GET ROLE FROM INTENT (DON'T FORCE!)
         userRole = getIntent().getStringExtra("role");
         if (userRole == null) {
             userRole = "customer"; // Default customer

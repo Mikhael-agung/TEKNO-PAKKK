@@ -2,8 +2,7 @@ package com.example.project_uts.network;
 
 public class AppConfig {
 
-    // MODE: "development" atau "production"
-    private static String currentMode = "production"; // Default production
+    private static String currentMode = "production";
 
     // BASE URLS
     private static final String PRODUCTION_URL = "https://be-teknoserve-production.up.railway.app/";

@@ -187,12 +187,39 @@ public class RegisterCustomerActivity extends AppCompatActivity {
             return false;
         }
 
-        // CLIENT-SIDE VALIDATION ONLY
+        // client-side validation only
         if (!password.equals(konfirmasiPassword)) {
             etKonfirmasiPassword.setError("Password tidak cocok");
             etKonfirmasiPassword.requestFocus();
             return false;
         }
+    }
+
+    private void handleRegistrationError(String message) {
+        Toast.makeText(this,
+                "Registrasi gagal: " + message,
+                Toast.LENGTH_LONG).show();
+    }
+
+    private void handleApiError(int statusCode) {
+        String errorMessage;
+
+        switch (statusCode) {
+            case 400:
+                errorMessage = "Data tidak valid. Periksa kembali form.";
+                break;
+            case 409:
+                errorMessage = "Username atau email sudah terdaftar.";
+                break;
+            case 500:
+                errorMessage = "Server error. Silakan coba lagi nanti.";
+                break;
+            default:
+                errorMessage = "Error " + statusCode + ". Silakan coba lagi.";
+        }
+
+        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+    }
 
         return true;
     }

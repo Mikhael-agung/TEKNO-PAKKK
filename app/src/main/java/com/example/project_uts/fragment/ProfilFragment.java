@@ -100,9 +100,9 @@ public class ProfilFragment extends Fragment {
 
     private void setupLogout() {
         btnLogout.setOnClickListener(v -> {
-            // 1. Clear AuthManager (PENTING!)
+            // 1. Clear AuthManager
             AuthManage authManage = new AuthManage(requireContext());
-            authManage.logout(requireContext()); // Panggil method logout yang baru
+            authManage.logout(requireContext());
 
             // 2. Clear shared preferences lama (backup)
             SharedPreferences preferences = requireActivity().getSharedPreferences("user_pref", Context.MODE_PRIVATE);

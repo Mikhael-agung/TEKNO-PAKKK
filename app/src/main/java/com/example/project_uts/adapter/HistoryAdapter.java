@@ -23,7 +23,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private List<Complaint> complaints;
     private OnItemClickListener listener;
 
-    private static final String WHATSAPP_NUMBER = "6281234567890"; // Format: 62 tanpa +
+    private static final String WHATSAPP_NUMBER = "6285175346469";
 
     public HistoryAdapter(List<Complaint> complaints, OnItemClickListener listener) {
         this.complaints = complaints != null ? complaints : new ArrayList<>();

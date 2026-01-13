@@ -136,6 +136,14 @@ public class HistoryComplainFragment extends Fragment {
     private void filterComplaints(String filter) {
         complaints.clear();
 
+        // DEBUG: CEK STATUS SETIAP COMPLAINT
+        Log.d("HISTORY_DEBUG", "=== FILTER: " + filter + " ===");
+        for (Complaint complaint : allComplaints) {
+            String status = complaint.getStatus();
+            String judul = complaint.getJudul();
+            Log.d("HISTORY_DEBUG", "Complaint: " + judul + " | Status: " + status);
+        }
+
         switch (filter) {
             case "semua":
                 complaints.addAll(allComplaints);
@@ -143,22 +151,26 @@ public class HistoryComplainFragment extends Fragment {
             case "aktif":
                 for (Complaint complaint : allComplaints) {
                     String status = complaint.getStatus().toLowerCase();
-                    // Mapping yang benar
-                    if (status.equals("pending") || status.equals("in_progress")) {
+                    boolean isActive = status.equals("pending") || status.equals("on_progress");
+                    if (isActive) {
                         complaints.add(complaint);
+                        Log.d("HISTORY_DEBUG", "✓ Added to AKTIF: " + complaint.getJudul() + " (" + status + ")");
                     }
                 }
                 break;
             case "selesai":
                 for (Complaint complaint : allComplaints) {
                     String status = complaint.getStatus().toLowerCase();
-                    // Mapping yang benar
-                    if (status.equals("completed") || status.equals("rejected")) {
+                    boolean isCompleted = status.equals("completed");
+                    if (isCompleted) {
                         complaints.add(complaint);
+                        Log.d("HISTORY_DEBUG", "✓ Added to SELESAI: " + complaint.getJudul() + " (" + status + ")");
                     }
                 }
                 break;
         }
+
+        Log.d("HISTORY_DEBUG", "Total after filter: " + complaints.size());
 
         if (adapter != null) {
             adapter.notifyDataSetChanged();
@@ -191,50 +203,65 @@ public class HistoryComplainFragment extends Fragment {
     private void loadComplaints() {
         showLoading(true);
 
-        Call<ApiResponse<ComplaintResponse>> call = apiService.getComplaints(1, 20);
+        Call<ApiResponse<ComplaintResponse>> call = apiService.getComplaints(1, 100);
 
         call.enqueue(new Callback<ApiResponse<ComplaintResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<ComplaintResponse>> call,
                                    Response<ApiResponse<ComplaintResponse>> response) {
+                // ✅ CHECK JIKA FRAGMENT MASIH ATTACHED
+                if (!isAdded() || getContext() == null) {
+                    Log.e("HISTORY_DEBUG", "Fragment not attached, skipping response");
+                    return;
+                }
+
                 showLoading(false);
 
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<ComplaintResponse> apiResponse = response.body();
 
                     if (apiResponse.isSuccess() && apiResponse.getData() != null) {
-                        // AMBIL DATA DARI ComplaintResponse
-                        List<Complaint> complaintsFromApi = apiResponse.getData().getComplaints();
+                        List<Complaint> allFromApi = apiResponse.getData().getComplaints();
 
+                        // SIMPAN SEMUA
                         allComplaints.clear();
-                        allComplaints.addAll(complaintsFromApi);
+                        allComplaints.addAll(allFromApi);
 
+                        // ✅ DAPATKAN USER ID DENGAN AMAN
+                        String currentUserId = getCurrentUserIdSafely();
+
+                        Log.d("HISTORY_DEBUG", "API returned: " + allFromApi.size() + " complaints");
+                        Log.d("HISTORY_DEBUG", "Current User ID: " + currentUserId);
+
+                        // ✅ PAKAI FILTER OTOMATIS (TANPA PANGGIL AuthManage DI SINI)
                         filterComplaints("semua");
                         updateButtonStates(btnSemua);
 
-                        Log.d("HISTORY_DEBUG", "Loaded " + allComplaints.size() + " complaints");
                         updateUI();
-
-                        if (allComplaints.isEmpty()) {
-                            Toast.makeText(getContext(), "Belum ada komplain", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(getContext(), "Error: " + apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                        showEmptyState();
                     }
-                } else {
-                    // Handle error
-                    showEmptyState();
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<ComplaintResponse>> call, Throwable t) {
-                showLoading(false);
-                Log.e("HISTORY_DEBUG", "API Call Failed: " + t.getMessage());
-                showEmptyState();
+                if (isAdded() && getContext() != null) {
+                    showLoading(false);
+                }
+                Log.e("HISTORY_DEBUG", "API Error: " + t.getMessage());
             }
         });
+    }
+
+    private String getCurrentUserIdSafely() {
+        try {
+            if (getContext() != null) {
+                AuthManage authManage = new AuthManage(getContext());
+                return authManage.getUserId();
+            }
+        } catch (Exception e) {
+            Log.e("HISTORY_DEBUG", "Error getting user ID: " + e.getMessage());
+        }
+        return null;
     }
 
     /**
@@ -252,9 +279,6 @@ public class HistoryComplainFragment extends Fragment {
         }
     }
 
-    /**
-     * Tampilkan detail komplain dalam dialog
-     */
     private void showComplaintDetail(Complaint complaint) {
         // Buat dialog custom
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -277,23 +301,24 @@ public class HistoryComplainFragment extends Fragment {
         MaterialButton btnShare = dialogView.findViewById(R.id.btn_detail_share);
         MaterialButton btnClose = dialogView.findViewById(R.id.btn_detail_close);
 
-        // Set data
+        // Set data sementara dari list
         tvId.setText(complaint.getId() != null ? complaint.getId() : "N/A");
         tvJudul.setText(complaint.getJudul() != null ? complaint.getJudul() : "-");
         tvKategori.setText(complaint.getKategori() != null ? complaint.getKategori() : "-");
         tvTanggal.setText(complaint.getTanggal() != null ? complaint.getTanggal() : "-");
-        tvDeskripsi.setText(complaint.getDeskripsi() != null ? complaint.getDeskripsi() : "-");
 
-        // Set status badge
+        // Tampilkan loading untuk deskripsi
+        tvDeskripsi.setText("Memuat deskripsi...");
+
+        // Set status badge sementara
         String status = complaint.getStatus() != null ? complaint.getStatus().toLowerCase() : "";
         setStatusBadge(tvStatusBadge, status);
 
-        // Handle foto (jika ada URL foto di model, tambahkan field nanti)
-        // Untuk sekarang, sembunyikan
+        // Handle foto
         ivFoto.setVisibility(View.GONE);
         tvFotoLabel.setVisibility(View.GONE);
 
-        // Handle teknisi (jika ada)
+        // Handle teknisi
         if (complaint.getTeknisi_id() != null && !complaint.getTeknisi_id().isEmpty()) {
             layoutTeknisi.setVisibility(View.VISIBLE);
             tvTeknisi.setText("Teknisi #" + complaint.getTeknisi_id());
@@ -316,11 +341,42 @@ public class HistoryComplainFragment extends Fragment {
         // Tampilkan dialog
         dialog.show();
 
-        // Set dialog window size jika perlu
+        // Set dialog window size
         Window window = dialog.getWindow();
         if (window != null) {
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
+
+        // AMBIL DATA DETAIL LENGKAP DARI API
+        ApiService apiService = ApiClient.getApiService();
+        apiService.getComplaintDetail(complaint.getId()).enqueue(new Callback<ApiResponse<Complaint>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Complaint>> call, Response<ApiResponse<Complaint>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Complaint detailComplaint = response.body().getData();
+
+                    // Update UI dengan data lengkap
+                    requireActivity().runOnUiThread(() -> {
+                        // Update deskripsi
+                        if (detailComplaint.getDeskripsi() != null &&
+                                !detailComplaint.getDeskripsi().isEmpty()) {
+                            tvDeskripsi.setText(detailComplaint.getDeskripsi());
+                        }
+
+                        // Update status jika berbeda
+                        if (detailComplaint.getStatus() != null &&
+                                !detailComplaint.getStatus().equals(complaint.getStatus())) {
+                            setStatusBadge(tvStatusBadge, detailComplaint.getStatus().toLowerCase());
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Complaint>> call, Throwable t) {
+                // Biarkan data dari list tetap tampil
+            }
+        });
     }
 
     private void setStatusBadge(TextView statusView, String status) {
@@ -332,8 +388,7 @@ public class HistoryComplainFragment extends Fragment {
                 bgRes = R.drawable.badge_success;
                 statusView.setText("SELESAI");
                 break;
-            case "dalam proses":
-            case "in_progress":
+            case "on_progress":
                 bgRes = R.drawable.badge_warning;
                 statusView.setText("DIPROSES");
                 break;
@@ -356,8 +411,6 @@ public class HistoryComplainFragment extends Fragment {
             statusView.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
         }
     }
-
-
 
     private void shareComplaint(Complaint complaint) {
         String shareText = "📋 Detail Komplain TeknoServe:\n\n" +
