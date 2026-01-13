@@ -20,14 +20,18 @@ public class KomplainPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                // Tab pertama: Komplain
-                return new KomplainFragment();
+                // Tab Komplain - SHOW READY COMPLAINTS
+                KomplainFragment komplainFragment = new KomplainFragment();
+                // Optional: bisa kasih argument jika perlu
+                return komplainFragment;
             case 1:
-                // Tab kedua: Progress
-                return new ProgressFragment();
+                // Tab Progress - SHOW PROGRESS COMPLAINTS
+                ProgressFragment progressFragment = new ProgressFragment();
+                return progressFragment;
             case 2:
-                // Tab ketiga: Completed
-                return new CompletedFragment();
+                // Tab Completed - SHOW COMPLETED COMPLAINTS
+                CompletedFragment completedFragment = new CompletedFragment();
+                return completedFragment;
             default:
                 return new KomplainFragment();
         }
@@ -35,7 +39,6 @@ public class KomplainPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        // Jumlah tab = 3
-        return 3;
+        return 3; // Komplain, Progress, Completed
     }
 }

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="12dp"
+    android:paddingEnd="16dp">
+
+    <!-- Timeline Line & Dot -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="12dp">
+
+        <!-- Top line (hidden for first item) -->
+        <View
+            android:id="@+id/viewTopLine"
+            android:layout_width="2dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="#E0E0E0"
+            android:visibility="gone"/>
+
+        <!-- Status Dot -->
+        <View
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:background="#4CAF50"
+            android:backgroundTint="#4CAF50"
+            android:shape="oval"/>
+
+        <!-- Bottom line (hidden for last item) -->
+        <View
+            android:id="@+id/viewBottomLine"
+            android:layout_width="2dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="#E0E0E0"/>
+
+    </LinearLayout>
+
+    <!-- Content -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Status Title -->
+        <TextView
+            android:id="@+id/tvStatusTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Selesai"
+            android:textSize="14sp"
+            android:textColor="#333333"
+            android:textStyle="bold"
+            android:layout_marginBottom="2dp"/>
+
+        <!-- Status Time -->
+        <TextView
+            android:id="@+id/tvStatusTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="07 Des 2025, 14:30"
+            android:textSize="12sp"
+            android:textColor="#757575"
+            android:layout_marginBottom="4dp"/>
+
+        <!-- Status Note -->
+        <TextView
+            android:id="@+id/tvStatusNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Komplain telah selesai diperbaiki. MCB diganti, sistem listrik normal kembali."
+            android:textSize="13sp"
+            android:textColor="#555555"
+            android:lineSpacingExtra="2dp"
+            android:layout_marginBottom="4dp"/>
+
+        <!-- Technician (if any) -->
+        <TextView
+            android:id="@+id/tvTechnician"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Oleh: Budi Teknisi"
+            android:textSize="12sp"
+            android:textColor="#888888"/>
+
+    </LinearLayout>
+
+</LinearLayout>

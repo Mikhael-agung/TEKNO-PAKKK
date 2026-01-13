@@ -11,14 +11,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.project_uts.ApiService;
 import com.example.project_uts.R;
-import com.example.project_uts.Teknisi.Model.ComplaintStatusRequest;
 import com.example.project_uts.Teknisi.Model.Komplain;
+import com.example.project_uts.network.ApiClient;
+import com.example.project_uts.network.ApiService;
 
 import java.util.List;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,12 +26,13 @@ public class KomplainAdapter extends RecyclerView.Adapter<KomplainAdapter.ViewHo
 
     private List<Komplain> komplainList;
     private Context context;
-    private ApiService api; // Retrofit service
+    private ApiService apiService;
 
-    public KomplainAdapter(Context context, List<Komplain> komplainList, ApiService api) {
+    // UPDATE CONSTRUCTOR
+    public KomplainAdapter(Context context, List<Komplain> komplainList) {
         this.context = context;
         this.komplainList = komplainList;
-        this.api = api;
+        this.apiService = ApiClient.getApiService(); // PAKAI API TEKNISI
     }
 
     @NonNull
@@ -47,30 +47,56 @@ public class KomplainAdapter extends RecyclerView.Adapter<KomplainAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Komplain komplain = komplainList.get(position);
 
-        holder.tvJudul.setText(komplain.getTitle());
-        holder.tvPelapor.setText("Pelapor: " + komplain.getUserId());
-        holder.tvStatus.setText(komplain.getStatus() != null ? komplain.getStatus() : "Belum ada status");
-        holder.tvWaktu.setText(komplain.getCreatedAt());
+        holder.tvJudul.setText(komplain.getJudul());
+        // UPDATE: Tampilkan nama customer jika ada
+        if (komplain.getUser() != null && komplain.getUser().getFull_name() != null) {
+            holder.tvPelapor.setText("Pelapor: " + komplain.getUser().getFull_name());
+        } else {
+            holder.tvPelapor.setText("Pelapor: " + komplain.getUserId());
+        }
+        holder.tvStatus.setText(komplain.getStatus() != null ? komplain.getStatus() : "Komplain");
+        holder.tvWaktu.setText(komplain.getCreatedAt() != null ? komplain.getCreatedAt() : "-");
 
-        // 👉 Listener tombol Ambil
+        // UPDATE: Tombol Ambil - gunakan endpoint teknisi
         holder.btnAmbil.setOnClickListener(v -> {
-            ComplaintStatusRequest req = new ComplaintStatusRequest(
-                    "On Progress", "tech_001", "Komplain sedang ditangani"
-            );
+            String complaintId = komplain.getId();
+            if (complaintId == null || complaintId.isEmpty()) {
+                Toast.makeText(context, "ID komplain tidak valid", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            api.addComplaintStatus(komplain.getId(), req).enqueue(new Callback<ResponseBody>() {
+            // PAKAI ENDPOINT TEKNISI: /api/teknisi/complaints/{id}/take
+            Call<com.example.project_uts.models.ApiResponse<Komplain>> call =
+                    apiService.takeComplaint(complaintId);
+
+            call.enqueue(new Callback<com.example.project_uts.models.ApiResponse<Komplain>>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    if (response.isSuccessful()) {
-                        Toast.makeText(context, "Komplain diambil!", Toast.LENGTH_SHORT).show();
-                        // refresh list kalau perlu
-                        // notifyDataSetChanged(); atau callback ke Fragment
+                public void onResponse(Call<com.example.project_uts.models.ApiResponse<Komplain>> call,
+                                       Response<com.example.project_uts.models.ApiResponse<Komplain>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        if (response.body().isSuccess()) {
+                            Toast.makeText(context, "Komplain berhasil diambil!", Toast.LENGTH_SHORT).show();
+                            // Hapus item dari list lokal
+                            komplainList.remove(position);
+                            notifyItemRemoved(position);
+                            notifyItemRangeChanged(position, komplainList.size());
+                        } else {
+                            Toast.makeText(context,
+                                    "Gagal: " + response.body().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(context,
+                                "Error response: " + response.code(),
+                                Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Toast.makeText(context, "Gagal ambil komplain", Toast.LENGTH_SHORT).show();
+                public void onFailure(Call<com.example.project_uts.models.ApiResponse<Komplain>> call, Throwable t) {
+                    Toast.makeText(context,
+                            "Network error: " + t.getMessage(),
+                            Toast.LENGTH_SHORT).show();
                 }
             });
         });
@@ -81,7 +107,6 @@ public class KomplainAdapter extends RecyclerView.Adapter<KomplainAdapter.ViewHo
         return komplainList != null ? komplainList.size() : 0;
     }
 
-    // 🔎 ViewHolder dengan tombol Ambil
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvJudul, tvPelapor, tvStatus, tvWaktu;
         Button btnAmbil;
@@ -92,7 +117,7 @@ public class KomplainAdapter extends RecyclerView.Adapter<KomplainAdapter.ViewHo
             tvPelapor = itemView.findViewById(R.id.tvPelapor);
             tvStatus = itemView.findViewById(R.id.tvStatus);
             tvWaktu = itemView.findViewById(R.id.tvWaktu);
-            btnAmbil = itemView.findViewById(R.id.btnAmbil); // 👉 ini tombol Ambil
+            btnAmbil = itemView.findViewById(R.id.btnAmbil);
         }
     }
 }

@@ -67,9 +67,7 @@ public class Complaint {
     public String getCreated_at() { return tanggal; }
     public void setCreated_at(String created_at) { this.tanggal = created_at; }
 
-    // Helper method untuk FE (getTanggal)
     public String getTanggal() {
-        // Format dari "2024-12-10T10:30:00.000Z" ke "10 Dec 2024"
         if (tanggal == null) return "";
         try {
             String datePart = tanggal.split("T")[0];
@@ -111,6 +109,71 @@ public class Complaint {
     public String getResolution_notes() { return resolution_notes; }
     public void setResolution_notes(String resolution_notes) {
         this.resolution_notes = resolution_notes;
+    }
+
+    public String getShortDate() {
+        if (tanggal == null) return "";
+        try {
+            // Format: "2024-12-10T10:30:00.000Z" → "15 Des"
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMM", new Locale("id", "ID"));
+
+            Date date = inputFormat.parse(tanggal.split("\\.")[0]);
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            // Fallback ke format pendek
+            try {
+                String[] parts = getTanggal().split("/");
+                if (parts.length >= 2) {
+                    int day = Integer.parseInt(parts[0]);
+                    int month = Integer.parseInt(parts[1]);
+                    String[] monthNames = {"Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+                            "Jul", "Agu", "Sep", "Okt", "Nov", "Des"};
+                    if (month >= 1 && month <= 12) {
+                        return day + " " + monthNames[month-1];
+                    }
+                }
+            } catch (Exception ex) {
+                // Ignore
+            }
+            return getTanggal();
+        }
+    }
+
+    // Method untuk dapatkan judul yang lebih presentable
+    public String getPresentableTitle() {
+        if (judul != null && !judul.trim().isEmpty()) {
+            String cleanTitle = judul.trim();
+            // Jika judul terlalu pendek atau tidak jelas
+            if (cleanTitle.length() < 4 ||
+                    cleanTitle.equalsIgnoreCase("null") ||
+                    cleanTitle.matches(".*[0-9]{5,}.*")) { // jika berisi banyak angka
+                // Gunakan kategori sebagai fallback
+                if (kategori != null && !kategori.trim().isEmpty()) {
+                    return "Keluhan " + kategori;
+                }
+                return "Keluhan Layanan";
+            }
+            return cleanTitle;
+        }
+        // Fallback ke kategori
+        if (kategori != null && !kategori.trim().isEmpty()) {
+            return "Keluhan " + kategori;
+        }
+        return "Keluhan Layanan";
+    }
+
+    // Method untuk deskripsi yang lebih baik
+    public String getCleanDescription() {
+        if (deskripsi != null && !deskripsi.trim().isEmpty()) {
+            String cleanDesc = deskripsi.trim();
+            // Hilangkan "null" string
+            if (cleanDesc.equalsIgnoreCase("null")) {
+                return "";
+            }
+            return cleanDesc;
+        }
+        return "";
     }
 
     public String getFormattedDate() {

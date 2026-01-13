@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.project_uts.LoginActivity;
 import com.example.project_uts.models.User;
@@ -14,7 +15,7 @@ public class AuthManage {
     private static final String PREF_NAME = "auth_pref";
     private static final String KEY_TOKEN = "jwt_token";
     private static final String KEY_USER = "user_data";
-    private static final String TAG = "AuthManage";  // Ubah jadi AuthManage, bukan LoginActivity
+    private static final String TAG = "AuthManage";
 
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
@@ -97,27 +98,58 @@ public class AuthManage {
         return loggedIn;
     }
 
-    // Logout - clear semua data
     public void logout(Context context) {
-        Log.d(TAG, "Logging out - clearing all auth data");
-
         editor.clear();
         boolean success = editor.commit();
         Log.d(TAG, "AuthManager clear successful: " + success);
 
-        SharedPreferences legacyPref = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE);
-        legacyPref.edit().clear().apply();
-        Log.d(TAG, "Legacy prefs cleared");
+        // 2. CLEAR ALL LEGACY PREFERENCES (SEMUA VERSI)
+        String[] legacyPrefNames = {
+                "user_pref",
+                "user_prefs",
+                "auth_preferences"
+        };
 
-        // 3. Redirect ke LoginActivity dengan clear stack
+        for (String prefName : legacyPrefNames) {
+            try {
+                SharedPreferences legacyPref = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
+                legacyPref.edit().clear().apply();
+                Log.d(TAG, "Cleared legacy pref: " + prefName);
+            } catch (Exception e) {
+                Log.e(TAG, "Error clearing pref " + prefName + ": " + e.getMessage());
+            }
+        }
+
+        // 4. VERIFY EVERYTHING IS CLEARED
+        Log.d(TAG, "=== VERIFICATION AFTER CLEAR ===");
+        Log.d(TAG, "Auth token: " + (pref.getString(KEY_TOKEN, null) != null ? "STILL EXISTS" : "CLEARED ✓"));
+        Log.d(TAG, "Auth user: " + (pref.getString(KEY_USER, null) != null ? "STILL EXISTS" : "CLEARED ✓"));
+
+        for (String prefName : legacyPrefNames) {
+            SharedPreferences checkPref = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
+            boolean isEmpty = checkPref.getAll().isEmpty();
+            Log.d(TAG, prefName + " empty: " + (isEmpty ? "YES ✓" : "NO ✗"));
+        }
+
+        // 5. REDIRECT TO LOGIN WITH PROPER FLAGS
+        Log.d(TAG, "Redirecting to LoginActivity...");
         Intent intent = new Intent(context, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                Intent.FLAG_ACTIVITY_CLEAR_TASK |
+                Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
         context.startActivity(intent);
 
-        // 4. Jika dari Activity, finish()
         if (context instanceof Activity) {
-            ((Activity) context).finish();
+            Activity activity = (Activity) context;
+
+            activity.finishAffinity();
+            Log.d(TAG, "All activities finished with finishAffinity()");
         }
+
+        Toast.makeText(context, "Logout berhasil", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "=== LOGOUT PROCESS COMPLETE ===");
     }
 
     // Update user data (setelah update profile)

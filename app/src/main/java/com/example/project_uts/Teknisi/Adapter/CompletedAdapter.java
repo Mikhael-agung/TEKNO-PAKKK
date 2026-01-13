@@ -32,11 +32,11 @@ public class CompletedAdapter extends RecyclerView.Adapter<CompletedAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Komplain komplain = completedList.get(position);
 
-        holder.tvJudul.setText(komplain.getTitle());
+        holder.tvJudul.setText(komplain.getJudul());
         holder.tvPelapor.setText("Pelapor: " + komplain.getUserId());
         holder.tvStatus.setText("✅ " + komplain.getStatus());
         holder.tvWaktu.setText(komplain.getCreatedAt());
-        holder.tvCatatan.setText("Catatan: " + komplain.getDescription());
+        holder.tvCatatan.setText("Catatan: " + komplain.getDeskripsi());
     }
 
     @Override

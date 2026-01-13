@@ -18,7 +18,7 @@
         android:layout_gravity="bottom"
         app:itemIconTint="@color/black"
         app:itemTextColor="@color/black"
-        app:menu="@menu/bottom_nav_teknisi"
+        app:menu="@menu/button_nav_customer"
         app:labelVisibilityMode="labeled"
         />
 

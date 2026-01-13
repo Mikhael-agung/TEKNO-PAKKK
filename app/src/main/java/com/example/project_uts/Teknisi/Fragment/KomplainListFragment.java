@@ -12,6 +12,7 @@ import com.example.project_uts.R;
 import com.example.project_uts.Teknisi.Adapter.KomplainPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+
 public class KomplainListFragment extends Fragment {
 
     private TabLayout tabLayout;
@@ -24,14 +25,24 @@ public class KomplainListFragment extends Fragment {
         tabLayout = view.findViewById(R.id.tabLayout);
         viewPager = view.findViewById(R.id.viewPager);
 
+        // Initialize adapter dengan requireActivity()
         KomplainPagerAdapter pagerAdapter = new KomplainPagerAdapter(requireActivity());
         viewPager.setAdapter(pagerAdapter);
 
+        // Connect TabLayout dengan ViewPager
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> {
-                    if (position == 0) tab.setText("Komplain");
-                    else if (position == 1) tab.setText("Progress");
-                    else if (position == 2) tab.setText("Completed");
+                    switch (position) {
+                        case 0:
+                            tab.setText("Komplain");
+                            break;
+                        case 1:
+                            tab.setText("Progress");
+                            break;
+                        case 2:
+                            tab.setText("Completed");
+                            break;
+                    }
                 }).attach();
 
         return view;

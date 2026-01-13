@@ -1,50 +1,56 @@
 package com.example.project_uts.Teknisi.Model;
 
-import com.google.gson.annotations.SerializedName;
-
 public class Komplain {
     private String id;
-
-    @SerializedName("user_id")
+    private String judul;
+    private String Deskripsi;
+    private String status;
+    private String createdAt;
     private String userId;
 
-    private String title;
-    private String description;
 
-    @SerializedName("image_path")
-    private String imagePath;
-
-    @SerializedName("created_at")
-    private String createdAt;
-
-    @SerializedName("updated_at")
-    private String updatedAt;
-
-    // Tambahan untuk status (kalau ambil dari endpoint by ID)
-    private String status;
+    private User user;
 
     // Getter & Setter
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
+    public String getJudul() { return judul; }
+    public void setJudul(String judul) { this.judul = judul; }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public String getDeskripsi() { return Deskripsi; }
+    public void setDeskripsi(String deskripsi) { this.Deskripsi = deskripsi; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public String getImagePath() { return imagePath; }
-    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
     public String getCreatedAt() { return createdAt; }
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
 
-    public String getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    // User object
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    // Inner class User
+    public static class User {
+        private String id;
+        private String full_name;
+        private String email;
+        private String phone;
+
+        public String getId() { return id; }
+        public void setId(String id) { this.id = id; }
+
+        public String getFull_name() { return full_name; }
+        public void setFull_name(String full_name) { this.full_name = full_name; }
+
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
+
+        public String getPhone() {return phone;}
+        public void setPhone(String phone) {this.phone = phone; }
+    }
 }

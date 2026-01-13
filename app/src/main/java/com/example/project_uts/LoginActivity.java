@@ -43,7 +43,18 @@ public class LoginActivity extends AppCompatActivity {
         apiService = ApiClient.getApiService();
 
         // Cek jika user sudah login dengan AuthManager (not SharedPreferences)
-        if (authManage.isLoggedIn()) {
+        boolean fromLogout = getIntent().getBooleanExtra("from_logout", false);
+        boolean forceLogin = getIntent().getBooleanExtra("force_login", false);
+
+        Log.d(TAG, "LoginActivity started - fromLogout: " + fromLogout + ", forceLogin: " + forceLogin);
+
+        if (fromLogout || forceLogin) {
+            Log.d(TAG, "Forcing login screen (from logout)");
+            // Lanjutkan ke login screen
+        }
+        // Cek jika user sudah login dengan AuthManager
+        else if (authManage.isLoggedIn()) {
+            Log.d(TAG, "User is logged in, redirecting...");
             redirectToMainActivity();
             return;
         }
@@ -61,11 +72,12 @@ public class LoginActivity extends AppCompatActivity {
 
         // Daftar button click
         btnDaftar.setOnClickListener(v -> {
-            Toast.makeText(this, "Fitur pendaftaran coming soon!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(LoginActivity.this, RegisterCustomerActivity.class);
+            startActivity(intent);
         });
 
         // Auto-fill for development
-        etUsername.setText("customer1");
+        etUsername.setText("teknisi");
         etPassword.setText("123");
     }
 
@@ -195,7 +207,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    // METHOD BARU: Simpan ke SharedPreferences lama untuk kompatibilitas
     private void saveToLegacyPreferences(com.example.project_uts.models.User user) {
         // 1. Untuk DashboardFragment (menggunakan "user_prefs")
         SharedPreferences prefs1 = getSharedPreferences("user_prefs", MODE_PRIVATE);

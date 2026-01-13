@@ -5,18 +5,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.project_uts.ApiClient;
-import com.example.project_uts.ApiService;
 import com.example.project_uts.R;
 import com.example.project_uts.Teknisi.Adapter.KomplainAdapter;
-import com.example.project_uts.Teknisi.Model.ComplaintStatus;
 import com.example.project_uts.Teknisi.Model.Komplain;
+import com.example.project_uts.Teknisi.Model.TeknisiComplaintsResponse;
+import com.example.project_uts.network.ApiClient;
+import com.example.project_uts.network.ApiService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class CompletedFragment extends Fragment {
     private RecyclerView rvCompleted;
     private KomplainAdapter adapter;
     private List<Komplain> completedList = new ArrayList<>();
+    private ApiService apiService;
 
     public CompletedFragment() {}
 
@@ -38,12 +40,13 @@ public class CompletedFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_completed_teknisi, container, false);
 
+        // INIT API SERVICE
+        apiService = ApiClient.getApiService();
+
         rvCompleted = view.findViewById(R.id.rvCompleted);
         rvCompleted.setLayoutManager(new LinearLayoutManager(getContext()));
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        adapter = new KomplainAdapter(getContext(), completedList, apiService);
-        rvCompleted.setAdapter(adapter);
 
+        adapter = new KomplainAdapter(getContext(), completedList);
         rvCompleted.setAdapter(adapter);
 
         fetchCompletedComplaints();
@@ -52,38 +55,60 @@ public class CompletedFragment extends Fragment {
     }
 
     private void fetchCompletedComplaints() {
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        apiService.getComplaints().enqueue(new Callback<List<Komplain>>() {
-            @Override
-            public void onResponse(Call<List<Komplain>> call, Response<List<Komplain>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    completedList.clear();
-                    for (Komplain k : response.body()) {
-                        apiService.getComplaintStatuses(k.getId()).enqueue(new Callback<List<ComplaintStatus>>() {
-                            @Override
-                            public void onResponse(Call<List<ComplaintStatus>> call, Response<List<ComplaintStatus>> resp) {
-                                if (resp.isSuccessful() && resp.body() != null && !resp.body().isEmpty()) {
-                                    ComplaintStatus latest = resp.body().get(0);
-                                    if ("Completed".equalsIgnoreCase(latest.getStatus())) {
-                                        k.setStatus(latest.getStatus());
-                                        completedList.add(k);
-                                        adapter.notifyDataSetChanged();
-                                    }
-                                }
-                            }
+        Call<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> call =
+                apiService.getCompletedComplaints(1, 50);
 
-                            @Override
-                            public void onFailure(Call<List<ComplaintStatus>> call, Throwable t) {
-                                Log.e("API_ERROR", "Gagal ambil status: " + t.getMessage());
+        call.enqueue(new Callback<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>>() {
+            @Override
+            public void onResponse(Call<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> call,
+                                   Response<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> response) {
+
+                if (!isAdded() || getContext() == null) {
+                    return;
+                }
+
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().isSuccess()) {
+                        TeknisiComplaintsResponse data = response.body().getData();
+
+                        if (data != null && data.getComplaints() != null) {
+                            completedList.clear();
+                            completedList.addAll(data.getComplaints());
+                            adapter.notifyDataSetChanged();
+
+                            Log.d("CompletedFragment", "Loaded " + data.getComplaints().size() + " complaints");
+                        }
+
+                        if (data == null || data.getComplaints() == null || data.getComplaints().isEmpty()) {
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() ->
+                                        Toast.makeText(getActivity(),
+                                                "Tidak ada komplain yang selesai",
+                                                Toast.LENGTH_SHORT).show()
+                                );
                             }
-                        });
+                        }
+                    } else {
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() ->
+                                    Toast.makeText(getActivity(),
+                                            "Error: " + response.body().getMessage(),
+                                            Toast.LENGTH_SHORT).show()
+                            );
+                        }
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Komplain>> call, Throwable t) {
-                Log.e("API_ERROR", "Gagal ambil complaints: " + t.getMessage());
+            public void onFailure(Call<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> call, Throwable t) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() ->
+                            Toast.makeText(getActivity(),
+                                    "Network error: " + t.getMessage(),
+                                    Toast.LENGTH_SHORT).show()
+                    );
+                }
             }
         });
     }

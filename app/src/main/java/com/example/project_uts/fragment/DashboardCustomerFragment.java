@@ -47,7 +47,7 @@ public class DashboardCustomerFragment extends Fragment {
 
     private AuthManage authManage;
 
-    private MaterialButton filterAll, filterPending, filterProses, filterSelesai, filterDitolak;
+    private MaterialButton filterAll, filterPending, filterProses, filterSelesai;
     private View emptyGrid;
 
     public DashboardCustomerFragment() {
@@ -77,7 +77,7 @@ public class DashboardCustomerFragment extends Fragment {
         setupFilters();
         setupClickListeners();
         loadUserData();
-        loadComplaintsData(); // Load data API dulu
+        loadComplaintsData();
     }
 
     private void initViews(View view) {
@@ -93,7 +93,6 @@ public class DashboardCustomerFragment extends Fragment {
         filterPending = view.findViewById(R.id.filter_pending);
         filterProses = view.findViewById(R.id.filter_proses);
         filterSelesai = view.findViewById(R.id.filter_selesai);
-        filterDitolak = view.findViewById(R.id.filter_ditolak);
 
         rvComplaintGrid = view.findViewById(R.id.rv_complaint_grid);
         emptyGrid = view.findViewById(R.id.empty_grid);
@@ -103,7 +102,6 @@ public class DashboardCustomerFragment extends Fragment {
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
         rvComplaintGrid.setLayoutManager(layoutManager);
 
-        // Pastikan RecyclerView tidak null
         if (rvComplaintGrid == null) {
             Log.e("Dashboard", "RecyclerView is null!");
             return;
@@ -120,10 +118,8 @@ public class DashboardCustomerFragment extends Fragment {
     }
 
     private void setupFilters() {
-        // Set initial active filter (Pending)
-        setActiveFilter(filterPending);
+        setActiveFilter(filterAll);
 
-        // Filter click listeners
         filterAll.setOnClickListener(v -> {
             setActiveFilter(filterAll);
             applyFilter("all");
@@ -136,23 +132,17 @@ public class DashboardCustomerFragment extends Fragment {
 
         filterProses.setOnClickListener(v -> {
             setActiveFilter(filterProses);
-            applyFilter("in_progress");
+            applyFilter("on_progress");
         });
 
         filterSelesai.setOnClickListener(v -> {
             setActiveFilter(filterSelesai);
             applyFilter("completed");
         });
-
-        filterDitolak.setOnClickListener(v -> {
-            setActiveFilter(filterDitolak);
-            applyFilter("ditolak");
-        });
     }
 
     private void setActiveFilter(MaterialButton activeButton) {
-        // Reset semua filter
-        MaterialButton[] filters = {filterAll, filterPending, filterProses, filterSelesai, filterDitolak};
+        MaterialButton[] filters = {filterAll, filterPending, filterProses, filterSelesai};
 
         for (MaterialButton filter : filters) {
             filter.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#E0E0E0")));
@@ -160,7 +150,6 @@ public class DashboardCustomerFragment extends Fragment {
             filter.setTextColor(Color.parseColor("#666666"));
         }
 
-        // Set active filter
         int primaryColor = getResources().getColor(R.color.colorPrimary);
         activeButton.setStrokeColor(ColorStateList.valueOf(primaryColor));
         activeButton.setBackgroundTintList(ColorStateList.valueOf(primaryColor));
@@ -178,17 +167,12 @@ public class DashboardCustomerFragment extends Fragment {
                 if (status != null) {
                     status = status.toLowerCase();
 
-                    if (filterType.equals("in_progress")) {
-                        if (status.equals("in_progress") || status.equals("dalam proses")) {
+                    if (filterType.equals("on_progress")) {
+                        if (status.equals("on_progress") || status.equals("dalam proses")) {
                             filteredComplaints.add(complaint);
                         }
                     } else if (filterType.equals("completed")) {
                         if (status.equals("completed") || status.equals("selesai")) {
-                            filteredComplaints.add(complaint);
-                        }
-                    } else if (filterType.equals("ditolak")) {
-                        if (status.equals("ditolak") || status.equals("rejected") ||
-                                status.equals("canceled") || status.equals("cancelled")) {
                             filteredComplaints.add(complaint);
                         }
                     } else if (status.equals(filterType)) {
@@ -198,14 +182,11 @@ public class DashboardCustomerFragment extends Fragment {
             }
         }
 
-        // Update adapter
         if (complaintGridAdapter != null) {
             complaintGridAdapter.updateData(filteredComplaints);
         }
 
-        // Update empty state
         updateEmptyState();
-
         Log.d("Dashboard", "Filter applied: " + filterType + ", items: " + filteredComplaints.size());
     }
 
@@ -246,7 +227,7 @@ public class DashboardCustomerFragment extends Fragment {
                     tvEmail.setText(userEmail);
                 }
             } else {
-                SharedPreferences prefs = requireActivity().getSharedPreferences("user_prefs", requireActivity().MODE_PRIVATE);
+                SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", getActivity().MODE_PRIVATE);
                 String userName = prefs.getString("user_name", "Customer");
                 String userEmail = prefs.getString("user_email", "user@email.com");
 
@@ -267,12 +248,10 @@ public class DashboardCustomerFragment extends Fragment {
     private void loadComplaintsData() {
         if (!isAdded()) return;
 
-        // Show loading state
         tvPendingCount.setText("...");
         tvProgressCount.setText("...");
         tvCompletedCount.setText("...");
 
-        // Coba load dari API
         ApiService apiService = ApiClient.getApiService();
         Call<ApiResponse<ComplaintResponse>> call = apiService.getComplaints(1, 100);
 
@@ -281,16 +260,16 @@ public class DashboardCustomerFragment extends Fragment {
             public void onResponse(Call<ApiResponse<ComplaintResponse>> call,
                                    Response<ApiResponse<ComplaintResponse>> response) {
 
-                if (isAdded() && response.isSuccessful() && response.body() != null) {
+                if (!isAdded()) return;
+
+                if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<ComplaintResponse> apiResponse = response.body();
 
                     if (apiResponse.isSuccess() && apiResponse.getData() != null) {
                         List<Complaint> complaints = apiResponse.getData().getComplaints();
 
-                        // Update data
                         allComplaints = complaints;
 
-                        // Hitung statistik
                         int pendingCount = 0;
                         int progressCount = 0;
                         int completedCount = 0;
@@ -304,7 +283,7 @@ public class DashboardCustomerFragment extends Fragment {
                                     case "pending":
                                         pendingCount++;
                                         break;
-                                    case "in_progress":
+                                    case "on_progress":
                                     case "dalam proses":
                                         progressCount++;
                                         break;
@@ -316,38 +295,43 @@ public class DashboardCustomerFragment extends Fragment {
                             }
                         }
 
-                        // Update UI
-                        int finalPendingCount = pendingCount;
-                        int finalProgressCount = progressCount;
-                        int finalCompletedCount = completedCount;
-                        requireActivity().runOnUiThread(() -> {
-                            tvPendingCount.setText(String.valueOf(finalPendingCount));
-                            tvProgressCount.setText(String.valueOf(finalProgressCount));
-                            tvCompletedCount.setText(String.valueOf(finalCompletedCount));
+                        final int finalPendingCount = pendingCount;
+                        final int finalProgressCount = progressCount;
+                        final int finalCompletedCount = completedCount;
 
-                            // Apply default filter
-                            applyFilter("pending");
+                        // ✅ FIXED: Gunakan check isAdded() dan getActivity()
+                        if (isAdded() && getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                tvPendingCount.setText(String.valueOf(finalPendingCount));
+                                tvProgressCount.setText(String.valueOf(finalProgressCount));
+                                tvCompletedCount.setText(String.valueOf(finalCompletedCount));
 
-                            Log.d("Dashboard", "API data loaded: " + complaints.size() + " items");
-                        });
+                                applyFilter("all");
+
+                                Log.d("Dashboard", "API data loaded: " + complaints.size() + " items");
+                            });
+                        }
 
                     } else {
-                        // Jika API gagal, gunakan dummy data
-                        requireActivity().runOnUiThread(() -> {
+                        if (isAdded() && getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                showDummyData();
+                            });
+                        }
+                    }
+                } else {
+                    if (isAdded() && getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
                             showDummyData();
                         });
                     }
-                } else {
-                    requireActivity().runOnUiThread(() -> {
-                        showDummyData();
-                    });
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<ComplaintResponse>> call, Throwable t) {
-                if (isAdded()) {
-                    requireActivity().runOnUiThread(() -> {
+                if (isAdded() && getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
                         showDummyData();
                         Log.e("Dashboard", "API failed: " + t.getMessage());
                     });
@@ -359,7 +343,6 @@ public class DashboardCustomerFragment extends Fragment {
     private void showDummyData() {
         if (!isAdded()) return;
 
-        // Dummy statistics
         int pendingCount = 3;
         int progressCount = 2;
         int completedCount = 5;
@@ -368,7 +351,6 @@ public class DashboardCustomerFragment extends Fragment {
         tvProgressCount.setText(String.valueOf(progressCount));
         tvCompletedCount.setText(String.valueOf(completedCount));
 
-        // Dummy complaints
         allComplaints.clear();
 
         Complaint c1 = new Complaint();
@@ -419,10 +401,12 @@ public class DashboardCustomerFragment extends Fragment {
         c6.setCreated_at("2024-12-10T13:25:00.000Z");
         allComplaints.add(c6);
 
-        // Apply filter
         applyFilter("pending");
 
-        Toast.makeText(getContext(), "Menggunakan data demo", Toast.LENGTH_SHORT).show();
+        if (isAdded() && getContext() != null) {
+            Toast.makeText(getContext(), "Menggunakan data demo", Toast.LENGTH_SHORT).show();
+        }
+
         Log.d("Dashboard", "Dummy data loaded: " + allComplaints.size() + " items");
     }
 
@@ -471,7 +455,7 @@ public class DashboardCustomerFragment extends Fragment {
                 historyFilter = "pending";
                 break;
             case "progress":
-                historyFilter = "in_progress";
+                historyFilter = "on_progress";
                 break;
             case "completed":
                 historyFilter = "completed";
@@ -492,7 +476,6 @@ public class DashboardCustomerFragment extends Fragment {
     }
 
     private void navigateToComplaintDetail(Complaint complaint) {
-        // Navigate to history with specific complaint
         HistoryComplainFragment detailFragment = new HistoryComplainFragment();
         Bundle args = new Bundle();
         args.putString("complaint_id", complaint.getId());
@@ -508,7 +491,6 @@ public class DashboardCustomerFragment extends Fragment {
         }
     }
 
-    // Method untuk refresh data ketika fragment menjadi visible
     @Override
     public void onResume() {
         super.onResume();
@@ -517,7 +499,6 @@ public class DashboardCustomerFragment extends Fragment {
             loadComplaintsData();
         }
     }
-
 
     @Override
     public void onDestroy() {
