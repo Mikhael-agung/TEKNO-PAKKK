@@ -25,7 +25,6 @@ public class Komplain {
     @SerializedName("alamat")
     private String alamat;
 
-    // kalau backend nanti kirim object user
     @SerializedName("user")
     private User user;
 
