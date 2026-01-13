@@ -13,9 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project_uts.R;
-import com.example.project_uts.Teknisi.Adapter.KomplainAdapter;
+import com.example.project_uts.Teknisi.Adapter.CompletedAdapter;
 import com.example.project_uts.Teknisi.Model.Komplain;
 import com.example.project_uts.Teknisi.Model.TeknisiComplaintsResponse;
+import com.example.project_uts.models.ApiResponse;
 import com.example.project_uts.network.ApiClient;
 import com.example.project_uts.network.ApiService;
 
@@ -29,7 +30,7 @@ import retrofit2.Response;
 public class CompletedFragment extends Fragment {
 
     private RecyclerView rvCompleted;
-    private KomplainAdapter adapter;
+    private CompletedAdapter adapter;
     private List<Komplain> completedList = new ArrayList<>();
     private ApiService apiService;
 
@@ -40,74 +41,69 @@ public class CompletedFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_completed_teknisi, container, false);
 
-        // INIT API SERVICE
         apiService = ApiClient.getApiService();
 
         rvCompleted = view.findViewById(R.id.rvCompleted);
-        rvCompleted.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvCompleted.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        adapter = new KomplainAdapter(getContext(), completedList);
+        adapter = new CompletedAdapter(completedList);
         rvCompleted.setAdapter(adapter);
 
-        fetchCompletedComplaints();
+        // load data awal
+        reloadComplaints();
 
         return view;
     }
 
-    private void fetchCompletedComplaints() {
-        Call<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> call =
-                apiService.getCompletedComplaints(1, 50);
+    // 👉 method public supaya bisa dipanggil dari MainActivity kalau perlu refresh
+    public void reloadComplaints() {
+        Call<ApiResponse<TeknisiComplaintsResponse>> call =
+                apiService.getCompletedComplaints(1, 50); // page=1, limit=50
 
-        call.enqueue(new Callback<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>>() {
+        call.enqueue(new Callback<ApiResponse<TeknisiComplaintsResponse>>() {
             @Override
-            public void onResponse(Call<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> call,
-                                   Response<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> response) {
+            public void onResponse(Call<ApiResponse<TeknisiComplaintsResponse>> call,
+                                   Response<ApiResponse<TeknisiComplaintsResponse>> response) {
 
-                if (!isAdded() || getContext() == null) {
-                    return;
-                }
+                if (!isAdded()) return;
 
                 if (response.isSuccessful() && response.body() != null) {
-                    if (response.body().isSuccess()) {
-                        TeknisiComplaintsResponse data = response.body().getData();
+                    ApiResponse<TeknisiComplaintsResponse> apiResponse = response.body();
 
-                        if (data != null && data.getComplaints() != null) {
-                            completedList.clear();
+                    if (apiResponse.isSuccess()) {
+                        TeknisiComplaintsResponse data = apiResponse.getData();
+
+                        completedList.clear();
+                        if (data != null && data.getComplaints() != null && !data.getComplaints().isEmpty()) {
                             completedList.addAll(data.getComplaints());
-                            adapter.notifyDataSetChanged();
-
                             Log.d("CompletedFragment", "Loaded " + data.getComplaints().size() + " complaints");
+                        } else {
+                            Toast.makeText(requireContext(),
+                                    "Belum ada komplain yang selesai",
+                                    Toast.LENGTH_SHORT).show();
                         }
-
-                        if (data == null || data.getComplaints() == null || data.getComplaints().isEmpty()) {
-                            if (getActivity() != null) {
-                                getActivity().runOnUiThread(() ->
-                                        Toast.makeText(getActivity(),
-                                                "Tidak ada komplain yang selesai",
-                                                Toast.LENGTH_SHORT).show()
-                                );
-                            }
-                        }
+                        adapter.notifyDataSetChanged();
                     } else {
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() ->
-                                    Toast.makeText(getActivity(),
-                                            "Error: " + response.body().getMessage(),
-                                            Toast.LENGTH_SHORT).show()
-                            );
-                        }
+                        Toast.makeText(requireContext(),
+                                "Error: " + apiResponse.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                        Log.e("CompletedFragment", "API Error: " + apiResponse.getMessage());
                     }
+                } else {
+                    Toast.makeText(requireContext(),
+                            "Response error: " + response.code(),
+                            Toast.LENGTH_SHORT).show();
+                    Log.e("CompletedFragment", "Response code: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> call, Throwable t) {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() ->
-                            Toast.makeText(getActivity(),
-                                    "Network error: " + t.getMessage(),
-                                    Toast.LENGTH_SHORT).show()
-                    );
+            public void onFailure(Call<ApiResponse<TeknisiComplaintsResponse>> call, Throwable t) {
+                if (isAdded()) {
+                    Toast.makeText(requireContext(),
+                            "Network error: " + t.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                    Log.e("CompletedFragment", "Network error: ", t);
                 }
             }
         });

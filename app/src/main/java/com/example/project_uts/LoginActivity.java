@@ -7,19 +7,21 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.project_uts.models.LoginResponse;
 import com.example.project_uts.models.User;
 import com.example.project_uts.network.ApiClient;
 import com.example.project_uts.network.ApiService;
 import com.example.project_uts.network.AuthManage;
-import com.example.project_uts.models.LoginResponse;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import java.util.HashMap;
-import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -75,10 +77,6 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(LoginActivity.this, RegisterCustomerActivity.class);
             startActivity(intent);
         });
-
-        // Auto-fill for development
-        etUsername.setText("teknisi");
-        etPassword.setText("123");
     }
 
     private void redirectToMainActivity() {
@@ -171,6 +169,8 @@ public class LoginActivity extends AppCompatActivity {
 
                         // 2. SIMPAN KE SHAREDPREFERENCES LAMA UNTUK KOMPATIBILITAS
                         saveToLegacyPreferences(user);
+
+                        SharedPreferences prefs = getSharedPreferences("MyAppPrefs", MODE_PRIVATE); prefs.edit().putString("jwt_token", token).apply();
 
                         // Login berhasil
                         redirectToMainActivity();

@@ -74,6 +74,18 @@ public class RegisterCustomerActivity extends AppCompatActivity {
         });
     }
 
+    private String formatPhoneNumber(String phone) {
+        phone = phone.replaceAll("[^0-9]", ""); // hapus spasi/simbol
+
+        if (phone.startsWith("0")) {
+            phone = "62" + phone.substring(1);
+        } else if (!phone.startsWith("62")) {
+            phone = "62" + phone;
+        }
+        return phone;
+    }
+
+
     private void registerUser() {
         // Collect form data
         String full_name = etNama.getText().toString().trim();
@@ -83,6 +95,7 @@ public class RegisterCustomerActivity extends AppCompatActivity {
         String password = etPassword.getText().toString().trim();
         String konfirmasiPassword = etKonfirmasiPassword.getText().toString().trim();
 
+        phone = formatPhoneNumber(phone);
         // Validation dengan username
         if (!validateForm(full_name, email, username, phone, password, konfirmasiPassword)) {
             return;
@@ -127,6 +140,7 @@ public class RegisterCustomerActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private boolean validateForm(String full_name, String email, String username,
                                  String phone, String password, String konfirmasiPassword) {

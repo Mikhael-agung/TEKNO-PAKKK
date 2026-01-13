@@ -4,11 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+    android:id="@+id/cardView"
     app:cardCornerRadius="12dp"
     app:cardElevation="2dp"
     app:cardBackgroundColor="#FFFFFF"
     app:strokeWidth="2dp"
-    app:strokeColor="#FF9800"> <!-- default Pending warna oranye -->
+    app:strokeColor="#FF9800">
 
     <LinearLayout
         android:orientation="vertical"
@@ -46,5 +47,14 @@
             android:text="07 Desember 2025 • 14:30 WIB"
             android:textSize="12sp"
             android:textColor="#757575"/>
+
+        <TextView
+            android:id="@+id/tvTeknisi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#444444"
+            android:layout_marginTop="4dp" />
+
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

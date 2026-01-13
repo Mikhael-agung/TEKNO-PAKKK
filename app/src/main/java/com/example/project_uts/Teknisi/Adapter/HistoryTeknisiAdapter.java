@@ -38,20 +38,60 @@ public class HistoryTeknisiAdapter extends RecyclerView.Adapter<HistoryTeknisiAd
 
         holder.tvStatusHistory.setText(history.getStatus());
         holder.tvReasonHistory.setText(history.getReason());
-        holder.tvTimeHistory.setText(history.getTime());
 
-        // Atur warna border & status text sesuai status
-        if (history.getStatus().equalsIgnoreCase("Pending")) {
-            holder.cardView.setStrokeColor(Color.parseColor("#FF9800")); // oranye
-            holder.tvStatusHistory.setTextColor(Color.parseColor("#FF9800"));
-        } else if (history.getStatus().equalsIgnoreCase("On Progress")) {
-            holder.cardView.setStrokeColor(Color.parseColor("#2196F3")); // biru
-            holder.tvStatusHistory.setTextColor(Color.parseColor("#2196F3"));
-        } else if (history.getStatus().equalsIgnoreCase("Completed")) {
-            holder.cardView.setStrokeColor(Color.parseColor("#4CAF50")); // hijau
-            holder.tvStatusHistory.setTextColor(Color.parseColor("#4CAF50"));
+        // Format tanggal lebih rapi
+        String rawDate = history.getCreatedAt();
+        if (rawDate != null) {
+            try {
+                // Sesuaikan pola input dengan format dari backend (ISO biasanya)
+                java.text.SimpleDateFormat inputFormat =
+                        new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault());
+                java.text.SimpleDateFormat outputFormat =
+                        new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault());
+
+                java.util.Date date = inputFormat.parse(rawDate);
+                holder.tvTimeHistory.setText(outputFormat.format(date));
+            } catch (Exception e) {
+                // fallback kalau parsing gagal
+                holder.tvTimeHistory.setText(rawDate);
+            }
+        } else {
+            holder.tvTimeHistory.setText("-");
+        }
+
+        if (history.getTeknisi() != null) {
+            holder.tvTeknisi.setText(history.getTeknisi().getFull_name());
+        } else {
+            holder.tvTeknisi.setText("-");
+        }
+
+        // Atur warna border & status text sesuai status dari backend
+        String status = history.getStatus().toLowerCase();
+        switch (status) {
+            case "complaint":
+                holder.cardView.setStrokeColor(Color.parseColor("#FF9800")); // oranye
+                holder.tvStatusHistory.setTextColor(Color.parseColor("#FF9800"));
+                break;
+            case "pending":
+                holder.cardView.setStrokeColor(Color.parseColor("#F44336")); // merah
+                holder.tvStatusHistory.setTextColor(Color.parseColor("#F44336"));
+                break;
+            case "progress":
+                holder.cardView.setStrokeColor(Color.parseColor("#2196F3")); // biru
+                holder.tvStatusHistory.setTextColor(Color.parseColor("#2196F3"));
+                break;
+            case "completed":
+                holder.cardView.setStrokeColor(Color.parseColor("#4CAF50")); // hijau
+                holder.tvStatusHistory.setTextColor(Color.parseColor("#4CAF50"));
+                break;
+            default:
+                holder.cardView.setStrokeColor(Color.parseColor("#9E9E9E")); // abu-abu default
+                holder.tvStatusHistory.setTextColor(Color.parseColor("#9E9E9E"));
+                break;
         }
     }
+
+
 
     @Override
     public int getItemCount() {
@@ -59,15 +99,17 @@ public class HistoryTeknisiAdapter extends RecyclerView.Adapter<HistoryTeknisiAd
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvStatusHistory, tvReasonHistory, tvTimeHistory;
+        TextView tvStatusHistory, tvReasonHistory, tvTimeHistory, tvTeknisi;
         MaterialCardView cardView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            cardView = (MaterialCardView) itemView; // root item adalah MaterialCardView
+            cardView = itemView.findViewById(R.id.cardView); // id root card
             tvStatusHistory = itemView.findViewById(R.id.tvStatusHistory);
             tvReasonHistory = itemView.findViewById(R.id.tvReasonHistory);
             tvTimeHistory = itemView.findViewById(R.id.tvTimeHistory);
+            tvTeknisi = itemView.findViewById(R.id.tvTeknisi);
         }
     }
+
 }

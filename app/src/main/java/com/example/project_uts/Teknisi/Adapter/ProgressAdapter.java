@@ -3,12 +3,12 @@ package com.example.project_uts.Teknisi.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,17 +16,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.project_uts.R;
 import com.example.project_uts.Teknisi.Activity.KomplainDetailActivity;
 import com.example.project_uts.Teknisi.Model.Komplain;
-import com.example.project_uts.Teknisi.Utils.WhatsAppHelper;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.ViewHolder> {
-    private List<Komplain> progressList;
-    private Context context;
+    private final List<Komplain> progressList;
+    private final Context context;
+    private final String namaTeknisi;
+    private final OnItemClickListener listener;
 
-    public ProgressAdapter(Context context, List<Komplain> progressList) {
+    // Listener interface untuk aksi tombol
+    public interface OnItemClickListener {
+        void onMintaBantuanClick(Komplain komplain);
+    }
+
+    public ProgressAdapter(Context context, List<Komplain> progressList, String namaTeknisi, OnItemClickListener listener) {
         this.context = context;
         this.progressList = progressList;
+        this.namaTeknisi = namaTeknisi;
+        this.listener = listener;
     }
 
     @NonNull
@@ -41,124 +52,79 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Komplain komplain = progressList.get(position);
 
-        // Set data ke view
         holder.tvJudul.setText(komplain.getJudul());
+        holder.tvAlamat.setText("Alamat: " + (komplain.getAlamat() != null ? komplain.getAlamat() : "-"));
+        holder.tvDeskripsi.setText("Deskripsi: " + (komplain.getDeskripsi() != null ? komplain.getDeskripsi() : "-"));
 
-        // Pelapor - dengan phone check
-        String pelaporText = "Pelapor: ";
         if (komplain.getUser() != null) {
-            String name = komplain.getUser().getFull_name();
-            if (name != null && !name.isEmpty()) {
-                pelaporText += name;
-            } else {
-                pelaporText += "User-" + komplain.getUserId();
-            }
+            holder.tvPelapor.setText("Pelapor: " + komplain.getUser().getFull_name());
         } else {
-            pelaporText += "User-" + komplain.getUserId();
+            holder.tvPelapor.setText("Pelapor: -");
         }
-        holder.tvPelapor.setText(pelaporText);
 
-        holder.tvWaktu.setText(komplain.getCreatedAt());
+        // Format tanggal ISO ke format lokal
+        try {
+            String rawDate = komplain.getTanggal();
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.getDefault());
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+            Date date = inputFormat.parse(rawDate);
+            holder.tvWaktu.setText(outputFormat.format(date));
+        } catch (Exception e) {
+            holder.tvWaktu.setText(komplain.getTanggal());
+        }
 
         // Status handling
-        String statusText = komplain.getStatus();
-        holder.tvStatus.setText(statusText);
-
-        if ("on_progress".equalsIgnoreCase(statusText)) {
-            holder.tvStatus.setBackgroundColor(Color.parseColor("#2196F3"));
-        } else if ("pending".equalsIgnoreCase(statusText)) {
-            holder.tvStatus.setBackgroundColor(Color.parseColor("#FF9800"));
+        String status = komplain.getStatus();
+        if ("on_progress".equalsIgnoreCase(status)) {
+            holder.tvStatus.setText("Progress");
+            holder.tvStatus.setTextColor(Color.parseColor("#2196F3")); // biru
+        } else if ("pending".equalsIgnoreCase(status)) {
+            holder.tvStatus.setText("Pending");
+            holder.tvStatus.setTextColor(Color.parseColor("#FF9800")); // oranye
+        } else {
+            holder.tvStatus.setText(status);
+            holder.tvStatus.setBackgroundColor(Color.GRAY);
         }
 
-        // ===== TOMBOL CUSTOMER =====
+        // Tombol aksi
         holder.btnCustomer.setOnClickListener(v -> {
-            Komplain.User user = komplain.getUser();
-            String customerPhone = null;
+            if (komplain.getUser() != null && komplain.getUser().getPhone() != null) {
+                String phoneNumber = komplain.getUser().getPhone();
+                String idKomplain = komplain.getId();
+                String judulKomplain = komplain.getJudul();
 
-            // CEK APAKAH ADA USER DAN PHONE
-            if (user != null && user.getPhone() != null && !user.getPhone().isEmpty()) {
-                customerPhone = user.getPhone();
-            }
+                String pesan = "Halo, perkenalkan saya " + namaTeknisi + "\n"
+                        + "Saya teknisi yang akan menangani komplain Anda.\n"
+                        + "ID Komplain: " + idKomplain + "\n"
+                        + "Judul: " + judulKomplain + "\n\n"
+                        + "Mohon konfirmasi jika informasi ini sudah sesuai.\n"
+                        + "Terima kasih ";
 
-            if (customerPhone != null) {
-                // Format nomor (pastikan +62 atau 0 di-handle)
-                String formattedPhone = formatPhoneNumber(customerPhone);
+                String url = "https://wa.me/" + phoneNumber + "?text=" + Uri.encode(pesan);
 
-                WhatsAppHelper.contactCustomer(
-                        context,
-                        formattedPhone,
-                        komplain.getId(),
-                        komplain.getJudul()
-                );
-            } else {
-                Toast.makeText(context,
-                        "Nomor telepon customer tidak tersedia",
-                        Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                context.startActivity(intent);
             }
         });
 
-        // ===== TOMBOL BANTUAN =====
         holder.btnMintaBantuan.setOnClickListener(v -> {
-            String pelaporName = "Unknown";
-            if (komplain.getUser() != null && komplain.getUser().getFull_name() != null) {
-                pelaporName = komplain.getUser().getFull_name();
+            if (listener != null) {
+                listener.onMintaBantuanClick(komplain); // kirim komplain ke fragment
             }
-
-            WhatsAppHelper.requestHelpToTeknisi(
-                    context,
-                    komplain.getId(),
-                    komplain.getJudul(),
-                    pelaporName,
-                    komplain.getStatus(),
-                    komplain.getDeskripsi()
-            );
         });
 
-        // ===== TOMBOL DETAIL =====
         holder.btnDetail.setOnClickListener(v -> {
-            String pelaporName = "Unknown";
-            if (komplain.getUser() != null && komplain.getUser().getFull_name() != null) {
-                pelaporName = komplain.getUser().getFull_name();
-            }
-
             Intent intent = new Intent(context, KomplainDetailActivity.class);
-            intent.putExtra("komplain_id", komplain.getId());
+            intent.putExtra("complaint_id", komplain.getId());
             intent.putExtra("komplain_judul", komplain.getJudul());
-            intent.putExtra("komplain_pelapor", pelaporName);
+            intent.putExtra("komplain_pelapor", komplain.getUser() != null ? komplain.getUser().getFull_name() : "-");
             intent.putExtra("komplain_status", komplain.getStatus());
-            intent.putExtra("komplain_waktu", komplain.getCreatedAt());
+            intent.putExtra("komplain_waktu", komplain.getTanggal());
+            intent.putExtra("komplain_alamat", komplain.getAlamat());
             intent.putExtra("komplain_deskripsi", komplain.getDeskripsi());
-
             context.startActivity(intent);
         });
-    }
-
-    // Helper method untuk format nomor telepon
-    private String formatPhoneNumber(String phone) {
-        if (phone == null || phone.isEmpty()) {
-            return phone;
-        }
-
-        // Hilangkan semua karakter non-digit
-        String digitsOnly = phone.replaceAll("[^0-9]", "");
-
-        // Jika diawali 0, ganti dengan +62
-        if (digitsOnly.startsWith("0")) {
-            return "62" + digitsOnly.substring(1);
-        }
-
-        // Jika diawali 62, tetap
-        if (digitsOnly.startsWith("62")) {
-            return digitsOnly;
-        }
-
-        // Jika diawali 8 (tanpa 0), tambah 62
-        if (digitsOnly.startsWith("8")) {
-            return "62" + digitsOnly;
-        }
-
-        // Default return as-is
-        return digitsOnly;
     }
 
     @Override
@@ -167,7 +133,7 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvJudul, tvPelapor, tvStatus, tvWaktu;
+        TextView tvJudul, tvPelapor, tvStatus, tvWaktu, tvAlamat, tvDeskripsi;
         Button btnCustomer, btnMintaBantuan, btnDetail;
 
         public ViewHolder(View itemView) {
@@ -176,6 +142,8 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.ViewHo
             tvPelapor = itemView.findViewById(R.id.tvPelapor);
             tvStatus = itemView.findViewById(R.id.tvStatus);
             tvWaktu = itemView.findViewById(R.id.tvWaktu);
+            tvAlamat = itemView.findViewById(R.id.tvAlamat);
+            tvDeskripsi = itemView.findViewById(R.id.tvDeskripsi);
             btnCustomer = itemView.findViewById(R.id.btnCustomer);
             btnMintaBantuan = itemView.findViewById(R.id.btnMintaBantuan);
             btnDetail = itemView.findViewById(R.id.btnDetail);

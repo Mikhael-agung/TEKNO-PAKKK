@@ -1,5 +1,7 @@
 package com.example.project_uts.network;
 
+import com.example.project_uts.Teknisi.Model.DiskusiTeknisi;
+import com.example.project_uts.Teknisi.Model.HistoryTeknisi;
 import com.example.project_uts.Teknisi.Model.Komplain;
 import com.example.project_uts.Teknisi.Model.TeknisiComplaintsResponse;
 import com.example.project_uts.models.ApiResponse;
@@ -99,4 +101,17 @@ public interface ApiService {
             @Query("status") String status,
             @Query("resolution_notes") String resolutionNotes
     );
+
+    @GET("api/complaints/{id}/history")
+    Call<ApiResponse<List<HistoryTeknisi>>> getComplaintStatuses(
+                @Path("id") String complaintId
+    );
+
+    @POST("api/teknisi/diskusi/complaints/diskusi")
+    Call<ApiResponse<DiskusiTeknisi>> addDiskusi(@Body DiskusiTeknisi request);
+
+    @GET("api/teknisi/diskusi/complaints/diskusi")
+    Call<ApiResponse<List<DiskusiTeknisi>>> getAllDiskusi();
+
+
 }

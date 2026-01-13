@@ -15,9 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.project_uts.R;
 import com.example.project_uts.Teknisi.Adapter.KomplainAdapter;
 import com.example.project_uts.Teknisi.Model.Komplain;
-import com.example.project_uts.Teknisi.Model.TeknisiComplaintsResponse; // IMPORT INI
+import com.example.project_uts.Teknisi.Model.TeknisiComplaintsResponse;
+import com.example.project_uts.models.ApiResponse;
+import com.example.project_uts.models.User;
 import com.example.project_uts.network.ApiClient;
 import com.example.project_uts.network.ApiService;
+import com.example.project_uts.network.AuthManage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,7 @@ public class KomplainFragment extends Fragment {
     private KomplainAdapter adapter;
     private List<Komplain> komplainList = new ArrayList<>();
     private ApiService apiService;
+    private String namaTeknisi = "Teknisi"; // default
 
     public KomplainFragment() {}
 
@@ -43,11 +47,20 @@ public class KomplainFragment extends Fragment {
         // INIT API SERVICE TEKNISI
         apiService = ApiClient.getApiService();
 
+        // Ambil user dari AuthManage (lebih aman daripada decode JWT manual)
+        AuthManage authManage = new AuthManage(requireContext());
+        User user = authManage.getUser();
+
+        if (user != null && user.getFull_name() != null) {
+            namaTeknisi = user.getFull_name();
+        }
+        Log.d("KomplainFragment", "Nama teknisi final: " + namaTeknisi);
+
         rvKomplain = view.findViewById(R.id.rvKomplain);
         rvKomplain.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // UPDATE ADAPTER CONSTRUCTOR
-        adapter = new KomplainAdapter(getContext(), komplainList);
+        // Adapter sekarang pakai nama teknisi dari AuthManage
+        adapter = new KomplainAdapter(getContext(), komplainList, namaTeknisi);
         rvKomplain.setAdapter(adapter);
 
         fetchReadyComplaints();
@@ -56,13 +69,13 @@ public class KomplainFragment extends Fragment {
     }
 
     private void fetchReadyComplaints() {
-        Call<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> call =
+        Call<ApiResponse<TeknisiComplaintsResponse>> call =
                 apiService.getReadyComplaints(1, 50); // page 1, limit 50
 
-        call.enqueue(new Callback<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>>() {
+        call.enqueue(new Callback<ApiResponse<TeknisiComplaintsResponse>>() {
             @Override
-            public void onResponse(Call<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> call,
-                                   Response<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> response) {
+            public void onResponse(Call<ApiResponse<TeknisiComplaintsResponse>> call,
+                                   Response<ApiResponse<TeknisiComplaintsResponse>> response) {
 
                 if (!isAdded() || getContext() == null) {
                     Log.e("KomplainFragment", "Fragment not attached, skipping UI update");
@@ -85,35 +98,22 @@ public class KomplainFragment extends Fragment {
                         }
 
                         if (data == null || data.getComplaints() == null || data.getComplaints().isEmpty()) {
-                            if (getActivity() != null) {
-                                getActivity().runOnUiThread(() ->
-                                        Toast.makeText(getActivity(),
-                                                "Tidak ada komplain yang siap ditangani",
-                                                Toast.LENGTH_SHORT).show()
-                                );
-                            }
+                            Toast.makeText(getContext(),
+                                    "Tidak ada komplain yang siap ditangani",
+                                    Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() ->
-                                    Toast.makeText(getActivity(),
-                                            "Error: " + response.body().getMessage(),
-                                            Toast.LENGTH_SHORT).show()
-                            );
-                        }
+                        Toast.makeText(getContext(),
+                                "Error: " + response.body().getMessage(),
+                                Toast.LENGTH_SHORT).show();
                         Log.e("KomplainFragment", "API Error: " + response.body().getMessage());
                     }
                 } else {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() ->
-                                Toast.makeText(getActivity(),
-                                        "Response error: " + response.code(),
-                                        Toast.LENGTH_SHORT).show()
-                        );
-                    }
+                    Toast.makeText(getContext(),
+                            "Response error: " + response.code(),
+                            Toast.LENGTH_SHORT).show();
                     Log.e("API_ERROR", "Response code: " + response.code());
 
-                    // DEBUG: Log response error body
                     try {
                         String errorBody = response.errorBody() != null ? response.errorBody().string() : "null";
                         Log.e("API_ERROR", "Error body: " + errorBody);
@@ -124,14 +124,10 @@ public class KomplainFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<com.example.project_uts.models.ApiResponse<TeknisiComplaintsResponse>> call, Throwable t) {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() ->
-                            Toast.makeText(getActivity(),
-                                    "Network error: " + t.getMessage(),
-                                    Toast.LENGTH_SHORT).show()
-                    );
-                }
+            public void onFailure(Call<ApiResponse<TeknisiComplaintsResponse>> call, Throwable t) {
+                Toast.makeText(getContext(),
+                        "Network error: " + t.getMessage(),
+                        Toast.LENGTH_SHORT).show();
                 Log.e("API_ERROR", "Network error: ", t);
             }
         });

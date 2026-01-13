@@ -3,16 +3,17 @@ package com.example.project_uts.network;
 import android.content.Context;
 import android.util.Log;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import java.util.concurrent.TimeUnit;
-import com.example.project_uts.network.AppConfig;
+
 
 public class ApiClient {
     private static final String TAG = "ApiClient";
-    private static final String BASE_URL = "https://be-teknoserve-production.up.railway.app/";
+    private static final String BASE_URL = "http://192.168.1.13:3000/";
     private static Retrofit retrofit = null;
     private static Context appContext;
 

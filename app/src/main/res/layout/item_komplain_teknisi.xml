@@ -74,8 +74,7 @@
                 android:textStyle="bold"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="4dp"
-                android:background="#F44336"
-                android:textColor="#FFFFFF"/>
+                android:textColor="#F44336"/>
 
             <View
                 android:layout_width="0dp"

@@ -1,11 +1,12 @@
 package com.example.project_uts.Teknisi.Activity;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,12 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project_uts.R;
 import com.example.project_uts.Teknisi.Adapter.HistoryTeknisiAdapter;
-import com.example.project_uts.Teknisi.Model.ComplaintStatusRequest;
 import com.example.project_uts.Teknisi.Model.HistoryTeknisi;
 import com.example.project_uts.models.ApiResponse;
 import com.example.project_uts.models.Complaint;
 import com.example.project_uts.network.ApiClient;
 import com.example.project_uts.network.ApiService;
+import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,8 +41,7 @@ public class KomplainDetailActivity extends AppCompatActivity {
     private Button btnPending, btnCompleted, btnSavePending, btnSaveCompleted, btnBack;
     private LinearLayout layoutPendingReason, layoutCompletedInfo;
     private EditText etAlasanPendingDetail, etTeknisiNote;
-    private TextView tvJudulDetail, tvPelaporDetail, tvStatusDetail, tvWaktuDetail, tvDeskripsiDetail;
-    private ImageView ivFotoBarang;
+    private TextView tvJudulDetail, tvPelaporDetail, tvAlamatDetail, tvStatusDetail, tvWaktuDetail, tvDeskripsiDetail;
     private RecyclerView rvHistory;
     private HistoryTeknisiAdapter historyAdapter;
     private List<HistoryTeknisi> historyList = new ArrayList<>();
@@ -59,16 +59,20 @@ public class KomplainDetailActivity extends AppCompatActivity {
         btnSavePending = findViewById(R.id.btnSavePending);
         btnSaveCompleted = findViewById(R.id.btnSaveCompleted);
         btnBack = findViewById(R.id.btnBackDetail);
+
         layoutPendingReason = findViewById(R.id.layoutPendingReason);
         layoutCompletedInfo = findViewById(R.id.layoutCompletedInfo);
+
         etAlasanPendingDetail = findViewById(R.id.etAlasanPendingDetail);
         etTeknisiNote = findViewById(R.id.etTeknisiNote);
+
         tvJudulDetail = findViewById(R.id.tvJudulDetail);
         tvPelaporDetail = findViewById(R.id.tvPelaporDetail);
+        tvAlamatDetail = findViewById(R.id.tvAlamatDetail);
         tvStatusDetail = findViewById(R.id.tvStatusDetail);
         tvWaktuDetail = findViewById(R.id.tvWaktuDetail);
         tvDeskripsiDetail = findViewById(R.id.tvDeskripsiDetail);
-        ivFotoBarang = findViewById(R.id.ivFotoBarang);
+
         rvHistory = findViewById(R.id.rvHistory);
 
         // Setup RecyclerView
@@ -77,31 +81,65 @@ public class KomplainDetailActivity extends AppCompatActivity {
         rvHistory.setAdapter(historyAdapter);
 
         // Ambil data dari Intent
-        komplainId = getIntent().getStringExtra("komplain_id");
+        komplainId = getIntent().getStringExtra("complaint_id");
         String judul = getIntent().getStringExtra("komplain_judul");
         String pelapor = getIntent().getStringExtra("komplain_pelapor");
         String status = getIntent().getStringExtra("komplain_status");
-        String waktu = getIntent().getStringExtra("komplain_waktu");
+        String waktuRaw = getIntent().getStringExtra("komplain_waktu");
+        String alamat = getIntent().getStringExtra("komplain_alamat");
         String deskripsi = getIntent().getStringExtra("komplain_deskripsi");
-        String catatan = getIntent().getStringExtra("komplain_catatan");
 
         // Tampilkan data
         tvJudulDetail.setText(judul);
         tvPelaporDetail.setText("Oleh: " + pelapor);
         tvStatusDetail.setText(status);
-        tvWaktuDetail.setText(waktu);
+        tvStatusDetail.setText(status);
+
+        switch (status.toLowerCase()) {
+            case "complaint":
+                tvStatusDetail.setTextColor(Color.parseColor("#FF9800")); // oranye
+                break;
+            case "pending":
+                tvStatusDetail.setTextColor(Color.parseColor("#F44336")); // merah
+                break;
+            case "progress":
+                tvStatusDetail.setTextColor(Color.parseColor("#2196F3")); // biru
+                break;
+            case "completed":
+                tvStatusDetail.setTextColor(Color.parseColor("#4CAF50")); // hijau
+                break;
+            default:
+                tvStatusDetail.setTextColor(Color.parseColor("#9E9E9E")); // abu-abu default
+                break;
+        }
+
+        tvAlamatDetail.setText(alamat);
         tvDeskripsiDetail.setText(deskripsi);
+        if (waktuRaw != null) {
+            try {
+                // format input sesuai pola dari backend (ISO tanpa zona)
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+                SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+
+                Date date = inputFormat.parse(waktuRaw);
+                tvWaktuDetail.setText(outputFormat.format(date)); // hasil: 11/01/2026 23:10
+            } catch (Exception e) {
+                // kalau parsing gagal, tampilkan raw string
+                tvWaktuDetail.setText(waktuRaw);
+            }
+        }
+
 
         // Tombol Pending
         btnPending.setOnClickListener(v -> {
-            layoutPendingReason.setVisibility(View.VISIBLE);
-            layoutCompletedInfo.setVisibility(View.GONE);
+            layoutPendingReason.setVisibility(android.view.View.VISIBLE);
+            layoutCompletedInfo.setVisibility(android.view.View.GONE);
         });
 
         // Tombol Completed
         btnCompleted.setOnClickListener(v -> {
-            layoutCompletedInfo.setVisibility(View.VISIBLE);
-            layoutPendingReason.setVisibility(View.GONE);
+            layoutCompletedInfo.setVisibility(android.view.View.VISIBLE);
+            layoutPendingReason.setVisibility(android.view.View.GONE);
         });
 
         // Tombol Back
@@ -121,137 +159,93 @@ public class KomplainDetailActivity extends AppCompatActivity {
         btnSaveCompleted.setOnClickListener(v -> {
             String catatanTeknisi = etTeknisiNote.getText().toString().trim();
             if (!catatanTeknisi.isEmpty()) {
-                updateStatusToServer("completed", catatanTeknisi);
+                new androidx.appcompat.app.AlertDialog.Builder(KomplainDetailActivity.this)
+                        .setTitle("Konfirmasi")
+                        .setMessage("Apakah Anda yakin menyelesaikan komplain ini?")
+                        .setPositiveButton("OK", (dialog, which) -> {
+                            updateStatusToServer("completed", catatanTeknisi);
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra("status_updated", true);
+                            setResult(RESULT_OK, resultIntent);
+                            finish();
+                        })
+                        .setNegativeButton("Cancel", (dialog, which) -> {
+                            dialog.dismiss(); // tetap di DetailActivity
+                        })
+                        .show();
             } else {
                 Toast.makeText(KomplainDetailActivity.this, "Harap isi catatan teknisi", Toast.LENGTH_SHORT).show();
             }
         });
+
+        if("completed".equalsIgnoreCase(status)){
+            btnPending.setVisibility(View.GONE);
+            btnCompleted.setVisibility(View.GONE);
+        }
+
+        // Load riwayat dari backend
+        fetchComplaintHistory();
     }
 
     private void updateStatusToServer(String status, String note) {
-
         ApiService apiService = ApiClient.getApiService();
         Map<String, String> statusMap = new HashMap<>();
-        String backendStatus;
-
-        if (status.equalsIgnoreCase("Mulai Kerja") ||
-                status.equalsIgnoreCase("Mulai kerja")) {
-            backendStatus = "on_progress";
-        } else if (status.equalsIgnoreCase("tunda") ||
-                status.equalsIgnoreCase("kendala")) {
-            backendStatus = "pending";
-        } else if (status.equalsIgnoreCase("selesai")) {
-            backendStatus = "completed";
-        } else {
-            // Fallback ke method helper
-            backendStatus = mapStatusToBackendFormat(status);
-        }
-
-        final String backendStatusFinal = backendStatus;
-
-        statusMap.put("status", backendStatusFinal);
-        statusMap.put("alasan", note);
-
-        Log.d("API_DEBUG", "Updating status: " + backendStatusFinal + ", alasan: " + note);
-        Log.d("API_DEBUG", "Complaint ID: " + komplainId);
+        statusMap.put("status", status);
+        statusMap.put("alasan", note); // gunakan field alasan untuk semua catatan
 
         apiService.updateStatus(komplainId, statusMap).enqueue(new Callback<ApiResponse<Complaint>>() {
             @Override
             public void onResponse(Call<ApiResponse<Complaint>> call, Response<ApiResponse<Complaint>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<Complaint> apiResponse = response.body();
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    fetchComplaintHistory();
 
-                    if (apiResponse.isSuccess()) {
-                        // Success - update UI
-                        Complaint updatedComplaint = apiResponse.getData();
+                    tvStatusDetail.setText(status);
+                    layoutPendingReason.setVisibility(android.view.View.GONE);
+                    layoutCompletedInfo.setVisibility(android.view.View.GONE);
+                    etAlasanPendingDetail.setText("");
+                    etTeknisiNote.setText("");
 
-                        // Add to history list
-                        String time = new SimpleDateFormat("dd MMMM yyyy • HH:mm", Locale.getDefault()).format(new Date());
-                        historyList.add(new HistoryTeknisi(backendStatusFinal, note, time));
-                        historyAdapter.notifyDataSetChanged();
-
-                        // Update status display
-                        tvStatusDetail.setText(backendStatusFinal);
-
-                        layoutPendingReason.setVisibility(View.GONE);
-                        layoutCompletedInfo.setVisibility(View.GONE);
-                        etAlasanPendingDetail.setText("");
-                        etTeknisiNote.setText("");
-
-                        // Jika status completed, hide action buttons
-                        if (backendStatusFinal.equals("completed")) {
-                            btnPending.setVisibility(View.GONE);
-                            btnCompleted.setVisibility(View.GONE);
-
-                        }
-
-                        Toast.makeText(KomplainDetailActivity.this,
-                                "Status berhasil diupdate", Toast.LENGTH_SHORT).show();
-
-                        Log.d("API_DEBUG", "Status update successful: " + apiResponse.getMessage());
-
-                    } else {
-                        Toast.makeText(KomplainDetailActivity.this,
-                                "Gagal: " + apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                        Log.e("API_ERROR", "API Error: " + apiResponse.getMessage());
+                    if (status.equals("completed")) {
+                        btnPending.setVisibility(android.view.View.GONE);
+                        btnCompleted.setVisibility(android.view.View.GONE);
                     }
+
+                    Toast.makeText(KomplainDetailActivity.this, "Status berhasil diupdate", Toast.LENGTH_SHORT).show();
                 } else {
-                    // HTTP error
-                    String errorMsg = "Gagal update status";
-                    if (response.code() == 403) {
-                        errorMsg = "Akses ditolak. Pastikan Anda adalah teknisi.";
-                    } else if (response.code() == 404) {
-                        errorMsg = "Komplain tidak ditemukan";
-                    }
-
-                    Toast.makeText(KomplainDetailActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
-                    Log.e("API_RESPONSE", "Update gagal. Code: " + response.code() +
-                            ", Message: " + (response.errorBody() != null ? response.errorBody().toString() : "No error body"));
+                    Toast.makeText(KomplainDetailActivity.this, "Gagal update status", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<Complaint>> call, Throwable t) {
-                Log.e("API_ERROR", "Network error: " + t.getMessage(), t);
-                Toast.makeText(KomplainDetailActivity.this,
-                        "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(KomplainDetailActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    /**
-     * Helper method untuk mapping status dari UI ke format backend
-     */
-    private String mapStatusToBackendFormat(String uiStatus) {
-        // UI mungkin kirim: "Pending", "Completed", "Progress", dll
-        // Backend expect: "pending", "completed", "on_progress", "complaint"
+    private void fetchComplaintHistory() {
+        ApiService apiService = ApiClient.getApiService();
+        apiService.getComplaintStatuses(komplainId).enqueue(new Callback<ApiResponse<List<HistoryTeknisi>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<HistoryTeknisi>>> call,
+                                   Response<ApiResponse<List<HistoryTeknisi>>> response) {
+                Log.d("HistoryAPI", "Response code: " + response.code());
+                if (response.body() != null) {
+                    Log.d("HistoryAPI", "Body: " + new Gson().toJson(response.body()));
+                }
 
-        String lowerStatus = uiStatus.toLowerCase();
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    historyList.clear();
+                    historyList.addAll(response.body().getData());
+                    historyAdapter.notifyDataSetChanged();
+                }
+            }
 
-        switch (lowerStatus) {
-            case "pending":
-            case "menunggu":
-                return "pending";
-
-            case "completed":
-            case "selesai":
-            case "done":
-                return "completed";
-
-            case "progress":
-            case "proses":
-            case "diproses":
-            case "onprogress":
-                return "on_progress";
-
-            case "complaint":
-            case "pengaduan":
-            case "new":
-                return "complaint";
-
-            default:
-                // Return as-is jika tidak diketahui
-                return lowerStatus;
-        }
+            @Override
+            public void onFailure(Call<ApiResponse<List<HistoryTeknisi>>> call, Throwable t) {
+                Log.e("HistoryAPI", "Error: " + t.getMessage(), t);
+                Toast.makeText(KomplainDetailActivity.this, "Gagal ambil riwayat: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

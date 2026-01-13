@@ -1,16 +1,15 @@
-package com.example.project_uts.Teknisi.Model;
-
 public class ComplaintStatus {
     private String status;
-    private String alasan;
-    private String created_at;
+    private String reason; // bisa alasan atau catatan
+    private String time;
+
+    public ComplaintStatus(String status, String reason, String time) {
+        this.status = status;
+        this.reason = reason;
+        this.time = time;
+    }
 
     public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-
-    public String getAlasan() { return alasan; }
-    public void setAlasan(String alasan) { this.alasan = alasan; }
-
-    public String getCreated_at() { return created_at; }
-    public void setCreated_at(String created_at) { this.created_at = created_at; }
+    public String getReason() { return reason; }
+    public String getTime() { return time; }
 }

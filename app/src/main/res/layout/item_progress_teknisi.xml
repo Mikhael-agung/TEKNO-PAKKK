@@ -68,11 +68,10 @@
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="On Progress"
-                android:textColor="#FFFFFF"
+                android:text="Progress"
+                android:textColor="#2196F3"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:background="#2196F3"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="4dp" />
 
