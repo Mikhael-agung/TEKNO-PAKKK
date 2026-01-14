@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Existing colors tetap -->
+    <!-- Light Theme Colors -->
     <color name="primary_color">#007BFF</color>
     <color name="primary_dark">#1976D2</color>
     <color name="accent_color">#FF4081</color>
@@ -15,7 +15,6 @@
     <color name="gray">#9E9E9E</color>
 
     <!-- Additional Colors -->
-    <color name="Dark_mode_discord">#252525</color>
     <color name="gray_light">#F5F5F5</color>
     <color name="gray_dark">#616161</color>
     <color name="colorFilterStroke">#CCCCCC</color>
@@ -29,11 +28,31 @@
     <color name="status_default">#666666</color>
 
     <!-- Discord Dark Mode Colors -->
-    <color name="discord_bg">#252525</color>
+    <color name="Dark_mode_discord">#252525</color>
     <color name="discord_card">#2D2D2D</color>
     <color name="discord_text_primary">#E0E0E0</color>
     <color name="discord_text_secondary">#9E9E9E</color>
     <color name="discord_text_tertiary">#8E9297</color>
     <color name="discord_bg_secondary">#2F3136</color>
 
+    <!-- Dark Mode Backgrounds -->
+    <color name="dark_background">#121212</color>
+    <color name="dark_surface">#1E1E1E</color>
+    <color name="dark_card">#252525</color>
+
+    <!-- Dark Mode Text -->
+    <color name="dark_text_primary">#FFFFFF</color>
+    <color name="dark_text_secondary">#B0B0B0</color>
+    <color name="dark_text_disabled">#6D6D6D</color>
+
+    <!-- Dark Mode Accents -->
+    <color name="dark_primary">#BB86FC</color>
+    <color name="dark_secondary">#03DAC5</color>
+    <color name="dark_error">#CF6679</color>
+
+    <!-- Switch Colors -->
+    <color name="switch_track_light">#E0E0E0</color>
+    <color name="switch_thumb_light">#FFFFFF</color>
+    <color name="switch_track_dark">#4A4A4A</color>
+    <color name="switch_thumb_dark">#BB86FC</color>
 </resources>

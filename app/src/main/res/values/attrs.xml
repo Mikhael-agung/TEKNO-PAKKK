@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Custom theme attributes -->
+    <attr name="themeBackground" format="color|reference" />
+    <attr name="themeCardBackground" format="color|reference" />
+    <attr name="themeTextPrimary" format="color|reference" />
+    <attr name="themeTextSecondary" format="color|reference" />
+    <attr name="themeStatusBar" format="color|reference" />
+    <attr name="themeNavigationBar" format="color|reference" />
+</resources>

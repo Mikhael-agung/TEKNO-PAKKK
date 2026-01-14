@@ -1,7 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.ProjectUTS" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <!-- Dark theme version -->
+    <style name="Theme.TeknoServe" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/dark_primary</item>  <!-- GANTI ke ungu dark mode -->
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor" tools:targetApi="l">@color/dark_background</item>
+        <item name="android:navigationBarColor">@color/dark_background</item>
+
+        <!-- Surface colors -->
+        <item name="android:windowBackground">@color/dark_background</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorOnSurface">@color/dark_text_primary</item>
+
+        <!-- Background colors -->
+        <item name="backgroundColor">@color/dark_background</item>
+        <item name="cardBackgroundColor">@color/dark_card</item>
+
+        <!-- Text colors -->
+        <item name="android:textColorPrimary">@color/dark_text_primary</item>
+        <item name="android:textColorSecondary">@color/dark_text_secondary</item>
+        <item name="colorOnSurface">@color/dark_text_primary</item>
+        <item name="colorOnBackground">@color/dark_text_primary</item>
+
+        <!-- Error color -->
+        <item name="colorError">@color/dark_error</item>
+
+        <!-- Bottom Navigation Style -->
+        <item name="bottomNavigationStyle">@style/Widget.MaterialComponents.BottomNavigationView.Colored</item>
+
+        <!-- Custom attributes for dark theme -->
+        <item name="themeBackground">@color/dark_background</item>
+        <item name="themeCardBackground">@color/dark_card</item>
+        <item name="themeTextPrimary">@color/dark_text_primary</item>
+        <item name="themeTextSecondary">@color/dark_text_secondary</item>
+        <item name="themeStatusBar">@color/dark_background</item>
+        <item name="themeNavigationBar">@color/dark_background</item>
     </style>
 </resources>

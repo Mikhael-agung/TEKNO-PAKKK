@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import com.example.project_uts.R;
@@ -58,6 +59,14 @@ public class CustomerFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // **FIX: FORCE LIGHT MODE SAJA DI FRAGMENT INI**
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_customer_complain, container, false);
@@ -69,6 +78,14 @@ public class CustomerFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // **KEMBALIKAN KE MODE SEBELUMNYA**
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+    }
+
+    // ... METODE LAINNYA TETAP SAMA ...
     private void initViews(View view) {
         etJudul = view.findViewById(R.id.et_judul);
         etDeskripsi = view.findViewById(R.id.et_deskripsi);
@@ -207,10 +224,7 @@ public class CustomerFragment extends Fragment {
         complaintData.put("telepon_alamat", etTelepon.getText().toString());
         complaintData.put("catatan_alamat", etCatatan.getText().toString());
 
-        // 4. Jika ada foto, perlu multipart request (nanti)
-        // Untuk sekarang, tanpa foto dulu
-
-        // 5. Panggil API
+        // 4. Panggil API
         ApiService apiService = ApiClient.getApiService();
         Call<com.example.project_uts.models.ApiResponse<Complaint>> call = apiService.createComplaint(complaintData);
 
@@ -230,8 +244,6 @@ public class CustomerFragment extends Fragment {
                     if (apiResponse.isSuccess()) {
                         Complaint complaint = apiResponse.getData();
                         Log.d("CREATE_COMPLAINT", "Success! ID: " + complaint.getId());
-                        Log.d("CREATE_COMPLAINT", "Alamat: " + complaint.getAlamat());
-                        Log.d("CREATE_COMPLAINT", "Kota: " + complaint.getKota());
 
                         requireActivity().runOnUiThread(() -> {
                             showSuccessDialog(complaint.getJudul(), complaint.getKategori());
@@ -298,12 +310,12 @@ public class CustomerFragment extends Fragment {
         dialog.setCancelable(false);
 
         TextView tvMessage = dialog.findViewById(R.id.tv_message);
-        tvMessage.setText(message); // Pakai parameter message
+        tvMessage.setText(message);
 
         Button btnTryAgain = dialog.findViewById(R.id.btn_try_again);
         btnTryAgain.setOnClickListener(v -> {
             dialog.dismiss();
-            submitKomplain(); 
+            submitKomplain();
         });
 
         Button btnCancel = dialog.findViewById(R.id.btn_cancel);
@@ -325,6 +337,7 @@ public class CustomerFragment extends Fragment {
         fotoUri = null;
         Toast.makeText(requireContext(), "Foto dihapus", Toast.LENGTH_SHORT).show();
     }
+
     private void resetForm() {
         etJudul.setText("");
         etDeskripsi.setText("");

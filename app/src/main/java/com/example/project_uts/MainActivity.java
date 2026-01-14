@@ -1,11 +1,12 @@
-
 package com.example.project_uts;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.example.project_uts.fragment.CustomerFragment;
@@ -20,6 +21,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // SYNC THEME DARI PREFERENCES (untuk dark mode consistency)
+        syncAppTheme();
+
         setContentView(R.layout.activity_main);
 
         Log.d(TAG, "=== CUSTOMER ACTIVITY STARTED ===");
@@ -91,5 +96,17 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, defaultFragment)
                 .commit();
+    }
+
+    private void syncAppTheme() {
+        // Ambil preferensi dark mode dari ProfilFragment
+        boolean isDarkMode = getSharedPreferences("app_settings", MODE_PRIVATE)
+                .getBoolean("dark_mode_enabled", false);
+
+        if (isDarkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
     }
 }

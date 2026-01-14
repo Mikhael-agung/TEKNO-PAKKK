@@ -10,16 +10,17 @@
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Navigation - AUTO LIGHT/DARK MODE -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:itemIconTint="@color/black"
-        app:itemTextColor="@color/black"
+        android:background="?attr/colorSurface"
+        app:itemIconTint="?attr/colorOnSurface"
+        app:itemTextColor="?attr/colorOnSurface"
         app:menu="@menu/button_nav_customer"
         app:labelVisibilityMode="labeled"
-        />
+        app:elevation="8dp" />
 
 </LinearLayout>
