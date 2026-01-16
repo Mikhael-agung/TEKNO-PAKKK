@@ -5,10 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -175,24 +171,14 @@ public class ProfilFragment extends Fragment {
         switchDarkMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // Simpan preference
                 SharedPreferences.Editor editor = requireContext()
                         .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                         .edit();
                 editor.putBoolean(THEME_PREF_KEY, isChecked);
                 editor.apply();
+                applyProfileTransition(isChecked);
 
-                // Crossfade animation
-                View rootView = requireActivity().getWindow().getDecorView();
-                TransitionDrawable transition = new TransitionDrawable(new Drawable[]{
-                        new ColorDrawable(Color.TRANSPARENT),
-                        new ColorDrawable(isChecked ? Color.BLACK : Color.WHITE)
-                });
-
-                rootView.setBackground(transition);
-                transition.startTransition(500); // 500ms animation
-
-                // Apply theme change SETELAH ANIMATION
+                // 3. Apply theme change (dengan delay sesuai animasi)
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     if (isChecked) {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -200,7 +186,11 @@ public class ProfilFragment extends Fragment {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                     }
                     requireActivity().recreate();
-                }, 300); // Tunggu 300ms sebelum recreate
+                }, 60);
+
+                Toast.makeText(requireContext(),
+                        isChecked ? "Dark mode ON 🌙" : "Light mode ON ☀️",
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
