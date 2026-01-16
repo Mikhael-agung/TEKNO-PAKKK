@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Dark theme version -->
     <style name="Theme.TeknoServe" parent="Theme.MaterialComponents.DayNight.NoActionBar">
@@ -34,10 +33,15 @@
 
         <!-- Custom attributes for dark theme -->
         <item name="themeBackground">@color/dark_background</item>
-        <item name="themeCardBackground">@color/dark_card</item>
+        <item name="themeCardBackground">@color/Dark_mode_discord</item>
         <item name="themeTextPrimary">@color/dark_text_primary</item>
         <item name="themeTextSecondary">@color/dark_text_secondary</item>
         <item name="themeStatusBar">@color/dark_background</item>
         <item name="themeNavigationBar">@color/dark_background</item>
+        <item name="cardOutlineColor">@color/OutlineColor</item>
     </style>
+
+    <!-- Alias untuk kompatibilitas -->
+    <style name="AppTheme" parent="Theme.TeknoServe" />
+
 </resources>

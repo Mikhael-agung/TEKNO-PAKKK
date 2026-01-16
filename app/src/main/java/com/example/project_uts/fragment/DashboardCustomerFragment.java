@@ -299,7 +299,7 @@ public class DashboardCustomerFragment extends Fragment {
                         final int finalProgressCount = progressCount;
                         final int finalCompletedCount = completedCount;
 
-                        // ✅ FIXED: Gunakan check isAdded() dan getActivity()
+                        //
                         if (isAdded() && getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
                                 tvPendingCount.setText(String.valueOf(finalPendingCount));

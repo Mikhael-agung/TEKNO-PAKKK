@@ -49,25 +49,27 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             holder.tvDate.setText(complaint.getTanggal() != null ? complaint.getTanggal() : "");
 
             String status = complaint.getStatus() != null ? complaint.getStatus() : "";
-            holder.tvStatus.setText(status);
+
+            // 1. SET CARD OUTLINE BERDASARKAN STATUS
+            setCardOutline(holder.itemView, status);
+
+            // 2. SET STATUS TEXT DAN BADGE
+            setStatusStyle(holder, status);
 
             // Set category icon
             setCategoryIcon(holder, complaint.getKategori());
-
-            // Set status style
-            setStatusStyle(holder, status);
 
             // Handle visibility based on status
             handleVisibility(holder, status);
 
             // Set technician name jika ada
             if (holder.layoutTechnician.getVisibility() == View.VISIBLE) {
-                holder.tvTechnician.setText("Budi Santoso"); // Default technician
+                holder.tvTechnician.setText("Budi Santoso");
             }
 
             // Set rating jika ada
             if (holder.layoutRating.getVisibility() == View.VISIBLE) {
-                holder.tvRating.setText("4.5/5"); // Default rating
+                holder.tvRating.setText("4.5/5");
             }
 
             // Set rejection reason jika ada
@@ -92,12 +94,67 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         }
     }
 
-    /**
-     * Fungsi untuk membuka WhatsApp dengan pesan otomatis
-     */
+    // ==================== NEW METHOD: SET CARD OUTLINE ====================
+    private void setCardOutline(View itemView, String status) {
+        LinearLayout cardLayout = itemView.findViewById(R.id.card_background_layout);
+
+        if (cardLayout == null) {
+            // Fallback ke layout lain jika ID berbeda
+            cardLayout = itemView.findViewById(R.id.linear_layout_main);
+        }
+
+        if (cardLayout != null) {
+            String statusLower = status.toLowerCase();
+
+            // Map status ke drawable outline
+            if (statusLower.contains("pending") || statusLower.contains("menunggu")) {
+                cardLayout.setBackgroundResource(R.drawable.bg_card_outline_pending);
+            } else if (statusLower.contains("proses") || statusLower.contains("progress") ||
+                    statusLower.contains("dalam proses") || statusLower.contains("on progress")) {
+                cardLayout.setBackgroundResource(R.drawable.bg_card_outline_proses);
+            } else if (statusLower.contains("selesai") || statusLower.contains("completed") ||
+                    statusLower.contains("done")) {
+                cardLayout.setBackgroundResource(R.drawable.bg_card_outline_selesai);
+            } else {
+                cardLayout.setBackgroundResource(R.drawable.bg_card_outline_default);
+            }
+        }
+    }
+
+    // ==================== UPDATED STATUS STYLE ====================
+    private void setStatusStyle(ViewHolder holder, String status) {
+        if (status == null) {
+            holder.tvStatus.setText("UNKNOWN");
+            holder.tvStatus.setBackgroundResource(R.drawable.badge_default);
+            return;
+        }
+
+        String statusLower = status.toLowerCase();
+
+        // Set status text
+        if (statusLower.contains("pending") || statusLower.contains("menunggu")) {
+            holder.tvStatus.setText("PENDING");
+            holder.tvStatus.setBackgroundResource(R.drawable.badge_pending);
+        } else if (statusLower.contains("proses") || statusLower.contains("progress") ||
+                statusLower.contains("dalam proses") || statusLower.contains("on progress")) {
+            holder.tvStatus.setText("PROSES");
+            holder.tvStatus.setBackgroundResource(R.drawable.badge_proses);
+        } else if (statusLower.contains("selesai") || statusLower.contains("completed") ||
+                statusLower.contains("done")) {
+            holder.tvStatus.setText("SELESAI");
+            holder.tvStatus.setBackgroundResource(R.drawable.badge_selesai);
+        } else if (statusLower.contains("ditolak") || statusLower.contains("rejected")) {
+            holder.tvStatus.setText("DITOLAK");
+            holder.tvStatus.setBackgroundResource(R.drawable.badge_selesai); // Pakai existing danger
+        } else {
+            holder.tvStatus.setText(status.toUpperCase());
+            holder.tvStatus.setBackgroundResource(R.drawable.badge_default);
+        }
+    }
+
+    /** WhatsApp integration (tetap sama) */
     private void openWhatsApp(Context context, Complaint complaint) {
         try {
-            // Format pesan default
             String message = "Halo Teknisi TeknoServe,\n\n" +
                     "Saya ingin bertanya tentang komplain saya:\n" +
                     "• ID Komplain: " + (complaint.getId() != null ? complaint.getId() : "N/A") + "\n" +
@@ -107,20 +164,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                     "• Status: " + complaint.getStatus() + "\n\n" +
                     "Bisa dibantu update progress-nya?";
 
-            // Encode message untuk URL
             String encodedMessage = Uri.encode(message);
-
-            // Buat URI WhatsApp
             Uri uri = Uri.parse("https://api.whatsapp.com/send?phone=" + WHATSAPP_NUMBER + "&text=" + encodedMessage);
 
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             intent.setPackage("com.whatsapp");
 
-            // Cek apakah WhatsApp terinstall
             if (intent.resolveActivity(context.getPackageManager()) != null) {
                 context.startActivity(intent);
             } else {
-                // Jika WhatsApp tidak terinstall, buka browser
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, uri);
                 context.startActivity(browserIntent);
                 Toast.makeText(context, "WhatsApp tidak terinstall, membuka browser", Toast.LENGTH_SHORT).show();
@@ -162,38 +214,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             holder.ivCategory.setImageResource(android.R.drawable.ic_menu_call); // Smartphone
         } else {
             holder.ivCategory.setImageResource(android.R.drawable.ic_menu_help); // Default
-        }
-    }
-
-    private void setStatusStyle(ViewHolder holder, String status) {
-        if (status == null) return;
-
-        String statusLower = status.toLowerCase();
-        int backgroundRes;
-
-        switch (statusLower) {
-            case "selesai":
-            case "completed":
-                backgroundRes = R.drawable.badge_success;
-                break;
-            case "dalam proses":
-            case "in progress":
-                backgroundRes = R.drawable.badge_warning;
-                break;
-            case "ditolak":
-            case "rejected":
-                backgroundRes = R.drawable.badge_danger;
-                break;
-            default:
-                backgroundRes = R.drawable.badge_default;
-        }
-
-        try {
-            holder.tvStatus.setBackgroundResource(backgroundRes);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Fallback ke background color jika drawable tidak ada
-            setStatusColorFallback(holder, statusLower);
         }
     }
 

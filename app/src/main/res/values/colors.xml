@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Light Theme Colors -->
+    <!-- Existing colors tetap -->
     <color name="primary_color">#007BFF</color>
     <color name="primary_dark">#1976D2</color>
     <color name="accent_color">#FF4081</color>
@@ -26,6 +26,7 @@
     <color name="status_progress">#2196F3</color>
     <color name="status_pending">#FF9800</color>
     <color name="status_default">#666666</color>
+    <color name="OutlineColor">#666666</color>
 
     <!-- Discord Dark Mode Colors -->
     <color name="Dark_mode_discord">#252525</color>

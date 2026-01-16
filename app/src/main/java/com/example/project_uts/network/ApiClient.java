@@ -13,7 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
     private static final String TAG = "ApiClient";
-    private static final String BASE_URL = AppConfig.getBaseUrl();;
+    private static final String BASE_URL = AppConfig.getBaseUrl();
     private static Retrofit retrofit = null;
     private static Context appContext;
 

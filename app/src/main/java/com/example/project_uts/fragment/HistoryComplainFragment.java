@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +29,6 @@ import com.example.project_uts.network.ApiService;
 import com.example.project_uts.network.AuthManage;
 import com.google.android.material.button.MaterialButton;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -137,11 +135,11 @@ public class HistoryComplainFragment extends Fragment {
         complaints.clear();
 
         // DEBUG: CEK STATUS SETIAP COMPLAINT
-        Log.d("HISTORY_DEBUG", "=== FILTER: " + filter + " ===");
+        //Log.d("HISTORY_DEBUG", "=== FILTER: " + filter + " ===");
         for (Complaint complaint : allComplaints) {
             String status = complaint.getStatus();
             String judul = complaint.getJudul();
-            Log.d("HISTORY_DEBUG", "Complaint: " + judul + " | Status: " + status);
+            //Log.d("HISTORY_DEBUG", "Complaint: " + judul + " | Status: " + status);
         }
 
         switch (filter) {
@@ -154,7 +152,7 @@ public class HistoryComplainFragment extends Fragment {
                     boolean isActive = status.equals("pending") || status.equals("on_progress");
                     if (isActive) {
                         complaints.add(complaint);
-                        Log.d("HISTORY_DEBUG", "✓ Added to AKTIF: " + complaint.getJudul() + " (" + status + ")");
+                        //Log.d("HISTORY_DEBUG", "✓ Added to AKTIF: " + complaint.getJudul() + " (" + status + ")");
                     }
                 }
                 break;
@@ -164,7 +162,7 @@ public class HistoryComplainFragment extends Fragment {
                     boolean isCompleted = status.equals("completed");
                     if (isCompleted) {
                         complaints.add(complaint);
-                        Log.d("HISTORY_DEBUG", "✓ Added to SELESAI: " + complaint.getJudul() + " (" + status + ")");
+                        //Log.d("HISTORY_DEBUG", "✓ Added to SELESAI: " + complaint.getJudul() + " (" + status + ")");
                     }
                 }
                 break;
@@ -385,16 +383,16 @@ public class HistoryComplainFragment extends Fragment {
         switch (status) {
             case "selesai":
             case "completed":
-                bgRes = R.drawable.badge_success;
+                bgRes = R.drawable.badge_pending;
                 statusView.setText("SELESAI");
                 break;
-            case "on_progress":
-                bgRes = R.drawable.badge_warning;
+            case "on progress":
+                bgRes = R.drawable.badge_proses;
                 statusView.setText("DIPROSES");
                 break;
             case "ditolak":
             case "rejected":
-                bgRes = R.drawable.badge_danger;
+                bgRes = R.drawable.badge_selesai;
                 statusView.setText("DITOLAK");
                 break;
             case "pending":

@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import com.example.project_uts.R;
@@ -61,9 +60,7 @@ public class CustomerFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // **FIX: FORCE LIGHT MODE SAJA DI FRAGMENT INI**
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        // HAPUS SEMUA AppCompatDelegate.setDefaultNightMode DARI SINI!
     }
 
     @Override
@@ -81,11 +78,11 @@ public class CustomerFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // **KEMBALIKAN KE MODE SEBELUMNYA**
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        // HAPUS SEMUA AppCompatDelegate.setDefaultNightMode DARI SINI!
     }
 
     // ... METODE LAINNYA TETAP SAMA ...
+
     private void initViews(View view) {
         etJudul = view.findViewById(R.id.et_judul);
         etDeskripsi = view.findViewById(R.id.et_deskripsi);
@@ -101,7 +98,6 @@ public class CustomerFragment extends Fragment {
         etKecamatan = view.findViewById(R.id.et_kecamatan);
         etTelepon = view.findViewById(R.id.et_telepon_alamat);
         etCatatan = view.findViewById(R.id.et_catatan_alamat);
-
     }
 
     private void setupKategoriSpinner() {
@@ -208,11 +204,9 @@ public class CustomerFragment extends Fragment {
             return;
         }
 
-        // 2. Disable button selama proses
         btnSubmit.setEnabled(false);
         btnSubmit.setText("Mengirim...");
 
-        // 3. Siapkan data untuk API
         Map<String, String> complaintData = new HashMap<>();
         complaintData.put("judul", judul);
         complaintData.put("kategori", kategori);
@@ -224,7 +218,6 @@ public class CustomerFragment extends Fragment {
         complaintData.put("telepon_alamat", etTelepon.getText().toString());
         complaintData.put("catatan_alamat", etCatatan.getText().toString());
 
-        // 4. Panggil API
         ApiService apiService = ApiClient.getApiService();
         Call<com.example.project_uts.models.ApiResponse<Complaint>> call = apiService.createComplaint(complaintData);
 

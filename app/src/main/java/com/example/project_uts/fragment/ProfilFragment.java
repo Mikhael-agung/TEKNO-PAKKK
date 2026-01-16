@@ -3,6 +3,7 @@ package com.example.project_uts.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +26,8 @@ public class ProfilFragment extends Fragment {
 
     private TextView tvNama, tvEmail, tvRole, tvUsername;
     private Button btnLogout;
-    private Switch switchDarkMode; // UBAH: SwitchCompat → Switch
+    private Switch switchDarkMode;
 
-    // SharedPreferences keys
     private static final String PREFS_NAME = "app_settings";
     private static final String THEME_PREF_KEY = "dark_mode_enabled";
 
@@ -40,7 +40,7 @@ public class ProfilFragment extends Fragment {
         tvRole = view.findViewById(R.id.tvRole);
         tvUsername = view.findViewById(R.id.tvUsername);
         btnLogout = view.findViewById(R.id.btnLogout);
-        switchDarkMode = view.findViewById(R.id.switch_dark_mode); // TETAP SAMA
+        switchDarkMode = view.findViewById(R.id.switch_dark_mode);
 
         loadUserData();
         setupDarkModeSwitch();
@@ -110,29 +110,36 @@ public class ProfilFragment extends Fragment {
     }
 
     private void setupDarkModeSwitch() {
-        SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        boolean isDarkMode = prefs.getBoolean(THEME_PREF_KEY, false);
-
-        switchDarkMode.setChecked(isDarkMode);
+        // Set initial state berdasarkan mode saat ini
+        updateSwitchState();
 
         switchDarkMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // LOG
+                android.util.Log.d("DARK_MODE_DEBUG", "Switch changed to: " + isChecked);
+
+                // Simpan preference
                 SharedPreferences.Editor editor = requireContext()
                         .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                         .edit();
                 editor.putBoolean(THEME_PREF_KEY, isChecked);
                 editor.apply();
 
-                if (isChecked) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                }
+                // LOG saved value
+                android.util.Log.d("DARK_MODE_DEBUG", "Saved to prefs: " + isChecked);
 
-                String message = isChecked ? "Dark mode ON" : "Dark mode OFF";
-                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+                // Apply theme change
+                int newMode = isChecked ?
+                        AppCompatDelegate.MODE_NIGHT_YES :
+                        AppCompatDelegate.MODE_NIGHT_NO;
 
+                AppCompatDelegate.setDefaultNightMode(newMode);
+
+                // LOG mode applied
+                android.util.Log.d("DARK_MODE_DEBUG", "Applied mode: " + newMode);
+
+                // Force recreate activity
                 requireActivity().recreate();
             }
         });
@@ -156,5 +163,25 @@ public class ProfilFragment extends Fragment {
             startActivity(intent);
             requireActivity().finish();
         });
+    }
+
+    private void updateSwitchState() {
+        // Deteksi mode saat ini
+        int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        boolean isCurrentlyDarkMode = currentNightMode == Configuration.UI_MODE_NIGHT_YES;
+
+        // LOG UNTUK DEBUG
+        android.util.Log.d("DARK_MODE_DEBUG",
+                "Current UI Mode: " + currentNightMode +
+                        ", Is Dark: " + isCurrentlyDarkMode);
+
+        switchDarkMode.setChecked(isCurrentlyDarkMode);
+
+        // Simpan ke preferences
+        SharedPreferences.Editor editor = requireContext()
+                .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit();
+        editor.putBoolean(THEME_PREF_KEY, isCurrentlyDarkMode);
+        editor.apply();
     }
 }

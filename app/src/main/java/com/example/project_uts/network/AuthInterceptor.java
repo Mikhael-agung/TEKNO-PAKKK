@@ -23,18 +23,17 @@ public class AuthInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
 
-        // DEBUG: Tampilkan URL yang diakses
+        // DEBUG
         Log.d(TAG, "=== AUTH INTERCEPTOR ===");
         Log.d(TAG, "URL: " + originalRequest.url());
         Log.d(TAG, "Method: " + originalRequest.method());
 
-        // Cek jika context null
         if (context == null) {
             Log.e(TAG, "CONTEXT IS NULL! Cannot get token");
             return chain.proceed(originalRequest);
         }
 
-        // Ambil token dari AuthManage
+        // get token dari AuthManage
         AuthManage authManage = new AuthManage(context);
         String token = authManage.getToken();
 
@@ -47,7 +46,7 @@ public class AuthInterceptor implements Interceptor {
         }
 
         if (token != null && !token.isEmpty()) {
-            // Tambahkan header Authorization
+            // header Authorization
             Request.Builder requestBuilder = originalRequest.newBuilder()
                     .header("Authorization", "Bearer " + token);
 

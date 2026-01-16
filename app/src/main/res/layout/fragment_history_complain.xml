@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/discord_card"
+    android:background="?attr/themeBackground"
     android:scrollbars="none"
     android:padding="16dp">
 
@@ -12,17 +12,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Header -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="History Komplain"
-            android:textColor="@color/discord_text_primary"
+            android:textColor="?attr/themeTextPrimary"
             android:textSize="24sp"
             android:textStyle="bold"
             android:layout_marginBottom="24dp" />
 
-        <!-- Filter Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,9 +35,9 @@
                 android:layout_marginEnd="8dp"
                 android:textSize="12sp"
                 android:text="Semua"
-                android:textColor="@color/discord_text_primary"
-                android:backgroundTint="@color/discord_bg_secondary"
-                app:strokeColor="@color/colorPrimary"
+                android:textColor="?attr/themeTextPrimary"
+                android:backgroundTint="?attr/themeCardBackground"
+                app:strokeColor="?attr/colorPrimary"
                 app:strokeWidth="1dp"
                 app:cornerRadius="20dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
@@ -52,9 +50,9 @@
                 android:layout_marginEnd="8dp"
                 android:textSize="12sp"
                 android:text="Aktif"
-                android:textColor="@color/discord_text_secondary"
-                android:backgroundTint="@color/discord_bg_secondary"
-                app:strokeColor="@color/discord_text_secondary"
+                android:textColor="?attr/themeTextSecondary"
+                android:backgroundTint="?attr/themeCardBackground"
+                app:strokeColor="?attr/themeTextSecondary"
                 app:strokeWidth="1dp"
                 app:cornerRadius="20dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
@@ -66,14 +64,21 @@
                 android:layout_weight="1"
                 android:textSize="12sp"
                 android:text="Selesai"
-                android:textColor="@color/discord_text_secondary"
-                android:backgroundTint="@color/discord_bg_secondary"
-                app:strokeColor="@color/discord_text_secondary"
+                android:textColor="?attr/themeTextSecondary"
+                android:backgroundTint="?attr/themeCardBackground"
+                app:strokeColor="?attr/themeTextSecondary"
                 app:strokeWidth="1dp"
                 app:cornerRadius="20dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/cardOutlineColor"
+            android:alpha="0.3"
+            android:layout_marginBottom="12dp" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -84,14 +89,12 @@
             android:layout_marginBottom="24dp"
             android:visibility="gone" />
 
-        <!-- Complaint List -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_history_complaints"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp" />
 
-        <!-- Empty State -->
         <LinearLayout
             android:id="@+id/empty_state"
             android:layout_width="match_parent"
@@ -99,19 +102,22 @@
             android:orientation="vertical"
             android:gravity="center"
             android:visibility="gone"
-            android:padding="32dp">
+            android:padding="32dp"
+            android:background="?attr/themeCardBackground"
+            app:strokeColor="?attr/cardOutlineColor"
+            app:strokeWidth="1dp">
 
             <ImageView
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:src="@android:drawable/ic_menu_report_image"
-                app:tint="@color/discord_text_tertiary" />
+                app:tint="?attr/themeTextSecondary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Belum ada history komplain"
-                android:textColor="@color/discord_text_primary"
+                android:textColor="?attr/themeTextPrimary"
                 android:textSize="16sp"
                 android:layout_marginTop="24dp" />
 
@@ -119,7 +125,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Komplain pertama Anda akan muncul di sini"
-                android:textColor="@color/discord_text_secondary"
+                android:textColor="?attr/themeTextSecondary"
                 android:textSize="14sp"
                 android:layout_marginTop="8dp" />
 
