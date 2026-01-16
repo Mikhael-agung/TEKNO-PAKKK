@@ -1,171 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#121212">
+    android:background="?attr/themeBackground">
 
     <!-- Header Profile -->
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_profile_header"
-        android:elevation="4dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="24dp">
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="?attr/colorPrimary"
+        app:strokeColor="?attr/cardOutlineColor"
+        app:strokeWidth="1dp"
+        android:layout_marginBottom="16dp">
 
-        <ImageView
-            android:id="@+id/imgProfil"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@drawable/bg_circle_primary"
-            android:contentDescription="Foto Profil"
-            android:src="@drawable/ic_profile" />
-
-        <TextView
-            android:id="@+id/tvNama"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Nama User"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="24dp">
 
-        <TextView
-            android:id="@+id/tvEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="email@example.com"
-            android:textColor="#E0E0E0"
-            android:textSize="14sp" />
+            <ImageView
+                android:id="@+id/imgProfil"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/bg_circle_primary"
+                android:contentDescription="Foto Profil"
+                android:src="@drawable/ic_profile"/>
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tvNama"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Nama User"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-    <!-- DARK MODE ONLY CARD -->
-    <LinearLayout
+            <TextView
+                android:id="@+id/tvEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="email@example.com"
+                android:textColor="#CCFFFFFF"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- DARK MODE CARD -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@color/Dark_mode_discord"
-        android:elevation="2dp"
-        android:gravity="center_vertical"
-        android:layout_marginTop="16dp"
-        android:padding="16dp">
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="?attr/themeCardBackground"
+        app:strokeColor="?attr/cardOutlineColor"
+        app:strokeWidth="1dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp">
 
-        <!-- Icon -->
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_dark_mode"
-            android:layout_marginEnd="12dp"
-            android:tint="@color/white"/>
-
-        <!-- Label -->
-        <TextView
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Dark Mode"
-            android:textColor="@color/white"
-            android:textSize="16sp"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
 
-        <!-- Switch (REGULAR SWITCH, BUKAN SWITCHCOMPAT) -->
-        <Switch
-            android:id="@+id/switch_dark_mode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:scaleX="1.0"
-            android:scaleY="1.0" />
+            <!-- Icon -->
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_dark_mode"
+                android:layout_marginEnd="12dp"
+                app:tint="?attr/colorPrimary" />
 
-    </LinearLayout>
+            <!-- Label -->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Dark Mode"
+                android:textColor="?attr/themeTextPrimary"
+                android:textSize="16sp" />
+
+            <!-- Switch -->
+            <Switch
+                android:id="@+id/switch_dark_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:scaleX="1.0"
+                android:scaleY="1.0"
+                android:thumbTint="?attr/colorPrimary"
+                android:trackTint="@color/switch_track_light" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- Info Card -->
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/Dark_mode_discord"
-        android:elevation="2dp"
-        android:layout_marginTop="16dp"
-        android:padding="16dp">
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="?attr/themeCardBackground"
+        app:strokeColor="?attr/cardOutlineColor"
+        app:strokeWidth="1dp"
+        android:layout_marginBottom="24dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Informasi Akun"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:layout_marginBottom="12dp"/>
-
-        <!-- Role Info -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="8dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Role"
-                android:textColor="@color/white"/>
-
-            <TextView
-                android:id="@+id/tvRole"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="customer"
-                android:textColor="#2196F3"
+                android:text="Informasi Akun"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:background="@drawable/bg_role_badge"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="4dp"/>
+                android:textColor="?attr/themeTextPrimary"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Role Info -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Role"
+                    android:textColor="?attr/themeTextPrimary" />
+
+                <TextView
+                    android:id="@+id/tvRole"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="customer"
+                    android:textColor="?attr/colorPrimary"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_role_badge"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp" />
+
+            </LinearLayout>
+
+            <!-- Username Info -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Username"
+                    android:textColor="?attr/themeTextPrimary" />
+
+                <TextView
+                    android:id="@+id/tvUsername"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="username"
+                    android:textColor="?attr/themeTextPrimary"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
 
         </LinearLayout>
-
-        <!-- Username Info -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="8dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Username"
-                android:textColor="@color/white"/>
-
-            <TextView
-                android:id="@+id/tvUsername"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="username"
-                android:textColor="@color/white"
-                android:textStyle="bold"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- Logout Button -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Logout"
-        android:textColor="#FFFFFF"
-        android:background="@drawable/bg_button_logout"
-        android:layout_marginTop="24dp"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/red"
+        app:cornerRadius="12dp"
+        app:elevation="4dp"
+        android:layout_marginTop="8dp"
         android:layout_marginHorizontal="16dp"
-        android:paddingVertical="12dp"/>
+        android:paddingVertical="12dp"
+        style="@style/Widget.MaterialComponents.Button" />
 
 </LinearLayout>

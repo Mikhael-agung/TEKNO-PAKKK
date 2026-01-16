@@ -3,9 +3,14 @@ package com.example.project_uts.fragment;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +20,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import androidx.cardview.widget.CardView;
-import android.widget.Spinner;
+
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.project_uts.network.ApiClient;
@@ -35,11 +41,14 @@ import com.example.project_uts.models.Complaint;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class CustomerFragment extends Fragment {
 
     private EditText etJudul, etDeskripsi;
-    private Spinner spKategori;
+    private MaterialAutoCompleteTextView actvKategori;
+    private TextInputLayout tilKategori;
     private ImageView ivFoto;
     private Button btnPilihFoto, btnSubmit;
     private FloatingActionButton fabBack;
@@ -78,15 +87,13 @@ public class CustomerFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // HAPUS SEMUA AppCompatDelegate.setDefaultNightMode DARI SINI!
     }
-
-    // ... METODE LAINNYA TETAP SAMA ...
 
     private void initViews(View view) {
         etJudul = view.findViewById(R.id.et_judul);
         etDeskripsi = view.findViewById(R.id.et_deskripsi);
-        spKategori = view.findViewById(R.id.sp_kategori);
+        actvKategori = view.findViewById(R.id.actv_kategori);
+        tilKategori = view.findViewById(R.id.til_kategori);
         ivFoto = view.findViewById(R.id.iv_foto);
         btnPilihFoto = view.findViewById(R.id.btn_pilih_foto);
         btnSubmit = view.findViewById(R.id.btn_submit);
@@ -102,7 +109,6 @@ public class CustomerFragment extends Fragment {
 
     private void setupKategoriSpinner() {
         String[] kategori = {
-                "Pilih Kategori",
                 "Elektronik (TV, Laptop, dll)",
                 "AC & Pendingin",
                 "Kulkas & Freezer",
@@ -117,11 +123,14 @@ public class CustomerFragment extends Fragment {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
-                android.R.layout.simple_spinner_item,
+                R.layout.dropdown_menu_popup_item,
                 kategori
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spKategori.setAdapter(adapter);
+
+        actvKategori.setAdapter(adapter);
+        actvKategori.setOnItemClickListener((parent, view, position, id) -> {
+            tilKategori.setError(null);
+        });
     }
 
     private void setupClickListeners() {
@@ -175,7 +184,7 @@ public class CustomerFragment extends Fragment {
     private void submitKomplain() {
         String judul = etJudul.getText().toString().trim();
         String deskripsi = etDeskripsi.getText().toString().trim();
-        String kategori = spKategori.getSelectedItem().toString();
+        String kategori = actvKategori.getText().toString().trim();
         String finalJudul = judul;
         String finalKategori = kategori;
 
@@ -190,8 +199,8 @@ public class CustomerFragment extends Fragment {
             return;
         }
 
-        if (kategori.equals("Pilih Kategori")) {
-            Toast.makeText(requireContext(), "Pilih kategori komplain", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(kategori)) {
+            tilKategori.setError("Pilih kategori komplain");
             return;
         }
 
@@ -334,7 +343,7 @@ public class CustomerFragment extends Fragment {
     private void resetForm() {
         etJudul.setText("");
         etDeskripsi.setText("");
-        spKategori.setSelection(0);
+        actvKategori.setSelection(0);
         ivFoto.setVisibility(View.GONE);
         fotoUri = null;
         if (cardFotoPreview != null) {

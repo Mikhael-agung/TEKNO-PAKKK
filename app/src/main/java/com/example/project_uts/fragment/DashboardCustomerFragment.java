@@ -3,6 +3,9 @@ package com.example.project_uts.fragment;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -416,60 +420,6 @@ public class DashboardCustomerFragment extends Fragment {
             mainActivity.getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_container, new CustomerFragment())
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-
-    private void navigateToHistory() {
-        if (getActivity() instanceof MainActivity && isAdded()) {
-            MainActivity mainActivity = (MainActivity) getActivity();
-            mainActivity.getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, new HistoryComplainFragment())
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-
-    private void navigateToProfile() {
-        if (getActivity() instanceof MainActivity && isAdded()) {
-            MainActivity mainActivity = (MainActivity) getActivity();
-            mainActivity.getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, new ProfilFragment())
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-
-    private void navigateToHistoryWithFilter(String filterType) {
-        if (!isAdded()) return;
-
-        HistoryComplainFragment historyFragment = new HistoryComplainFragment();
-        Bundle args = new Bundle();
-
-        String historyFilter = "semua";
-        switch (filterType) {
-            case "pending":
-                historyFilter = "pending";
-                break;
-            case "progress":
-                historyFilter = "on_progress";
-                break;
-            case "completed":
-                historyFilter = "completed";
-                break;
-        }
-
-        args.putString("filter", historyFilter);
-        historyFragment.setArguments(args);
-
-        if (getActivity() instanceof MainActivity) {
-            MainActivity mainActivity = (MainActivity) getActivity();
-            mainActivity.getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, historyFragment)
                     .addToBackStack(null)
                     .commit();
         }

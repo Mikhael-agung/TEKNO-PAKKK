@@ -39,6 +39,22 @@
         <item name="cardOutlineColor">@color/colorPrimary</item>
     </style>
 
+    <style name="AppSpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">@drawable/edittext_border</item>
+        <item name="android:popupBackground">?attr/colorSurface</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:padding">12dp</item>
+    </style>
+
+    <style name="AppSpinnerItem" parent="Widget.AppCompat.TextView.SpinnerItem">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="AppSpinnerDropdownItem" parent="Widget.AppCompat.TextView.SpinnerItem">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
+
     <!-- Theme for settings/preference screens -->
     <style name="Theme.TeknoServe.Settings" parent="Theme.TeknoServe">
         <item name="android:windowBackground">@color/gray_light</item>

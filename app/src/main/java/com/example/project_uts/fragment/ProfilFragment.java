@@ -1,15 +1,25 @@
 package com.example.project_uts.fragment;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -109,16 +119,62 @@ public class ProfilFragment extends Fragment {
         }
     }
 
+    //transisi
+    private void applyProfileTransition(boolean toDarkMode) {
+        View rootView = getView();
+        if (rootView == null) return;
+
+        // 1. Fade animation
+        rootView.animate()
+                .alpha(0.3f)
+                .setDuration(300)
+                .withEndAction(() -> rootView.animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .start())
+                .start();
+
+        // 2. Animate profile image
+        animateProfileImage(toDarkMode);
+
+        // 3. Animate switch dengan bounce
+        animateSwitchBounce();
+    }
+
+    private void animateProfileImage(boolean toDarkMode) {
+        ImageView profileImage = getView().findViewById(R.id.imgProfil);
+        if (profileImage != null) {
+            profileImage.animate()
+                    .scaleX(1.2f).scaleY(1.2f)
+                    .setDuration(200)
+                    .withEndAction(() -> profileImage.animate()
+                            .scaleX(1f).scaleY(1f)
+                            .setDuration(200)
+                            .start())
+                    .start();
+        }
+    }
+
+    private void animateSwitchBounce() {
+        Switch darkModeSwitch = getView().findViewById(R.id.switch_dark_mode);
+        if (darkModeSwitch != null) {
+            darkModeSwitch.animate()
+                    .scaleX(1.3f).scaleY(1.3f)
+                    .setDuration(150)
+                    .withEndAction(() -> darkModeSwitch.animate()
+                            .scaleX(1f).scaleY(1f)
+                            .setDuration(150)
+                            .start())
+                    .start();
+        }
+    }
+
     private void setupDarkModeSwitch() {
-        // Set initial state berdasarkan mode saat ini
         updateSwitchState();
 
         switchDarkMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // LOG
-                android.util.Log.d("DARK_MODE_DEBUG", "Switch changed to: " + isChecked);
-
                 // Simpan preference
                 SharedPreferences.Editor editor = requireContext()
                         .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -126,21 +182,25 @@ public class ProfilFragment extends Fragment {
                 editor.putBoolean(THEME_PREF_KEY, isChecked);
                 editor.apply();
 
-                // LOG saved value
-                android.util.Log.d("DARK_MODE_DEBUG", "Saved to prefs: " + isChecked);
+                // Crossfade animation
+                View rootView = requireActivity().getWindow().getDecorView();
+                TransitionDrawable transition = new TransitionDrawable(new Drawable[]{
+                        new ColorDrawable(Color.TRANSPARENT),
+                        new ColorDrawable(isChecked ? Color.BLACK : Color.WHITE)
+                });
 
-                // Apply theme change
-                int newMode = isChecked ?
-                        AppCompatDelegate.MODE_NIGHT_YES :
-                        AppCompatDelegate.MODE_NIGHT_NO;
+                rootView.setBackground(transition);
+                transition.startTransition(500); // 500ms animation
 
-                AppCompatDelegate.setDefaultNightMode(newMode);
-
-                // LOG mode applied
-                android.util.Log.d("DARK_MODE_DEBUG", "Applied mode: " + newMode);
-
-                // Force recreate activity
-                requireActivity().recreate();
+                // Apply theme change SETELAH ANIMATION
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    if (isChecked) {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    } else {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    }
+                    requireActivity().recreate();
+                }, 300); // Tunggu 300ms sebelum recreate
             }
         });
     }

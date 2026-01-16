@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#132440"
+    android:background="?attr/themeBackground"
     android:fillViewport="true">
 
     <LinearLayout
@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="20dp"
             app:cardElevation="8dp"
-            app:cardBackgroundColor="#007BFF"
+            app:cardBackgroundColor="?attr/colorPrimary"
             android:layout_marginBottom="24dp">
 
             <RelativeLayout
@@ -27,7 +27,7 @@
                 android:padding="24dp"
                 android:minHeight="140dp">
 
-                <!-- Back Button - DI POJOK KIRI ATAS -->
+                <!-- Back Button -->
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fab_back"
                     android:layout_width="40dp"
@@ -41,9 +41,9 @@
                     app:elevation="6dp"
                     app:fabSize="mini"
                     app:maxImageSize="20dp"
-                    app:tint="#007BFF" />
+                    app:tint="?attr/colorPrimary" />
 
-                <!-- Title Section (Center) -->
+                <!-- Title Section -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -85,11 +85,14 @@
         </androidx.cardview.widget.CardView>
 
         <!-- Form Card -->
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
+            app:cardBackgroundColor="?attr/themeCardBackground"
+            app:strokeColor="?attr/cardOutlineColor"
+            app:strokeWidth="1dp"
             android:layout_marginBottom="24dp">
 
             <LinearLayout
@@ -110,13 +113,13 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@android:drawable/ic_menu_edit"
-                        app:tint="#007BFF" />
+                        app:tint="?attr/colorPrimary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Judul Komplain"
-                        android:textColor="#333"
+                        android:textColor="?attr/themeTextPrimary"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:layout_marginStart="12dp" />
@@ -131,7 +134,8 @@
                     app:boxCornerRadiusBottomStart="12dp"
                     app:boxCornerRadiusTopEnd="12dp"
                     app:boxCornerRadiusTopStart="12dp"
-                    app:boxStrokeColor="#007BFF"
+                    app:boxStrokeColor="?attr/colorPrimary"
+                    app:hintTextColor="?attr/colorPrimary"
                     android:layout_marginBottom="20dp">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -139,6 +143,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Masukkan judul komplain"
+                        android:textColor="?attr/themeTextPrimary"
                         android:maxLines="1" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -155,13 +160,13 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@android:drawable/ic_menu_agenda"
-                        app:tint="#007BFF" />
+                        app:tint="?attr/colorPrimary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Deskripsi Masalah"
-                        android:textColor="#333"
+                        android:textColor="?attr/themeTextPrimary"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:layout_marginStart="12dp" />
@@ -176,7 +181,8 @@
                     app:boxCornerRadiusBottomStart="12dp"
                     app:boxCornerRadiusTopEnd="12dp"
                     app:boxCornerRadiusTopStart="12dp"
-                    app:boxStrokeColor="#007BFF"
+                    app:boxStrokeColor="?attr/colorPrimary"
+                    app:hintTextColor="?attr/colorPrimary"
                     android:layout_marginBottom="20dp">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -185,6 +191,7 @@
                         android:layout_height="120dp"
                         android:gravity="top"
                         android:hint="Jelaskan masalah secara detail"
+                        android:textColor="?attr/themeTextPrimary"
                         android:inputType="textMultiLine"
                         android:maxLines="5" />
 
@@ -202,49 +209,54 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@android:drawable/ic_menu_sort_by_size"
-                        app:tint="#007BFF" />
+                        app:tint="?attr/colorPrimary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Kategori"
-                        android:textColor="#333"
+                        android:textColor="?attr/themeTextPrimary"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:layout_marginStart="12dp" />
 
                 </LinearLayout>
 
-                <LinearLayout
+                <!-- GANTI SPINNER LAMA DENGAN INI: -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_kategori"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxStrokeColor="?attr/colorPrimary"
+                    app:hintTextColor="?attr/colorPrimary"
+                    app:endIconMode="dropdown_menu"
                     android:layout_marginBottom="20dp">
 
-                    <TextView
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/actv_kategori"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Kategori"
-                        android:textColor="#333"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="8dp" />
+                        android:hint="Pilih Kategori Masalah"
+                        android:textColor="?attr/themeTextPrimary"
+                        android:inputType="none"
+                        android:maxLines="1" />
 
-                    <Spinner
-                        android:id="@+id/sp_kategori"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/btn_border"
-                        android:padding="12dp" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                </LinearLayout>
-
-                <androidx.cardview.widget.CardView
+                <!-- Alamat Section Card -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="#E8F4FF"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:strokeColor="?attr/colorPrimary"
+                    app:strokeWidth="1dp"
                     android:layout_marginBottom="20dp">
 
                     <LinearLayout
@@ -265,13 +277,13 @@
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:src="@android:drawable/ic_menu_mapmode"
-                                app:tint="#007BFF" />
+                                app:tint="?attr/colorPrimary" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Alamat Layanan"
-                                android:textColor="#007BFF"
+                                android:textColor="?attr/colorPrimary"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:layout_marginStart="12dp" />
@@ -283,7 +295,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Teknisi akan datang ke alamat ini untuk perbaikan"
-                            android:textColor="#666"
+                            android:textColor="?attr/themeTextSecondary"
                             android:textSize="12sp"
                             android:layout_marginBottom="16dp" />
 
@@ -296,7 +308,8 @@
                             app:boxCornerRadiusBottomStart="8dp"
                             app:boxCornerRadiusTopEnd="8dp"
                             app:boxCornerRadiusTopStart="8dp"
-                            app:boxStrokeColor="#007BFF"
+                            app:boxStrokeColor="?attr/colorPrimary"
+                            app:hintTextColor="?attr/colorPrimary"
                             android:layout_marginBottom="12dp">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -304,37 +317,17 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="Alamat lengkap (jalan, no rumah, RT/RW)"
+                                android:textColor="?attr/themeTextPrimary"
                                 android:maxLines="2" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <!-- Row: Provinsi & Kota -->
+                        <!-- Row: Kota -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:layout_marginBottom="12dp">
-
-                            <!-- Provinsi -->
-<!--                            <com.google.android.material.textfield.TextInputLayout-->
-<!--                                android:layout_width="0dp"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:layout_weight="1"-->
-<!--                                android:layout_marginEnd="8dp"-->
-<!--                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
-<!--                                app:boxCornerRadiusBottomEnd="8dp"-->
-<!--                                app:boxCornerRadiusBottomStart="8dp"-->
-<!--                                app:boxCornerRadiusTopEnd="8dp"-->
-<!--                                app:boxCornerRadiusTopStart="8dp"-->
-<!--                                app:boxStrokeColor="#007BFF">-->
-
-<!--                                <com.google.android.material.textfield.TextInputEditText-->
-<!--                                    android:id="@+id/et_provinsi"-->
-<!--                                    android:layout_width="match_parent"-->
-<!--                                    android:layout_height="wrap_content"-->
-<!--                                    android:hint="Provinsi" />-->
-
-<!--                            </com.google.android.material.textfield.TextInputLayout>-->
 
                             <!-- Kota -->
                             <com.google.android.material.textfield.TextInputLayout
@@ -346,19 +339,21 @@
                                 app:boxCornerRadiusBottomStart="8dp"
                                 app:boxCornerRadiusTopEnd="8dp"
                                 app:boxCornerRadiusTopStart="8dp"
-                                app:boxStrokeColor="#007BFF">
+                                app:boxStrokeColor="?attr/colorPrimary"
+                                app:hintTextColor="?attr/colorPrimary">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/et_kota"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="Kota/Kabupaten" />
+                                    android:hint="Kota/Kabupaten"
+                                    android:textColor="?attr/themeTextPrimary" />
 
                             </com.google.android.material.textfield.TextInputLayout>
 
                         </LinearLayout>
 
-                        <!-- Row: Kecamatan & Kode Pos -->
+                        <!-- Row: Kecamatan -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -370,42 +365,22 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:layout_marginEnd="8dp"
                                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                 app:boxCornerRadiusBottomEnd="8dp"
                                 app:boxCornerRadiusBottomStart="8dp"
                                 app:boxCornerRadiusTopEnd="8dp"
                                 app:boxCornerRadiusTopStart="8dp"
-                                app:boxStrokeColor="#007BFF">
+                                app:boxStrokeColor="?attr/colorPrimary"
+                                app:hintTextColor="?attr/colorPrimary">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/et_kecamatan"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="Kecamatan" />
+                                    android:hint="Kecamatan"
+                                    android:textColor="?attr/themeTextPrimary" />
 
                             </com.google.android.material.textfield.TextInputLayout>
-
-                            <!-- Kode Pos -->
-<!--                            <com.google.android.material.textfield.TextInputLayout-->
-<!--                                android:layout_width="0dp"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:layout_weight="1"-->
-<!--                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
-<!--                                app:boxCornerRadiusBottomEnd="8dp"-->
-<!--                                app:boxCornerRadiusBottomStart="8dp"-->
-<!--                                app:boxCornerRadiusTopEnd="8dp"-->
-<!--                                app:boxCornerRadiusTopStart="8dp"-->
-<!--                                app:boxStrokeColor="#007BFF">-->
-
-<!--                                <com.google.android.material.textfield.TextInputEditText-->
-<!--                                    android:id="@+id/et_kode_pos"-->
-<!--                                    android:layout_width="match_parent"-->
-<!--                                    android:layout_height="wrap_content"-->
-<!--                                    android:hint="Kode Pos"-->
-<!--                                    android:inputType="number" />-->
-
-<!--                            </com.google.android.material.textfield.TextInputLayout>-->
 
                         </LinearLayout>
 
@@ -418,7 +393,8 @@
                             app:boxCornerRadiusBottomStart="8dp"
                             app:boxCornerRadiusTopEnd="8dp"
                             app:boxCornerRadiusTopStart="8dp"
-                            app:boxStrokeColor="#007BFF"
+                            app:boxStrokeColor="?attr/colorPrimary"
+                            app:hintTextColor="?attr/colorPrimary"
                             android:layout_marginBottom="12dp">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -426,6 +402,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="Nomor telepon di alamat ini"
+                                android:textColor="?attr/themeTextPrimary"
                                 android:inputType="phone" />
 
                         </com.google.android.material.textfield.TextInputLayout>
@@ -439,7 +416,8 @@
                             app:boxCornerRadiusBottomStart="8dp"
                             app:boxCornerRadiusTopEnd="8dp"
                             app:boxCornerRadiusTopStart="8dp"
-                            app:boxStrokeColor="#007BFF">
+                            app:boxStrokeColor="?attr/colorPrimary"
+                            app:hintTextColor="?attr/colorPrimary">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/et_catatan_alamat"
@@ -447,22 +425,24 @@
                                 android:layout_height="80dp"
                                 android:gravity="top"
                                 android:hint="Catatan alamat (contoh: rumah warna biru, pagar hitam)"
+                                android:textColor="?attr/themeTextPrimary"
                                 android:inputType="textMultiLine"
                                 android:maxLines="3" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
                     </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Foto Upload Section -->
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="#E8F4FF"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:strokeColor="?attr/colorPrimary"
+                    app:strokeWidth="1dp"
                     android:layout_marginBottom="20dp">
 
                     <LinearLayout
@@ -476,14 +456,14 @@
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:src="@android:drawable/ic_menu_camera"
-                            app:tint="#007BFF"
+                            app:tint="?attr/colorPrimary"
                             android:layout_marginBottom="12dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Foto Barang Rusak"
-                            android:textColor="#007BFF"
+                            android:textColor="?attr/colorPrimary"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:layout_marginBottom="4dp" />
@@ -491,8 +471,8 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Unggah foto untuk membantu teknisi"
-                            android:textColor="#666"
+                            android:text="Unggah foto untuk membantu teknisi (opsional)"
+                            android:textColor="?attr/themeTextSecondary"
                             android:textSize="12sp"
                             android:layout_marginBottom="16dp" />
 
@@ -501,16 +481,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Pilih Foto"
-                            android:textColor="#FFFFFF"
-                            app:backgroundTint="#007BFF"
+                            android:textColor="@color/white"
+                            app:backgroundTint="?attr/colorPrimary"
                             app:cornerRadius="20dp"
                             app:icon="@android:drawable/ic_menu_upload"
-                            app:iconTint="#FFFFFF"
+                            app:iconTint="@color/white"
                             style="@style/Widget.MaterialComponents.Button" />
 
                     </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Foto Preview -->
                 <androidx.cardview.widget.CardView
@@ -519,6 +498,9 @@
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/themeCardBackground"
+                    app:strokeColor="?attr/cardOutlineColor"
+                    app:strokeWidth="1dp"
                     android:layout_marginBottom="20dp"
                     android:visibility="gone">
 
@@ -540,7 +522,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="Foto Terpilih"
-                                android:textColor="#333"
+                                android:textColor="?attr/themeTextPrimary"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
@@ -549,10 +531,10 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Hapus"
-                                android:textColor="#F44336"
+                                android:textColor="@color/red"
                                 app:icon="@android:drawable/ic_menu_delete"
-                                app:iconTint="#F44336"
-                                app:strokeColor="#F44336"
+                                app:iconTint="@color/red"
+                                app:strokeColor="@color/red"
                                 app:strokeWidth="1dp"
                                 app:cornerRadius="8dp"
                                 style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
@@ -562,18 +544,16 @@
                         <ImageView
                             android:id="@+id/iv_foto"
                             android:layout_width="match_parent"
-                            android:layout_height="2000dp"
+                            android:layout_height="200dp"
                             android:scaleType="centerCrop"
                             android:background="@drawable/btn_border"
                             app:srcCompat="@android:drawable/ic_menu_gallery" />
 
                     </LinearLayout>
-
                 </androidx.cardview.widget.CardView>
 
             </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Submit Button -->
         <com.google.android.material.button.MaterialButton
@@ -581,14 +561,14 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:text="Kirim Komplain"
-            android:textColor="@android:color/white"
+            android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:backgroundTint="#007BFF"
+            app:backgroundTint="?attr/colorPrimary"
             app:cornerRadius="28dp"
             app:elevation="8dp"
             app:icon="@android:drawable/ic_menu_send"
-            app:iconTint="@android:color/white"
+            app:iconTint="@color/white"
             app:iconGravity="textStart"
             style="@style/Widget.MaterialComponents.Button"
             android:layout_marginTop="8dp"
@@ -599,12 +579,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="ⓘ Komplain akan diproses dalam 1x24 jam. Tim kami akan menghubungi Anda."
-            android:textColor="#666"
+            android:textColor="?attr/themeTextSecondary"
             android:textSize="12sp"
             android:gravity="center"
             android:lineSpacingExtra="4dp"
             android:padding="8dp" />
 
     </LinearLayout>
-
 </ScrollView>

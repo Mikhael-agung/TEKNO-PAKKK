@@ -11,9 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.project_uts.R;
 import com.example.project_uts.models.Complaint;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +52,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
             String status = complaint.getStatus() != null ? complaint.getStatus() : "";
 
-            // 1. SET CARD OUTLINE BERDASARKAN STATUS
-            setCardOutline(holder.itemView, status);
+            // 1. SET CARD STROKE COLOR BERDASARKAN STATUS
+            if (holder.cardComplaint != null) {
+                setCardStrokeColor(holder.cardComplaint, status);
+            }
 
             // 2. SET STATUS TEXT DAN BADGE
             setStatusStyle(holder, status);
@@ -94,34 +98,38 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         }
     }
 
-    // ==================== NEW METHOD: SET CARD OUTLINE ====================
-    private void setCardOutline(View itemView, String status) {
-        LinearLayout cardLayout = itemView.findViewById(R.id.card_background_layout);
+    private void setCardStrokeColor(MaterialCardView cardView, String status) {
+        if (cardView == null) return;
 
-        if (cardLayout == null) {
-            // Fallback ke layout lain jika ID berbeda
-            cardLayout = itemView.findViewById(R.id.linear_layout_main);
+        String statusLower = status.toLowerCase();
+        Context context = cardView.getContext();
+
+        // Map status ke warna stroke
+        int strokeColor;
+
+        if (statusLower.contains("pending") || statusLower.contains("menunggu")) {
+            strokeColor = ContextCompat.getColor(context, R.color.status_pending); // #FF9800
+        } else if (statusLower.contains("proses") || statusLower.contains("progress") ||
+                statusLower.contains("dalam proses") || statusLower.contains("on progress")) {
+            strokeColor = ContextCompat.getColor(context, R.color.status_progress); // #2196F3
+        } else if (statusLower.contains("selesai") || statusLower.contains("completed") ||
+                statusLower.contains("done")) {
+            strokeColor = ContextCompat.getColor(context, R.color.status_completed); // #4CAF50
+        } else if (statusLower.contains("ditolak") || statusLower.contains("rejected")) {
+            strokeColor = ContextCompat.getColor(context, R.color.colorDitolak); // #C0392B
+        } else {
+            strokeColor = ContextCompat.getColor(context, R.color.status_default); // #666666
         }
 
-        if (cardLayout != null) {
-            String statusLower = status.toLowerCase();
-
-            // Map status ke drawable outline
-            if (statusLower.contains("pending") || statusLower.contains("menunggu")) {
-                cardLayout.setBackgroundResource(R.drawable.bg_card_outline_pending);
-            } else if (statusLower.contains("proses") || statusLower.contains("progress") ||
-                    statusLower.contains("dalam proses") || statusLower.contains("on progress")) {
-                cardLayout.setBackgroundResource(R.drawable.bg_card_outline_proses);
-            } else if (statusLower.contains("selesai") || statusLower.contains("completed") ||
-                    statusLower.contains("done")) {
-                cardLayout.setBackgroundResource(R.drawable.bg_card_outline_selesai);
-            } else {
-                cardLayout.setBackgroundResource(R.drawable.bg_card_outline_default);
-            }
-        }
+        // Set stroke color dan width ke MaterialCardView
+        cardView.setStrokeColor(strokeColor);
+        cardView.setStrokeWidth(dpToPx(context, 2)); // 2dp
     }
 
-    // ==================== UPDATED STATUS STYLE ====================
+    private int dpToPx(Context context, int dp) {
+        return (int) (dp * context.getResources().getDisplayMetrics().density);
+    }
+
     private void setStatusStyle(ViewHolder holder, String status) {
         if (status == null) {
             holder.tvStatus.setText("UNKNOWN");
@@ -131,7 +139,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         String statusLower = status.toLowerCase();
 
-        // Set status text
+        // Set status text dan badge
         if (statusLower.contains("pending") || statusLower.contains("menunggu")) {
             holder.tvStatus.setText("PENDING");
             holder.tvStatus.setBackgroundResource(R.drawable.badge_pending);
@@ -143,9 +151,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 statusLower.contains("done")) {
             holder.tvStatus.setText("SELESAI");
             holder.tvStatus.setBackgroundResource(R.drawable.badge_selesai);
-        } else if (statusLower.contains("ditolak") || statusLower.contains("rejected")) {
-            holder.tvStatus.setText("DITOLAK");
-            holder.tvStatus.setBackgroundResource(R.drawable.badge_selesai); // Pakai existing danger
         } else {
             holder.tvStatus.setText(status.toUpperCase());
             holder.tvStatus.setBackgroundResource(R.drawable.badge_default);
@@ -217,29 +222,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         }
     }
 
-    private void setStatusColorFallback(ViewHolder holder, String statusLower) {
-        int colorRes;
-        switch (statusLower) {
-            case "selesai":
-                colorRes = android.R.color.holo_green_dark;
-                break;
-            case "dalam proses":
-                colorRes = android.R.color.holo_orange_dark;
-                break;
-            case "ditolak":
-                colorRes = android.R.color.holo_red_dark;
-                break;
-            default:
-                colorRes = android.R.color.darker_gray;
-        }
-
-        try {
-            holder.tvStatus.setBackgroundColor(holder.itemView.getContext().getResources().getColor(colorRes));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private void handleVisibility(ViewHolder holder, String status) {
         if (status == null) return;
 
@@ -266,10 +248,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     private void setErrorState(ViewHolder holder) {
-        holder.tvTitle.setText("Error loading data - This is a long title to demonstrate scrolling functionality within the card item layout");
-        holder.tvCategory.setText("Error Category with long text");
+        holder.tvTitle.setText("Error loading data");
+        holder.tvCategory.setText("Error Category");
         holder.tvDate.setText("Date not available");
-        holder.tvStatus.setText("error");
+        holder.tvStatus.setText("ERROR");
         holder.layoutTechnician.setVisibility(View.GONE);
         holder.layoutRating.setVisibility(View.GONE);
         holder.tvRejectionReason.setVisibility(View.GONE);
@@ -281,6 +263,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        // TAMBAHKAN INI
+        MaterialCardView cardComplaint;
         ImageView ivCategory;
         TextView tvTitle, tvCategory, tvDate, tvStatus, tvTechnician, tvRating, tvRejectionReason;
         LinearLayout layoutTechnician, layoutRating, layoutActions;
@@ -288,6 +272,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            // TAMBAHKAN INI - PASTIKAN ID DI XML 'card_complaint'
+            cardComplaint = itemView.findViewById(R.id.card_complaint);
 
             // Initialize semua view
             ivCategory = itemView.findViewById(R.id.iv_category);
