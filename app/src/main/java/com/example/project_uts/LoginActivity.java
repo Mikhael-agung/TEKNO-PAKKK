@@ -2,8 +2,15 @@ package com.example.project_uts;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -33,6 +40,38 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+
+            // CLEAR FLAGS YANG BISA SEBABKAN BLACK SCREEN
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+            // Cek apakah dark mode aktif
+            int nightModeFlags = getResources().getConfiguration().uiMode &
+                    Configuration.UI_MODE_NIGHT_MASK;
+
+            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                // DARK MODE
+                window.setStatusBarColor(Color.parseColor("#121212"));
+                window.setNavigationBarColor(Color.parseColor("#121212"));
+                // Set background window (ini yang penting!)
+                getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#121212")));
+            } else {
+                // LIGHT MODE - FORCE WHITE
+                window.setStatusBarColor(Color.WHITE);
+                window.setNavigationBarColor(Color.WHITE);
+                // Set background window PUTIH
+                getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+
+                // Untuk Android 6.0+, set status bar icon hitam
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    window.getDecorView().setSystemUiVisibility(
+                            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                }
+            }
+        }
+
         super.onCreate(savedInstanceState);
 
         if (getSupportActionBar() != null) {
