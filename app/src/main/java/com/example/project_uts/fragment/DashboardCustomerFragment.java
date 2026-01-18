@@ -191,7 +191,7 @@ public class DashboardCustomerFragment extends Fragment {
         }
 
         updateEmptyState();
-        Log.d("Dashboard", "Filter applied: " + filterType + ", items: " + filteredComplaints.size());
+        //Log.d("Dashboard", "Filter applied: " + filterType + ", items: " + filteredComplaints.size());
     }
 
     private void updateEmptyState() {
@@ -312,7 +312,7 @@ public class DashboardCustomerFragment extends Fragment {
 
                                 applyFilter("all");
 
-                                Log.d("Dashboard", "API data loaded: " + complaints.size() + " items");
+                               // Log.d("Dashboard", "API data loaded: " + complaints.size() + " items");
                             });
                         }
 
@@ -337,7 +337,7 @@ public class DashboardCustomerFragment extends Fragment {
                 if (isAdded() && getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                         showDummyData();
-                        Log.e("Dashboard", "API failed: " + t.getMessage());
+                       // Log.e("Dashboard", "API failed: " + t.getMessage());
                     });
                 }
             }

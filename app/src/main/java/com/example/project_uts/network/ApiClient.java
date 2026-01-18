@@ -19,7 +19,7 @@ public class ApiClient {
 
     public static void init(Context context) {
         appContext = context.getApplicationContext();
-        Log.d(TAG, "ApiClient initialized with context");
+        //Log.d(TAG, "ApiClient initialized with context");
         retrofit = null;
     }
 
@@ -30,9 +30,7 @@ public class ApiClient {
         return retrofit.create(ApiService.class);
     }
 
-    // ✅ TAMBAH METHOD INI
     public static ApiService getFreshApiService() {
-        Log.d(TAG, "🔄 Creating FRESH API service (no cache)");
 
         // Force create new Retrofit instance dengan no-cache
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -45,9 +43,8 @@ public class ApiClient {
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
-                .cache(null) // ✅ DISABLE CACHE
+                .cache(null)
                 .addInterceptor(chain -> {
-                    // ✅ ADD NO-CACHE HEADERS
                     okhttp3.Request original = chain.request();
                     okhttp3.Request request = original.newBuilder()
                             .header("Cache-Control", "no-cache, no-store, must-revalidate")
@@ -70,11 +67,11 @@ public class ApiClient {
 
     private static void createRetrofitInstance() {
         if (appContext == null) {
-            Log.e(TAG, "Context is NULL! Call init() first.");
+            //Log.e(TAG, "Context is NULL! Call init() first.");
             throw new IllegalStateException("ApiClient not initialized. Call init() first.");
         }
 
-        Log.d(TAG, "Creating Retrofit instance...");
+        //Log.d(TAG, "Creating Retrofit instance...");
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
@@ -93,7 +90,7 @@ public class ApiClient {
                 .client(client)
                 .build();
 
-        Log.d(TAG, "Retrofit instance created successfully");
+        //Log.d(TAG, "Retrofit instance created successfully");
     }
 
     // Method untuk debugging

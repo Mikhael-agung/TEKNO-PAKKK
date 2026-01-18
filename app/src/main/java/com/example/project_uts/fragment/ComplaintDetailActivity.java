@@ -161,25 +161,17 @@ public class ComplaintDetailActivity extends AppCompatActivity {
                 !complaint.getTeknisi_name().isEmpty() &&
                 !complaint.getTeknisi_name().equalsIgnoreCase("Belum ditugaskan");
 
-        // ✅ FIXED: Hanya pakai teknisi_phone field sampai Complaint.java di-recompile
         String teknisiPhone = complaint.getTeknisi_phone();
 
-        Log.d("WhatsAppDebug", "🔍 Cek data untuk WhatsApp:");
-        Log.d("WhatsAppDebug", "  - Nama Teknisi: " + complaint.getTeknisi_name());
-        Log.d("WhatsAppDebug", "  - No Telp (teknisi_phone): " + teknisiPhone);
-        Log.d("WhatsAppDebug", "  - Has Teknisi: " + hasTeknisiFromComplaint);
-
-        // ✅ Juga cek dari timeline
         if ((teknisiPhone == null || teknisiPhone.trim().isEmpty()) && !teknisiPhoneFromTimeline.isEmpty()) {
             teknisiPhone = teknisiPhoneFromTimeline;
-            Log.d("WhatsAppDebug", "📱 Fallback ke phone dari timeline: " + teknisiPhone);
+           // Log.d("WhatsAppDebug", "📱 Fallback ke phone dari timeline: " + teknisiPhone);
         }
 
-        // ✅ PERBAIKAN: CEK JIKA ADA TEKNISI DI TIMELINE TAPI TIDAK DI COMPLAINT
         if (!teknisiNameFromTimeline.isEmpty() && !teknisiPhoneFromTimeline.isEmpty()) {
             hasTeknisiFromComplaint = true;
             teknisiPhone = teknisiPhoneFromTimeline;
-            Log.d("WhatsAppDebug", "📱 Menggunakan teknisi dari timeline");
+            //Log.d("WhatsAppDebug", "📱 Menggunakan teknisi dari timeline");
         }
 
         if (!hasTeknisiFromComplaint || teknisiPhone == null || teknisiPhone.trim().isEmpty()) {
@@ -206,8 +198,6 @@ public class ComplaintDetailActivity extends AppCompatActivity {
             return;
         }
 
-        Log.d("WhatsAppDebug", "📱 Nomor untuk WhatsApp: " + cleanPhone);
-
         // Buat pesan WhatsApp
         String message = buildWhatsAppMessage();
         String encodedMessage = Uri.encode(message);
@@ -215,28 +205,25 @@ public class ComplaintDetailActivity extends AppCompatActivity {
         // URL WhatsApp
         String whatsappUrl = "https://wa.me/" + cleanPhone + "?text=" + encodedMessage;
 
-        Log.d("WhatsAppDebug", "🔗 URL WhatsApp: " + whatsappUrl);
-
-        // Intent langsung ke WhatsApp
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(whatsappUrl));
-        intent.setPackage("com.whatsapp"); // Force ke WhatsApp
+        intent.setPackage("com.whatsapp");
 
         try {
             // Cek apakah WhatsApp terinstall
             PackageManager packageManager = getPackageManager();
             if (intent.resolveActivity(packageManager) != null) {
                 startActivity(intent);
-                Log.d("WhatsAppDebug", "✅ WhatsApp dibuka");
+                //Log.d("WhatsAppDebug", "✅ WhatsApp dibuka");
             } else {
                 // WhatsApp tidak terinstall, buka browser
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(whatsappUrl));
                 startActivity(browserIntent);
                 Toast.makeText(this, "WhatsApp tidak terinstall, membuka browser", Toast.LENGTH_SHORT).show();
-                Log.d("WhatsAppDebug", "🌐 Buka via browser");
+                //Log.d("WhatsAppDebug", "🌐 Buka via browser");
             }
         } catch (Exception e) {
-            Log.e("WhatsAppDebug", "❌ Error buka WhatsApp: " + e.getMessage());
+            //Log.e("WhatsAppDebug", "❌ Error buka WhatsApp: " + e.getMessage());
             Toast.makeText(this, "Gagal membuka WhatsApp: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -293,12 +280,7 @@ public class ComplaintDetailActivity extends AppCompatActivity {
         }
 
         final String complaintId = complaint.getId();
-
-        Log.d("ComplaintDebug", "🔄 FETCH DETAIL dengan NO CACHE...");
-
-        // ✅ PAKAI FRESH API SERVICE (NO CACHE)
         ApiService apiService = ApiClient.getFreshApiService();
-
         apiService.getComplaintDetail(complaintId).enqueue(new Callback<ApiResponse<Complaint>>() {
             @Override
             public void onResponse(Call<ApiResponse<Complaint>> call, Response<ApiResponse<Complaint>> response) {
@@ -309,18 +291,6 @@ public class ComplaintDetailActivity extends AppCompatActivity {
 
                     if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                         Complaint fullComplaint = response.body().getData();
-
-                        // ✅ LOG DATA LENGKAP
-                        Log.d("ComplaintDebug", "✅ DATA LENGKAP DITERIMA:");
-                        Log.d("ComplaintDebug", "  ID: " + fullComplaint.getId());
-                        Log.d("ComplaintDebug", "  Judul: " + fullComplaint.getJudul());
-
-                        // ✅ LOG SEMUA FIELD TEKNISI
-                        Log.d("ComplaintDebug", "👨‍🔧 SEMUA FIELD TEKNISI:");
-                        Log.d("ComplaintDebug", "  - teknisi_name: " + fullComplaint.getTeknisi_name());
-                        Log.d("ComplaintDebug", "  - teknisi_phone: " + fullComplaint.getTeknisi_phone());
-                        Log.d("ComplaintDebug", "  - teknisi_id: " + fullComplaint.getTeknisi_id());
-
                         complaint = fullComplaint;
 
                         // Update UI
@@ -331,7 +301,7 @@ public class ComplaintDetailActivity extends AppCompatActivity {
                         fetchStatusHistory();
 
                     } else {
-                        Log.e("ComplaintDebug", "❌ Gagal ambil data detail");
+                      //  Log.e("ComplaintDebug", "❌ Gagal ambil data detail");
                         // Tetap tampilkan data yang ada
                         displayComplaintData();
                         showDetailUI();
@@ -346,7 +316,7 @@ public class ComplaintDetailActivity extends AppCompatActivity {
                     if (progressBarDetail != null) {
                         progressBarDetail.setVisibility(View.GONE);
                     }
-                    Log.e("ComplaintDebug", "❌ Error: " + t.getMessage());
+                    //Log.e("ComplaintDebug", "❌ Error: " + t.getMessage());
                     displayComplaintData();
                     showDetailUI();
                     fetchStatusHistory();
@@ -402,7 +372,6 @@ public class ComplaintDetailActivity extends AppCompatActivity {
                 tvDescription.setText("Deskripsi: (kosong)");
             }
             else {
-                // ✅ DESKRIPSI ADA!
                 tvDescription.setText(deskripsi);
             }
         }
@@ -417,10 +386,8 @@ public class ComplaintDetailActivity extends AppCompatActivity {
     }
 
     private void setupTechnicianUI() {
-        // ✅ PERBAIKAN LOGIC: Prioritaskan data dari timeline
         if (!teknisiNameFromTimeline.isEmpty()) {
-            // Ada teknisi di timeline
-            Log.d("ComplaintDebug", "✅ Teknisi ditemukan di timeline: " + teknisiNameFromTimeline);
+            //Log.d("ComplaintDebug", "✅ Teknisi ditemukan di timeline: " + teknisiNameFromTimeline);
             showTechnicianUI(teknisiNameFromTimeline, teknisiPhoneFromTimeline);
             return;
         }
@@ -434,13 +401,13 @@ public class ComplaintDetailActivity extends AppCompatActivity {
             final String teknisiName = complaint.getTeknisi_name();
             String teknisiPhone = complaint.getTeknisi_phone();
 
-            Log.d("ComplaintDebug", "✅ Teknisi ditemukan di complaint data: " + teknisiName);
+            //Log.d("ComplaintDebug", "✅ Teknisi ditemukan di complaint data: " + teknisiName);
             showTechnicianUI(teknisiName, teknisiPhone != null ? teknisiPhone : "");
             return;
         }
 
         // Jika benar-benar tidak ada teknisi
-        Log.d("ComplaintDebug", "❌ Belum ada teknisi yang ditugaskan");
+       // Log.d("ComplaintDebug", "❌ Belum ada teknisi yang ditugaskan");
         hideTechnicianUI();
     }
 
@@ -470,7 +437,7 @@ public class ComplaintDetailActivity extends AppCompatActivity {
     }
 
     private void showTechnicianUI(final String teknisiName, final String teknisiPhone) {
-        Log.d("ComplaintDebug", "🔄 Menampilkan UI Teknisi: " + teknisiName);
+       // Log.d("ComplaintDebug", "🔄 Menampilkan UI Teknisi: " + teknisiName);
 
         // ============ TAMPILKAN CARD TEKNISI ============
         if (technicianCard != null) {
@@ -500,14 +467,13 @@ public class ComplaintDetailActivity extends AppCompatActivity {
                 openWhatsAppDirect();
             });
 
-            Log.d("ComplaintDebug", "✅ Tombol WhatsApp AKTIF");
+            //Log.d("ComplaintDebug", "✅ Tombol WhatsApp AKTIF");
         }
 
-        Log.d("ComplaintDebug", "✅ UI Teknisi berhasil ditampilkan");
+        //Log.d("ComplaintDebug", "✅ UI Teknisi berhasil ditampilkan");
     }
 
     private void hideTechnicianUI() {
-        // ============ JIKA BELUM ADA TEKNISI ============
         if (technicianCard != null) {
             technicianCard.setVisibility(View.GONE);
         }
@@ -531,7 +497,7 @@ public class ComplaintDetailActivity extends AppCompatActivity {
         teknisiNameFromTimeline = "";
         teknisiPhoneFromTimeline = "";
 
-        Log.d("ComplaintDebug", "🔍 Mencari data teknisi dari " + historyList.size() + " items timeline");
+        //Log.d("ComplaintDebug", "🔍 Mencari data teknisi dari " + historyList.size() + " items timeline");
 
         for (int i = 0; i < historyList.size(); i++) {
             HistoryTeknisi history = historyList.get(i);
@@ -545,16 +511,12 @@ public class ComplaintDetailActivity extends AppCompatActivity {
 
                     if (phone != null && !phone.trim().isEmpty()) {
                         teknisiPhoneFromTimeline = phone.trim();
-                        Log.d("ComplaintDebug", "✅ Found phone: " + teknisiPhoneFromTimeline);
+                        //Log.d("ComplaintDebug", "✅ Found phone: " + teknisiPhoneFromTimeline);
                     }
                     break;
                 }
             }
         }
-
-        Log.d("ComplaintDebug", "📊 Hasil ekstraksi:");
-        Log.d("ComplaintDebug", "  - Nama teknisi: " + teknisiNameFromTimeline);
-        Log.d("ComplaintDebug", "  - No telp: " + teknisiPhoneFromTimeline);
     }
 
     private void fetchStatusHistory() {
@@ -608,8 +570,6 @@ public class ComplaintDetailActivity extends AppCompatActivity {
                             historyAdapter.notifyDataSetChanged();
                         }
 
-                        // ✅ PERBAIKAN: PASTIKAN SETUP UI TEKNISI DIPANGGIL LAGI
-                        // Karena data timeline baru didapat
                         runOnUiThread(() -> {
                             setupTechnicianUI();
                         });

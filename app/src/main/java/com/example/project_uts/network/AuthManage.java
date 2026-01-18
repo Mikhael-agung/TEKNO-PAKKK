@@ -52,26 +52,26 @@ public class AuthManage {
 
         if (userJson != null) {
             try {
-                Log.d(TAG, "JSON content: " + userJson);
+                //Log.d(TAG, "JSON content: " + userJson);
                 User user = gson.fromJson(userJson, User.class);
-                Log.d(TAG, "User parsed - Name: " + user.getFull_name() +
-                        ", Email: " + user.getEmail() +
-                        ", Role: " + user.getRole() +
-                        ", ID: " + user.getId());
+                //Log.d(TAG, "User parsed - Name: " + user.getFull_name() +
+                       // ", Email: " + user.getEmail() +
+                        //", Role: " + user.getRole() +
+                        //", ID: " + user.getId());
                 return user;
             } catch (Exception e) {
                 Log.e(TAG, "Error parsing user JSON: " + e.getMessage());
                 return null;
             }
         }
-        Log.d(TAG, "No user data found in preferences");
+        //Log.d(TAG, "No user data found in preferences");
         return null;
     }
 
     // Ambil token untuk API calls
     public String getToken() {
         String token = pref.getString(KEY_TOKEN, null);
-        Log.d(TAG, "Getting token: " + (token != null ? "YES (length: " + token.length() + ")" : "NO"));
+       // Log.d(TAG, "Getting token: " + (token != null ? "YES (length: " + token.length() + ")" : "NO"));
         return token;
     }
 
@@ -79,7 +79,7 @@ public class AuthManage {
     public String getUserId() {
         User user = getUser();
         String userId = user != null ? user.getId() : null;
-        Log.d(TAG, "Getting user ID: " + userId);
+        //Log.d(TAG, "Getting user ID: " + userId);
         return userId;
     }
 
@@ -87,14 +87,14 @@ public class AuthManage {
     public String getUserRole() {
         User user = getUser();
         String role = user != null ? user.getRole() : null;
-        Log.d(TAG, "Getting user role: " + role);
+       // Log.d(TAG, "Getting user role: " + role);
         return role;
     }
 
     // Cek apakah user sudah login
     public boolean isLoggedIn() {
         boolean loggedIn = getToken() != null;
-        Log.d(TAG, "isLoggedIn: " + loggedIn);
+        // Log.d(TAG, "isLoggedIn: " + loggedIn);
         return loggedIn;
     }
 
@@ -121,9 +121,9 @@ public class AuthManage {
         }
 
         // 4. VERIFY EVERYTHING IS CLEARED
-        Log.d(TAG, "=== VERIFICATION AFTER CLEAR ===");
-        Log.d(TAG, "Auth token: " + (pref.getString(KEY_TOKEN, null) != null ? "STILL EXISTS" : "CLEARED ✓"));
-        Log.d(TAG, "Auth user: " + (pref.getString(KEY_USER, null) != null ? "STILL EXISTS" : "CLEARED ✓"));
+       // Log.d(TAG, "=== VERIFICATION AFTER CLEAR ===");
+       // Log.d(TAG, "Auth token: " + (pref.getString(KEY_TOKEN, null) != null ? "STILL EXISTS" : "CLEARED ✓"));
+        //Log.d(TAG, "Auth user: " + (pref.getString(KEY_USER, null) != null ? "STILL EXISTS" : "CLEARED ✓"));
 
         for (String prefName : legacyPrefNames) {
             SharedPreferences checkPref = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
@@ -132,7 +132,7 @@ public class AuthManage {
         }
 
         // 5. REDIRECT TO LOGIN WITH PROPER FLAGS
-        Log.d(TAG, "Redirecting to LoginActivity...");
+       // Log.d(TAG, "Redirecting to LoginActivity...");
         Intent intent = new Intent(context, LoginActivity.class);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
@@ -149,16 +149,16 @@ public class AuthManage {
         }
 
         Toast.makeText(context, "Logout berhasil", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "=== LOGOUT PROCESS COMPLETE ===");
+        //Log.d(TAG, "=== LOGOUT PROCESS COMPLETE ===");
     }
 
     // Update user data (setelah update profile)
     public void updateUser(User user) {
-        Log.d(TAG, "Updating user data for: " + user.getFull_name());
+        //Log.d(TAG, "Updating user data for: " + user.getFull_name());
         String userJson = gson.toJson(user);
         editor.putString(KEY_USER, userJson);
         editor.apply();
-        Log.d(TAG, "User data updated");
+       // Log.d(TAG, "User data updated");
     }
 
     // Method tambahan untuk debugging

@@ -100,7 +100,7 @@ public class CustomerFragment extends Fragment {
         etKota = view.findViewById(R.id.et_kota);
         etKecamatan = view.findViewById(R.id.et_kecamatan);
         etTelepon = view.findViewById(R.id.et_telepon_alamat);
-        etCatatan = view.findViewById(R.id.et_catatan_alamat);
+        etCatatan = view.findViewById(R.id.et_catatan_alamat);  
     }
 
     private void setupKategoriSpinner() {
