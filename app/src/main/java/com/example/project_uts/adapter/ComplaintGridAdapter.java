@@ -85,7 +85,7 @@ public class ComplaintGridAdapter extends RecyclerView.Adapter<ComplaintGridAdap
 
             if (status.equals("pending")) {
                 statusText = "MENUNGGU";
-                badgeDrawable = R.drawable.badge_selesai;
+                badgeDrawable = R.drawable.badge_pending;
                 setCardOutlineByStatus(holder.cardView, "pending");
             }
             else if (status.equals("on_progress") || status.equals("in_progress")) {
@@ -95,7 +95,7 @@ public class ComplaintGridAdapter extends RecyclerView.Adapter<ComplaintGridAdap
             }
             else if (status.equals("complete") || status.equals("completed") || status.equals("selesai")) {
                 statusText = "SELESAI";
-                badgeDrawable = R.drawable.badge_pending;
+                badgeDrawable = R.drawable.badge_selesai;
                 setCardOutlineByStatus(holder.cardView, "completed");
             }
             else {
