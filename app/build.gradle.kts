@@ -49,4 +49,5 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.preference.ktx)
     implementation(libs.cardview)
+    implementation("com.auth0.android:jwtdecode:2.0.1")
 }

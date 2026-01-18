@@ -1,19 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-
-    <!-- Theme aplikasi utama -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <!-- Base application theme -->
+    <style name="Theme.TeknoServe" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color -->
         <item name="colorPrimary">@color/primary_color</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent_color</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/accent_color</item>
+        <item name="colorSecondaryVariant">@color/accent_color</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
+        <!-- Surface colors -->
+        <item name="android:windowBackground">@color/white</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/black</item>
+
+        <!-- Background colors -->
+        <item name="backgroundColor">@color/white</item>
+        <item name="cardBackgroundColor">@color/gray_light</item>
+
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textColorSecondary">@color/gray_dark</item>
+        <item name="colorOnSurface">@color/black</item>
+        <item name="colorOnBackground">@color/black</item>
+
+        <!-- Custom attributes -->
+        <item name="themeBackground">@color/white</item>
+        <item name="themeCardBackground">@color/gray_light</item>
+        <item name="themeTextPrimary">@color/black</item>
+        <item name="themeTextSecondary">@color/gray_dark</item>
+        <item name="themeStatusBar">@color/primary_dark</item>
+        <item name="themeNavigationBar">@color/white</item>
+        <item name="cardOutlineColor">@color/colorPrimary</item>
     </style>
 
-    <!-- Theme khusus untuk SplashActivity -->
-    <style name="SplashTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash_background</item>
-        <item name="android:statusBarColor">@color/primary_color</item>
+    <style name="AppSpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">@drawable/edittext_border</item>
+        <item name="android:popupBackground">?attr/colorSurface</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:padding">12dp</item>
+    </style>
+
+    <style name="AppSpinnerItem" parent="Widget.AppCompat.TextView.SpinnerItem">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="AppSpinnerDropdownItem" parent="Widget.AppCompat.TextView.SpinnerItem">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
+
+    <!-- Theme for settings/preference screens -->
+    <style name="Theme.TeknoServe.Settings" parent="Theme.TeknoServe">
+        <item name="android:windowBackground">@color/gray_light</item>
     </style>
 
 </resources>

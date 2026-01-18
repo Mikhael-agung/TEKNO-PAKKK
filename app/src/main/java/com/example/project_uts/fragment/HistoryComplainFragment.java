@@ -1,17 +1,20 @@
 package com.example.project_uts.fragment;
 
+import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +33,6 @@ import com.example.project_uts.network.ApiService;
 import com.example.project_uts.network.AuthManage;
 import com.google.android.material.button.MaterialButton;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -137,11 +139,11 @@ public class HistoryComplainFragment extends Fragment {
         complaints.clear();
 
         // DEBUG: CEK STATUS SETIAP COMPLAINT
-        Log.d("HISTORY_DEBUG", "=== FILTER: " + filter + " ===");
+        //Log.d("HISTORY_DEBUG", "=== FILTER: " + filter + " ===");
         for (Complaint complaint : allComplaints) {
             String status = complaint.getStatus();
             String judul = complaint.getJudul();
-            Log.d("HISTORY_DEBUG", "Complaint: " + judul + " | Status: " + status);
+            //Log.d("HISTORY_DEBUG", "Complaint: " + judul + " | Status: " + status);
         }
 
         switch (filter) {
@@ -154,7 +156,7 @@ public class HistoryComplainFragment extends Fragment {
                     boolean isActive = status.equals("pending") || status.equals("on_progress");
                     if (isActive) {
                         complaints.add(complaint);
-                        Log.d("HISTORY_DEBUG", "✓ Added to AKTIF: " + complaint.getJudul() + " (" + status + ")");
+                        //Log.d("HISTORY_DEBUG", "✓ Added to AKTIF: " + complaint.getJudul() + " (" + status + ")");
                     }
                 }
                 break;
@@ -164,13 +166,13 @@ public class HistoryComplainFragment extends Fragment {
                     boolean isCompleted = status.equals("completed");
                     if (isCompleted) {
                         complaints.add(complaint);
-                        Log.d("HISTORY_DEBUG", "✓ Added to SELESAI: " + complaint.getJudul() + " (" + status + ")");
+                        //Log.d("HISTORY_DEBUG", "✓ Added to SELESAI: " + complaint.getJudul() + " (" + status + ")");
                     }
                 }
                 break;
         }
 
-        Log.d("HISTORY_DEBUG", "Total after filter: " + complaints.size());
+        //Log.d("HISTORY_DEBUG", "Total after filter: " + complaints.size());
 
         if (adapter != null) {
             adapter.notifyDataSetChanged();
@@ -209,7 +211,6 @@ public class HistoryComplainFragment extends Fragment {
             @Override
             public void onResponse(Call<ApiResponse<ComplaintResponse>> call,
                                    Response<ApiResponse<ComplaintResponse>> response) {
-                // ✅ CHECK JIKA FRAGMENT MASIH ATTACHED
                 if (!isAdded() || getContext() == null) {
                     Log.e("HISTORY_DEBUG", "Fragment not attached, skipping response");
                     return;
@@ -227,13 +228,13 @@ public class HistoryComplainFragment extends Fragment {
                         allComplaints.clear();
                         allComplaints.addAll(allFromApi);
 
-                        // ✅ DAPATKAN USER ID DENGAN AMAN
+                        // DAPATKAN USER ID DENGAN AMAN
                         String currentUserId = getCurrentUserIdSafely();
 
                         Log.d("HISTORY_DEBUG", "API returned: " + allFromApi.size() + " complaints");
                         Log.d("HISTORY_DEBUG", "Current User ID: " + currentUserId);
 
-                        // ✅ PAKAI FILTER OTOMATIS (TANPA PANGGIL AuthManage DI SINI)
+                        //  AKAI FILTER OTOMATIS (TANPA PANGGIL AuthManage DI SINI)
                         filterComplaints("semua");
                         updateButtonStates(btnSemua);
 
@@ -259,7 +260,7 @@ public class HistoryComplainFragment extends Fragment {
                 return authManage.getUserId();
             }
         } catch (Exception e) {
-            Log.e("HISTORY_DEBUG", "Error getting user ID: " + e.getMessage());
+            //Log.e("HISTORY_DEBUG", "Error getting user ID: " + e.getMessage());
         }
         return null;
     }
@@ -347,7 +348,6 @@ public class HistoryComplainFragment extends Fragment {
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        // AMBIL DATA DETAIL LENGKAP DARI API
         ApiService apiService = ApiClient.getApiService();
         apiService.getComplaintDetail(complaint.getId()).enqueue(new Callback<ApiResponse<Complaint>>() {
             @Override
@@ -385,16 +385,16 @@ public class HistoryComplainFragment extends Fragment {
         switch (status) {
             case "selesai":
             case "completed":
-                bgRes = R.drawable.badge_success;
+                bgRes = R.drawable.badge_pending;
                 statusView.setText("SELESAI");
                 break;
-            case "on_progress":
-                bgRes = R.drawable.badge_warning;
+            case "on progress":
+                bgRes = R.drawable.badge_proses;
                 statusView.setText("DIPROSES");
                 break;
             case "ditolak":
             case "rejected":
-                bgRes = R.drawable.badge_danger;
+                bgRes = R.drawable.badge_selesai;
                 statusView.setText("DITOLAK");
                 break;
             case "pending":

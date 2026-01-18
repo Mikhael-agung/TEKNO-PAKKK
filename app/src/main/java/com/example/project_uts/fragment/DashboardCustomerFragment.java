@@ -1,8 +1,12 @@
 package com.example.project_uts.fragment;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -187,7 +192,7 @@ public class DashboardCustomerFragment extends Fragment {
         }
 
         updateEmptyState();
-        Log.d("Dashboard", "Filter applied: " + filterType + ", items: " + filteredComplaints.size());
+        //Log.d("Dashboard", "Filter applied: " + filterType + ", items: " + filteredComplaints.size());
     }
 
     private void updateEmptyState() {
@@ -299,7 +304,7 @@ public class DashboardCustomerFragment extends Fragment {
                         final int finalProgressCount = progressCount;
                         final int finalCompletedCount = completedCount;
 
-                        // ✅ FIXED: Gunakan check isAdded() dan getActivity()
+                        //
                         if (isAdded() && getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
                                 tvPendingCount.setText(String.valueOf(finalPendingCount));
@@ -308,7 +313,7 @@ public class DashboardCustomerFragment extends Fragment {
 
                                 applyFilter("all");
 
-                                Log.d("Dashboard", "API data loaded: " + complaints.size() + " items");
+                               // Log.d("Dashboard", "API data loaded: " + complaints.size() + " items");
                             });
                         }
 
@@ -333,7 +338,7 @@ public class DashboardCustomerFragment extends Fragment {
                 if (isAdded() && getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                         showDummyData();
-                        Log.e("Dashboard", "API failed: " + t.getMessage());
+                       // Log.e("Dashboard", "API failed: " + t.getMessage());
                     });
                 }
             }
@@ -421,74 +426,10 @@ public class DashboardCustomerFragment extends Fragment {
         }
     }
 
-    private void navigateToHistory() {
-        if (getActivity() instanceof MainActivity && isAdded()) {
-            MainActivity mainActivity = (MainActivity) getActivity();
-            mainActivity.getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, new HistoryComplainFragment())
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-
-    private void navigateToProfile() {
-        if (getActivity() instanceof MainActivity && isAdded()) {
-            MainActivity mainActivity = (MainActivity) getActivity();
-            mainActivity.getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, new ProfilFragment())
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-
-    private void navigateToHistoryWithFilter(String filterType) {
-        if (!isAdded()) return;
-
-        HistoryComplainFragment historyFragment = new HistoryComplainFragment();
-        Bundle args = new Bundle();
-
-        String historyFilter = "semua";
-        switch (filterType) {
-            case "pending":
-                historyFilter = "pending";
-                break;
-            case "progress":
-                historyFilter = "on_progress";
-                break;
-            case "completed":
-                historyFilter = "completed";
-                break;
-        }
-
-        args.putString("filter", historyFilter);
-        historyFragment.setArguments(args);
-
-        if (getActivity() instanceof MainActivity) {
-            MainActivity mainActivity = (MainActivity) getActivity();
-            mainActivity.getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, historyFragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-
     private void navigateToComplaintDetail(Complaint complaint) {
-        HistoryComplainFragment detailFragment = new HistoryComplainFragment();
-        Bundle args = new Bundle();
-        args.putString("complaint_id", complaint.getId());
-        detailFragment.setArguments(args);
-
-        if (getActivity() instanceof MainActivity) {
-            MainActivity mainActivity = (MainActivity) getActivity();
-            mainActivity.getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, detailFragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
+        Intent intent = new Intent(getActivity(), ComplaintDetailActivity.class);
+        intent.putExtra("complaint", complaint);
+        startActivity(intent);
     }
 
     @Override

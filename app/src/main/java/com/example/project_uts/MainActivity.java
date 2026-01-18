@@ -1,4 +1,3 @@
-
 package com.example.project_uts;
 
 import android.content.Intent;
@@ -7,11 +6,12 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import com.example.project_uts.fragment.CustomerFragment;
 import com.example.project_uts.fragment.DashboardCustomerFragment;
 import com.example.project_uts.fragment.HistoryComplainFragment;
 import com.example.project_uts.fragment.ProfilFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
     private String userRole;
@@ -19,8 +19,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        super.onCreate(savedInstanceState); // Biarkan MyApplication handle theme
+
+        setContentView(R.layout.activity_main); // Set layout
 
         Log.d(TAG, "=== CUSTOMER ACTIVITY STARTED ===");
 
@@ -92,4 +93,5 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.fragment_container, defaultFragment)
                 .commit();
     }
+
 }

@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,122 +20,134 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.project_uts.R;
 import com.example.project_uts.Teknisi.Adapter.DiskusiAdapter;
 import com.example.project_uts.Teknisi.Model.DiskusiTeknisi;
+import com.example.project_uts.network.ApiClient;
+import com.example.project_uts.network.ApiService;
+import com.example.project_uts.models.ApiResponse;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DiskusiTeknisiFragment extends Fragment {
 
     private RecyclerView rvDiskusi;
     private LinearLayout layoutEmpty;
     private String userRole;
+    private DiskusiAdapter adapter;
+    private ApiService apiService;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_diskusi_teknisi, container, false);
 
-        // Ambil role user dari SharedPreferences
         SharedPreferences preferences = requireActivity().getSharedPreferences("user_pref", Context.MODE_PRIVATE);
         userRole = preferences.getString("role", "customer");
 
         initViews(view);
-        setupDiskusiList();
+        setupRecyclerView();
+
+        // Inisialisasi ApiClient dengan context
+        ApiClient.init(requireContext());
+        apiService = ApiClient.getApiService();
+
+        if ("teknisi".equals(userRole)) {
+            fetchDiskusiData();
+        } else {
+            Toast.makeText(getContext(), "Hanya teknisi yang bisa melihat diskusi", Toast.LENGTH_SHORT).show();
+            showEmptyState();
+        }
 
         return view;
     }
+
 
     private void initViews(View view) {
         rvDiskusi = view.findViewById(R.id.rvDiskusi);
         layoutEmpty = view.findViewById(R.id.layoutEmptyDiskusi);
     }
 
-    private void setupDiskusiList() {
+    private void setupRecyclerView() {
         rvDiskusi.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        List<DiskusiTeknisi> diskusiList = getDiskusiData();
-
-        if (diskusiList.isEmpty()) {
-            layoutEmpty.setVisibility(View.VISIBLE);
-            rvDiskusi.setVisibility(View.GONE);
-        } else {
-            layoutEmpty.setVisibility(View.GONE);
-            rvDiskusi.setVisibility(View.VISIBLE);
-
-            DiskusiAdapter adapter = new DiskusiAdapter(diskusiList, diskusi -> {
-                openBantuToTechnician(diskusi);
-            });
-            rvDiskusi.setAdapter(adapter);
-        }
+        adapter = new DiskusiAdapter(diskusi -> openBantuToTechnician(diskusi));
+        rvDiskusi.setAdapter(adapter);
     }
 
-    private List<DiskusiTeknisi> getDiskusiData() {
-        List<DiskusiTeknisi> diskusiList = new ArrayList<>();
+    private void fetchDiskusiData() {
+        apiService.getAllDiskusi().enqueue(new Callback<ApiResponse<List<DiskusiTeknisi>>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<List<DiskusiTeknisi>>> call,
+                                   @NonNull Response<ApiResponse<List<DiskusiTeknisi>>> response) {
+                if (!isAdded()) return;
 
-        // Hanya teknisi yang bisa lihat diskusi
-        if (!"teknisi".equals(userRole)) {
-            Toast.makeText(getContext(), "Hanya teknisi yang bisa melihat diskusi", Toast.LENGTH_SHORT).show();
-            return diskusiList;
-        }
-
-        // Ambil data dari SharedPreferences
-        SharedPreferences preferences = requireActivity().getSharedPreferences("diskusi_pref", Context.MODE_PRIVATE);
-        String diskusiIds = preferences.getString("diskusi_ids", "");
-
-        if (!diskusiIds.isEmpty()) {
-            String[] ids = diskusiIds.split(",");
-            for (String id : ids) {
-                String diskusiData = preferences.getString(id, "");
-                if (!diskusiData.isEmpty()) {
-                    DiskusiTeknisi diskusi = parseDiskusiFromString(diskusiData);
-                    if (diskusi != null) diskusiList.add(diskusi);
+                if (response.isSuccessful() && response.body() != null) {
+                    List<DiskusiTeknisi> diskusiList = response.body().getData();
+                    if (diskusiList != null && !diskusiList.isEmpty()) {
+                        adapter.setData(diskusiList);
+                        showListState();
+                    } else {
+                        showEmptyState();
+                    }
+                } else {
+                    showEmptyState();
+                    Toast.makeText(getContext(), "Gagal memuat diskusi", Toast.LENGTH_SHORT).show();
                 }
             }
-        }
 
-        return diskusiList;
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<List<DiskusiTeknisi>>> call, @NonNull Throwable t) {
+                if (!isAdded()) return;
+                Log.e("DiskusiFragment", "Error: " + t.getMessage());
+                showEmptyState();
+                Toast.makeText(getContext(), "Terjadi kesalahan jaringan", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private DiskusiTeknisi parseDiskusiFromString(String diskusiData) {
-        try {
-            String[] parts = diskusiData.split("\\|");
-            if (parts.length >= 9) {
-                DiskusiTeknisi diskusi = new DiskusiTeknisi();
-                diskusi.setId(parts[0]);
-                diskusi.setKomplainId(parts[1]);
-                diskusi.setJudulKomplain(parts[2]);
-                diskusi.setPelapor(parts[3]);
-                diskusi.setDeskripsiKomplain(parts[4]);
-                diskusi.setTeknisiPeminta(parts[5]);
-                diskusi.setNoTelpTeknisi(parts[6]);
-                diskusi.setWaktu(parts[7]);
-                diskusi.setStatus(parts[8]);
-                return diskusi;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    private void showEmptyState() {
+        layoutEmpty.setVisibility(View.VISIBLE);
+        rvDiskusi.setVisibility(View.GONE);
+    }
+
+    private void showListState() {
+        layoutEmpty.setVisibility(View.GONE);
+        rvDiskusi.setVisibility(View.VISIBLE);
     }
 
     private void openBantuToTechnician(DiskusiTeknisi diskusi) {
         try {
-            String phoneNumber = diskusi.getNoTelpTeknisi();
+            String phoneNumber = null;
+            String teknisiName = null;
+            String judul = null;
+            String pelapor = null;
 
-            // Format pesan
-            String message = "Halo " + diskusi.getTeknisiPeminta() + "! 👋\n\n" +
+            if (diskusi.getTechnician() != null) {
+                phoneNumber = diskusi.getTechnician().getPhone();
+                teknisiName = diskusi.getTechnician().getFull_name();
+            }
+            if (diskusi.getComplaint() != null) {
+                judul = diskusi.getComplaint().getJudul();
+                if (diskusi.getComplaint().getUser() != null) {
+                    pelapor = diskusi.getComplaint().getUser().getFull_name();
+                }
+            }
+
+            if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+                Toast.makeText(getContext(), "Nomor teknisi tidak tersedia", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String message = "Halo " + (teknisiName != null ? teknisiName : "Teknisi") + "! 👋\n\n" +
                     "Saya lihat kamu minta bantuan untuk komplain:\n\n" +
-                    "📋 *" + diskusi.getJudulKomplain() + "*\n" +
-                    "👤 Pelapor: " + diskusi.getPelapor() + "\n\n" +
+                    "📋 *" + (judul != null ? judul : "-") + "*\n" +
+                    "👤 Pelapor: " + (pelapor != null ? pelapor : "-") + "\n\n" +
                     "Ada yang bisa saya bantu?";
 
-            // Format nomor (hapus karakter selain angka)
             String formattedNumber = phoneNumber.replaceAll("[^0-9]", "");
-
-            // Buka WhatsApp
             String url = "https://wa.me/" + formattedNumber + "?text=" + Uri.encode(message);
 
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(url));
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(intent);
 
         } catch (Exception e) {

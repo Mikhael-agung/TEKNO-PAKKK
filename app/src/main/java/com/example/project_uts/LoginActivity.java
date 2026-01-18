@@ -2,24 +2,33 @@ package com.example.project_uts;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.project_uts.models.LoginResponse;
 import com.example.project_uts.models.User;
 import com.example.project_uts.network.ApiClient;
 import com.example.project_uts.network.ApiService;
 import com.example.project_uts.network.AuthManage;
-import com.example.project_uts.models.LoginResponse;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import java.util.HashMap;
-import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -31,6 +40,38 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+
+            // CLEAR FLAGS YANG BISA SEBABKAN BLACK SCREEN
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+            // Cek apakah dark mode aktif
+            int nightModeFlags = getResources().getConfiguration().uiMode &
+                    Configuration.UI_MODE_NIGHT_MASK;
+
+            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                // DARK MODE
+                window.setStatusBarColor(Color.parseColor("#121212"));
+                window.setNavigationBarColor(Color.parseColor("#121212"));
+                // Set background window (ini yang penting!)
+                getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#121212")));
+            } else {
+                // LIGHT MODE - FORCE WHITE
+                window.setStatusBarColor(Color.WHITE);
+                window.setNavigationBarColor(Color.WHITE);
+                // Set background window PUTIH
+                getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+
+                // Untuk Android 6.0+, set status bar icon hitam
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    window.getDecorView().setSystemUiVisibility(
+                            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                }
+            }
+        }
+
         super.onCreate(savedInstanceState);
 
         if (getSupportActionBar() != null) {
@@ -42,7 +83,6 @@ public class LoginActivity extends AppCompatActivity {
         authManage = new AuthManage(this);
         apiService = ApiClient.getApiService();
 
-        // Cek jika user sudah login dengan AuthManager (not SharedPreferences)
         boolean fromLogout = getIntent().getBooleanExtra("from_logout", false);
         boolean forceLogin = getIntent().getBooleanExtra("force_login", false);
 
@@ -50,9 +90,8 @@ public class LoginActivity extends AppCompatActivity {
 
         if (fromLogout || forceLogin) {
             Log.d(TAG, "Forcing login screen (from logout)");
-            // Lanjutkan ke login screen
         }
-        // Cek jika user sudah login dengan AuthManager
+        // user login dengan AuthManager
         else if (authManage.isLoggedIn()) {
             Log.d(TAG, "User is logged in, redirecting...");
             redirectToMainActivity();
@@ -75,10 +114,6 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(LoginActivity.this, RegisterCustomerActivity.class);
             startActivity(intent);
         });
-
-        // Auto-fill for development
-        etUsername.setText("teknisi");
-        etPassword.setText("123");
     }
 
     private void redirectToMainActivity() {
@@ -104,10 +139,8 @@ public class LoginActivity extends AppCompatActivity {
             intent = new Intent(LoginActivity.this, MainActivity.class);
         }
 
-        // FLAG PENTING: Clear task agar tidak bisa back ke login
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        // PASS USER DATA
         if (user != null) {
             intent.putExtra("role", user.getRole());
             intent.putExtra("user_id", user.getId());
@@ -116,7 +149,6 @@ public class LoginActivity extends AppCompatActivity {
             intent.putExtra("email", user.getEmail());
         }
 
-        // DEBUG INFO
         intent.putExtra("from_login", true);
         intent.putExtra("login_time", System.currentTimeMillis());
 
@@ -166,11 +198,11 @@ public class LoginActivity extends AppCompatActivity {
                         String token = loginResponse.getData().getToken();
                         com.example.project_uts.models.User user = loginResponse.getData().getUser();
 
-                        // 1. SIMPAN KE AUTHMANAGE (UNTUK TOKEN DAN DATA USER)
                         authManage.saveAuthData(token, user);
 
-                        // 2. SIMPAN KE SHAREDPREFERENCES LAMA UNTUK KOMPATIBILITAS
                         saveToLegacyPreferences(user);
+
+                        SharedPreferences prefs = getSharedPreferences("MyAppPrefs", MODE_PRIVATE); prefs.edit().putString("jwt_token", token).apply();
 
                         // Login berhasil
                         redirectToMainActivity();
@@ -199,7 +231,6 @@ public class LoginActivity extends AppCompatActivity {
                 btnLogin.setEnabled(true);
                 btnLogin.setText("Login");
 
-                // Fallback ke login lokal jika network error
                 fallbackLogin(username, password);
                 Toast.makeText(LoginActivity.this,
                         "Koneksi gagal, menggunakan mode offline", Toast.LENGTH_SHORT).show();

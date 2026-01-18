@@ -1,14 +1,12 @@
 package com.example.project_uts.adapter;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.project_uts.R;
 import com.example.project_uts.models.Complaint;
@@ -87,17 +85,17 @@ public class ComplaintGridAdapter extends RecyclerView.Adapter<ComplaintGridAdap
 
             if (status.equals("pending")) {
                 statusText = "MENUNGGU";
-                badgeDrawable = R.drawable.badge_danger;
+                badgeDrawable = R.drawable.badge_pending;
                 setCardOutlineByStatus(holder.cardView, "pending");
             }
             else if (status.equals("on_progress") || status.equals("in_progress")) {
                 statusText = "DIPROSES";
-                badgeDrawable = R.drawable.badge_warning;
+                badgeDrawable = R.drawable.badge_proses;
                 setCardOutlineByStatus(holder.cardView, "on_progress");
             }
             else if (status.equals("complete") || status.equals("completed") || status.equals("selesai")) {
                 statusText = "SELESAI";
-                badgeDrawable = R.drawable.badge_success;
+                badgeDrawable = R.drawable.badge_selesai;
                 setCardOutlineByStatus(holder.cardView, "completed");
             }
             else {

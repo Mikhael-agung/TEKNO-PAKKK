@@ -12,15 +12,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.project_uts.R;
 import com.example.project_uts.Teknisi.Model.DiskusiTeknisi;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DiskusiAdapter extends RecyclerView.Adapter<DiskusiAdapter.ViewHolder> {
 
-    private List<DiskusiTeknisi> diskusiList;
+    private List<DiskusiTeknisi> diskusiList = new ArrayList<>();
     private OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onBantuClick(DiskusiTeknisi diskusi);
+    }
+
+    public DiskusiAdapter(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    public void setData(List<DiskusiTeknisi> newData) {
+        this.diskusiList.clear();
+        if (newData != null) {
+            this.diskusiList.addAll(newData);
+        }
+        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -37,11 +50,6 @@ public class DiskusiAdapter extends RecyclerView.Adapter<DiskusiAdapter.ViewHold
         }
     }
 
-    public DiskusiAdapter(List<DiskusiTeknisi> diskusiList, OnItemClickListener listener) {
-        this.diskusiList = diskusiList;
-        this.listener = listener;
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -54,17 +62,22 @@ public class DiskusiAdapter extends RecyclerView.Adapter<DiskusiAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         DiskusiTeknisi diskusi = diskusiList.get(position);
 
-        holder.tvJudul.setText(diskusi.getJudulKomplain());
-        holder.tvTeknisiPeminta.setText("Diminta oleh: " + diskusi.getTeknisiPeminta());
-        holder.tvPelapor.setText("Pelapor: " + diskusi.getPelapor());
-        holder.tvWaktu.setText(diskusi.getWaktu());
+        // Ambil data dari nested object
+        if (diskusi.getComplaint() != null) {
+            holder.tvJudul.setText(diskusi.getComplaint().getJudul());
+            if (diskusi.getComplaint().getUser() != null) {
+                holder.tvPelapor.setText("Pelapor: " + diskusi.getComplaint().getUser().getFull_name());
+            }
+        }
+
+        if (diskusi.getTechnician() != null) {
+            holder.tvTeknisiPeminta.setText("Diminta oleh: " + diskusi.getTechnician().getFull_name());
+        }
+
+        holder.tvWaktu.setText(diskusi.getCreated_at());
 
         holder.btnBantu.setOnClickListener(v -> {
-            listener.onBantuClick(diskusi);
-        });
-
-        holder.itemView.setOnClickListener(v -> {
-            // TODO: bisa tambahin detail kalau mau
+            if (listener != null) listener.onBantuClick(diskusi);
         });
     }
 

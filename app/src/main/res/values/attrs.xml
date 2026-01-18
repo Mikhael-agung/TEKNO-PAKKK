@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Deklarasi custom attributes -->
+    <attr name="themeBackground" format="color" />
+    <attr name="themeCardBackground" format="color" />
+    <attr name="themeTextPrimary" format="color" />
+    <attr name="themeTextSecondary" format="color" />
+    <attr name="themeStatusBar" format="color" />
+    <attr name="themeNavigationBar" format="color" />
+    <attr name="cardOutlineColor" format="color" />
+</resources>

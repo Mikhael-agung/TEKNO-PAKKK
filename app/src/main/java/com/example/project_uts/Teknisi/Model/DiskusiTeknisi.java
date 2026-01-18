@@ -1,41 +1,58 @@
 package com.example.project_uts.Teknisi.Model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class DiskusiTeknisi {
-    private String id;
-    private String komplainId;
-    private String judulKomplain;
-    private String pelapor;
-    private String deskripsiKomplain;
-    private String teknisiPeminta;
-    private String noTelpTeknisi;
-    private String waktu;
-    private String status;
+    private int id;
+
+    @SerializedName("created_at")
+    private String created_at;
+
+    @SerializedName("technician")
+    private Technician technician;
+
+    @SerializedName("complaint")
+    private Complaint complaint;
+
+    // 👉 Tambahin field untuk request body
+    @SerializedName("complaint_id")
+    private String complaintId;
 
     // Getter & Setter
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public int getId() { return id; }
+    public String getCreated_at() { return created_at; }
+    public Technician getTechnician() { return technician; }
+    public Complaint getComplaint() { return complaint; }
 
-    public String getKomplainId() { return komplainId; }
-    public void setKomplainId(String komplainId) { this.komplainId = komplainId; }
+    public String getComplaintId() { return complaintId; }
+    public void setComplaintId(String complaintId) { this.complaintId = complaintId; }
 
-    public String getJudulKomplain() { return judulKomplain; }
-    public void setJudulKomplain(String judulKomplain) { this.judulKomplain = judulKomplain; }
+    // Nested classes
+    public static class Technician {
+        private String id;
+        private String phone;
+        private String full_name;
 
-    public String getPelapor() { return pelapor; }
-    public void setPelapor(String pelapor) { this.pelapor = pelapor; }
+        public String getId() { return id; }
+        public String getPhone() { return phone; }
+        public String getFull_name() { return full_name; }
+    }
 
-    public String getDeskripsiKomplain() { return deskripsiKomplain; }
-    public void setDeskripsiKomplain(String deskripsiKomplain) { this.deskripsiKomplain = deskripsiKomplain; }
+    public static class Complaint {
+        private String id;
+        private User user;
+        private String judul;
 
-    public String getTeknisiPeminta() { return teknisiPeminta; }
-    public void setTeknisiPeminta(String teknisiPeminta) { this.teknisiPeminta = teknisiPeminta; }
+        public String getId() { return id; }
+        public User getUser() { return user; }
+        public String getJudul() { return judul; }
 
-    public String getNoTelpTeknisi() { return noTelpTeknisi; }
-    public void setNoTelpTeknisi(String noTelpTeknisi) { this.noTelpTeknisi = noTelpTeknisi; }
+        public static class User {
+            private String id;
+            private String full_name;
 
-    public String getWaktu() { return waktu; }
-    public void setWaktu(String waktu) { this.waktu = waktu; }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+            public String getId() { return id; }
+            public String getFull_name() { return full_name; }
+        }
+    }
 }

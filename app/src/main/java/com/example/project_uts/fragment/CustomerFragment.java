@@ -3,9 +3,14 @@ package com.example.project_uts.fragment;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +20,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import androidx.cardview.widget.CardView;
-import android.widget.Spinner;
+
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.project_uts.network.ApiClient;
@@ -35,11 +41,14 @@ import com.example.project_uts.models.Complaint;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class CustomerFragment extends Fragment {
 
     private EditText etJudul, etDeskripsi;
-    private Spinner spKategori;
+    private MaterialAutoCompleteTextView actvKategori;
+    private TextInputLayout tilKategori;
     private ImageView ivFoto;
     private Button btnPilihFoto, btnSubmit;
     private FloatingActionButton fabBack;
@@ -58,6 +67,12 @@ public class CustomerFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // HAPUS SEMUA AppCompatDelegate.setDefaultNightMode DARI SINI!
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_customer_complain, container, false);
@@ -69,27 +84,27 @@ public class CustomerFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
     private void initViews(View view) {
         etJudul = view.findViewById(R.id.et_judul);
         etDeskripsi = view.findViewById(R.id.et_deskripsi);
-        spKategori = view.findViewById(R.id.sp_kategori);
-        ivFoto = view.findViewById(R.id.iv_foto);
-        btnPilihFoto = view.findViewById(R.id.btn_pilih_foto);
+        actvKategori = view.findViewById(R.id.actv_kategori);
+        tilKategori = view.findViewById(R.id.til_kategori);
         btnSubmit = view.findViewById(R.id.btn_submit);
         fabBack = view.findViewById(R.id.fab_back);
-        cardFotoPreview = view.findViewById(R.id.card_foto_preview);
-        btnHapusFoto = view.findViewById(R.id.btn_hapus_foto);
         etAlamat = view.findViewById(R.id.et_alamat);
         etKota = view.findViewById(R.id.et_kota);
         etKecamatan = view.findViewById(R.id.et_kecamatan);
         etTelepon = view.findViewById(R.id.et_telepon_alamat);
-        etCatatan = view.findViewById(R.id.et_catatan_alamat);
-
+        etCatatan = view.findViewById(R.id.et_catatan_alamat);  
     }
 
     private void setupKategoriSpinner() {
         String[] kategori = {
-                "Pilih Kategori",
                 "Elektronik (TV, Laptop, dll)",
                 "AC & Pendingin",
                 "Kulkas & Freezer",
@@ -104,11 +119,14 @@ public class CustomerFragment extends Fragment {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
-                android.R.layout.simple_spinner_item,
+                R.layout.dropdown_menu_popup_item,
                 kategori
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spKategori.setAdapter(adapter);
+
+        actvKategori.setAdapter(adapter);
+        actvKategori.setOnItemClickListener((parent, view, position, id) -> {
+            tilKategori.setError(null);
+        });
     }
 
     private void setupClickListeners() {
@@ -116,9 +134,7 @@ public class CustomerFragment extends Fragment {
             navigateToDashboard();
         });
 
-        btnPilihFoto.setOnClickListener(v -> pilihFoto());
         btnSubmit.setOnClickListener(v -> submitKomplain());
-        btnHapusFoto.setOnClickListener(v -> hapusFoto());
     }
 
     /**
@@ -138,31 +154,10 @@ public class CustomerFragment extends Fragment {
         }
     }
 
-    private void pilihFoto() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            fotoUri = data.getData();
-            ivFoto.setImageURI(fotoUri);
-
-            if (cardFotoPreview != null) {
-                cardFotoPreview.setVisibility(View.VISIBLE);
-            }
-
-            Toast.makeText(requireContext(), "Foto berhasil dipilih", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private void submitKomplain() {
         String judul = etJudul.getText().toString().trim();
         String deskripsi = etDeskripsi.getText().toString().trim();
-        String kategori = spKategori.getSelectedItem().toString();
+        String kategori = actvKategori.getText().toString().trim();
         String finalJudul = judul;
         String finalKategori = kategori;
 
@@ -177,8 +172,8 @@ public class CustomerFragment extends Fragment {
             return;
         }
 
-        if (kategori.equals("Pilih Kategori")) {
-            Toast.makeText(requireContext(), "Pilih kategori komplain", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(kategori)) {
+            tilKategori.setError("Pilih kategori komplain");
             return;
         }
 
@@ -191,11 +186,9 @@ public class CustomerFragment extends Fragment {
             return;
         }
 
-        // 2. Disable button selama proses
         btnSubmit.setEnabled(false);
         btnSubmit.setText("Mengirim...");
 
-        // 3. Siapkan data untuk API
         Map<String, String> complaintData = new HashMap<>();
         complaintData.put("judul", judul);
         complaintData.put("kategori", kategori);
@@ -207,10 +200,6 @@ public class CustomerFragment extends Fragment {
         complaintData.put("telepon_alamat", etTelepon.getText().toString());
         complaintData.put("catatan_alamat", etCatatan.getText().toString());
 
-        // 4. Jika ada foto, perlu multipart request (nanti)
-        // Untuk sekarang, tanpa foto dulu
-
-        // 5. Panggil API
         ApiService apiService = ApiClient.getApiService();
         Call<com.example.project_uts.models.ApiResponse<Complaint>> call = apiService.createComplaint(complaintData);
 
@@ -230,8 +219,6 @@ public class CustomerFragment extends Fragment {
                     if (apiResponse.isSuccess()) {
                         Complaint complaint = apiResponse.getData();
                         Log.d("CREATE_COMPLAINT", "Success! ID: " + complaint.getId());
-                        Log.d("CREATE_COMPLAINT", "Alamat: " + complaint.getAlamat());
-                        Log.d("CREATE_COMPLAINT", "Kota: " + complaint.getKota());
 
                         requireActivity().runOnUiThread(() -> {
                             showSuccessDialog(complaint.getJudul(), complaint.getKategori());
@@ -298,12 +285,12 @@ public class CustomerFragment extends Fragment {
         dialog.setCancelable(false);
 
         TextView tvMessage = dialog.findViewById(R.id.tv_message);
-        tvMessage.setText(message); // Pakai parameter message
+        tvMessage.setText(message);
 
         Button btnTryAgain = dialog.findViewById(R.id.btn_try_again);
         btnTryAgain.setOnClickListener(v -> {
             dialog.dismiss();
-            submitKomplain(); 
+            submitKomplain();
         });
 
         Button btnCancel = dialog.findViewById(R.id.btn_cancel);
@@ -314,21 +301,10 @@ public class CustomerFragment extends Fragment {
         dialog.show();
     }
 
-    /**
-     * Hapus foto yang sudah dipilih
-     */
-    private void hapusFoto() {
-        if (cardFotoPreview != null) {
-            cardFotoPreview.setVisibility(View.GONE);
-        }
-        ivFoto.setImageDrawable(null);
-        fotoUri = null;
-        Toast.makeText(requireContext(), "Foto dihapus", Toast.LENGTH_SHORT).show();
-    }
     private void resetForm() {
         etJudul.setText("");
         etDeskripsi.setText("");
-        spKategori.setSelection(0);
+        actvKategori.setSelection(0);
         ivFoto.setVisibility(View.GONE);
         fotoUri = null;
         if (cardFotoPreview != null) {
