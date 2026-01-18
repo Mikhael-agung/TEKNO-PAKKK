@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.project_uts.R;
 import com.example.project_uts.Teknisi.Adapter.HistoryTeknisiAdapter;
 import com.example.project_uts.Teknisi.Model.HistoryTeknisi;
+import com.example.project_uts.adapter.CustomerTimelineAdapter;
 import com.example.project_uts.models.ApiResponse;
 import com.example.project_uts.models.Complaint;
 import com.example.project_uts.models.User;
@@ -41,7 +42,7 @@ public class ComplaintDetailActivity extends AppCompatActivity {
 
     private Complaint complaint;
     private RecyclerView rvTimeline;
-    private HistoryTeknisiAdapter historyAdapter;
+    private CustomerTimelineAdapter historyAdapter;
     private List<HistoryTeknisi> historyList = new ArrayList<>();
     private ProgressBar progressBar, progressBarDetail;
     private TextView tvNoTimeline;
@@ -105,7 +106,7 @@ public class ComplaintDetailActivity extends AppCompatActivity {
         // Setup RecyclerView
         if (rvTimeline != null) {
             rvTimeline.setLayoutManager(new LinearLayoutManager(this));
-            historyAdapter = new HistoryTeknisiAdapter(historyList);
+            historyAdapter = new CustomerTimelineAdapter(this, historyList);
             rvTimeline.setAdapter(historyAdapter);
         }
 

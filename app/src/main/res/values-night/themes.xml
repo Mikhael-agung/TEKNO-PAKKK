@@ -2,7 +2,7 @@
     <!-- Dark theme version -->
     <style name="Theme.TeknoServe" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color -->
-        <item name="colorPrimary">@color/dark_primary</item>  <!-- GANTI ke ungu dark mode -->
+        <item name="colorPrimary">@color/dark_primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorOnPrimary">@color/white</item>
 

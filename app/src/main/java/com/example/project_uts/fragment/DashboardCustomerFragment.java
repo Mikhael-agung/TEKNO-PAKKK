@@ -1,5 +1,6 @@
 package com.example.project_uts.fragment;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -426,19 +427,9 @@ public class DashboardCustomerFragment extends Fragment {
     }
 
     private void navigateToComplaintDetail(Complaint complaint) {
-        HistoryComplainFragment detailFragment = new HistoryComplainFragment();
-        Bundle args = new Bundle();
-        args.putString("complaint_id", complaint.getId());
-        detailFragment.setArguments(args);
-
-        if (getActivity() instanceof MainActivity) {
-            MainActivity mainActivity = (MainActivity) getActivity();
-            mainActivity.getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, detailFragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
+        Intent intent = new Intent(getActivity(), ComplaintDetailActivity.class);
+        intent.putExtra("complaint", complaint);
+        startActivity(intent);
     }
 
     @Override
