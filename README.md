@@ -17,14 +17,20 @@ A mobile application for handling customer complaints and technician assignments
 | Halaman / Fragment | Tipe | Role | Description |
 |-------------------|------|------|-------------|
 | `LoginActivity` | Activity | All | User authentication |
-| `DashboardActivity` | Activity | All | Role-based main dashboard |
-| `KomplainFormFragment` | Fragment | Customer | Create new complaints |
-| `StatusKomplainFragment` | Fragment | Customer | Track complaint status |
-| `KomplainListFragment` | Fragment | Teknisi | List of assigned complaints |
-| `KomplainDetailFragment` | Fragment | All | Complaint details & discussion |
-| `AbsenFragment` | Fragment | Teknisi | Daily attendance |
-| `ProfilFragment` | Fragment | All | User profile management |
+| `RegisterCustomerActivity` | Activity | Customer | New customer registration |
+| `MainActivity` | Activity | All | Main customer dashboard |
+| `MainActivity` (Teknisi) | Activity | Teknisi | Main technician dashboard |
+| `ComplaintDetailActivity` | Activity | Customer | Complaint details with timeline |
+| `KomplainDetailActivity` | Activity | Teknisi | Technician complaint details |
+| `DashboardCustomerFragment` | Fragment | Customer | Customer dashboard with stats |
+| `HistoryComplainFragment` | Fragment | Customer | Complaint history list |
+| `CustomerFragment` | Fragment | Customer | Create new complaints |
+| `DashboardTeknisiFragment` | Fragment | Teknisi | Technician dashboard |
+| `KomplainFragment` | Fragment | Teknisi | Technician complaint list |
+| `ProgressFragment` | Fragment | Teknisi | In-progress complaints |
+| `CompletedFragment` | Fragment | Teknisi | Completed complaints |
 | `DiskusiTeknisiFragment` | Fragment | Teknisi | Technician discussions |
+| `ProfilFragment` | Fragment | All | User profile management |
 
 ## 🔐 Authentication Flow
 
@@ -34,96 +40,144 @@ A mobile application for handling customer complaints and technician assignments
 Input: username & password
 POST → /login
 Response: { userId, role }
-Store: SharedPreferences
-Navigate → DashboardActivity
+Store: SharedPreferences + AuthManager
+Navigate → Role-specific MainActivity
+```
+
+### **Registration Process**
+```java
+// RegisterCustomerActivity
+Input: username, email, password, full_name, phone
+POST → /register
+Navigate → LoginActivity
 ```
 
 ### **Role Detection & Navigation**
 ```java
-// DashboardActivity - Role-Based Menu
+// MainActivity - Role-Based Dashboard
 if (role == "customer") {
-    showMenu: Komplain Baru, Status Komplain, Profil
+    show: DashboardCustomerFragment, CustomerFragment, HistoryComplainFragment, ProfilFragment
 } else if (role == "teknisi") {
-    showMenu: Absen, Daftar Komplain, Profil
+    show: DashboardTeknisiFragment, KomplainFragment, ProgressFragment, CompletedFragment, ProfilFragment
 }
 ```
 
 ## 📱 Customer Flow
 
-### **1. 📸 Komplain Baru - `KomplainFormFragment`**
+### **1. 🏠 Dashboard Customer - `DashboardCustomerFragment`**
+```java
+// Features:
+- Welcome message with user name
+- Complaint statistics (Total, Proses, Pending, Selesai)
+- Quick access to create new complaint
+- Recent complaint history (clickable → ComplaintDetailActivity)
+```
+
+### **2. 📝 Buat Komplain - `CustomerFragment`**
 ```java
 // Input Fields:
 - Judul (required)
 - Deskripsi (required) 
-- Kategori (dropdown)
-- Foto barang rusak (optional)
+- Kategori (dropdown: AC Rusak, Listrik Mati, Pipa Bocor, Default Rusak)
+- Foto (optional, camera/gallery)
 
 // API:
-Multipart POST → /complains
-Body: { judul, deskripsi, kategori, foto, status: "open" }
+Multipart POST → /complaints
+Body: { title, description, category, photo, status: "complaint" }
 ```
 
-### **2. 📋 Status Komplain - `StatusKomplainFragment`**
+### **3. 📋 Riwayat Komplain - `HistoryComplainFragment`**
 ```java
 // API:
-GET → /complains?userId={userId}
+GET → /complaints/{userId}
 
 // Display:
-- List of user's complaints
-- Click → KomplainDetailFragment
+- Grid/list of user's complaints with status badges
+- Status badges: MENUNGGU (orange), PROSES (blue), SELESAI (green)
+- Click → ComplaintDetailActivity with timeline
 ```
 
-### **3. 💬 Diskusi Komplain - `KomplainDetailFragment`**
+### **4. 📊 Detail Komplain - `ComplaintDetailActivity`**
 ```java
-// Features:
-- Chat with assigned technician
-- View complaint details
-- Cannot change status or send reports
+// NEW FEATURES:
+- Dynamic timeline from /complaints/{id}/history API
+- 4 status stages: Complaint → On Progress → Pending → Completed
+- Complete description display
+- Technician card with name and status
+- WhatsApp contact button with fallback phone number
+- Status-based outline colors on timeline cards
+- Dark/Light mode support
 ```
 
 ## 🔧 Technician Flow
 
-### **1. ✅ Absen Harian - `AbsenFragment`**
+### **1. 🏠 Dashboard Teknisi - `DashboardTeknisiFragment`**
 ```java
-// API:
-POST → /attendance
-Body: { teknisiId, timestamp }
+// Features:
+- Welcome message
+- Complaint statistics
+- Quick access to complaint lists
 ```
 
-### **2. 📥 Daftar Komplain - `KomplainListFragment`**
+### **2. 📥 Daftar Komplain - `KomplainFragment`**
 ```java
 // API:
-GET → /complains?status=open
+GET → /complaints?status=complaint
 
 // Display:
-- List of open complaints
-- Click → KomplainDetailFragment
+- List of new complaints
+- Click → KomplainDetailActivity
 ```
 
-### **3. 🔧 Detail Komplain - `KomplainDetailFragment`**
+### **3. 🔄 Proses Komplain - `ProgressFragment`**
+```java
+// API:
+GET → /complaints?status=on_progress&teknisiId={id}
+
+// Display:
+- List of in-progress complaints assigned to technician
+```
+
+### **4. ✅ Selesai Komplain - `CompletedFragment`**
+```java
+// API:
+GET → /complaints?status=completed&teknisiId={id}
+
+// Display:
+- List of completed complaints
+```
+
+### **5. 🔧 Detail Komplain Teknisi - `KomplainDetailActivity`**
 ```java
 // Features:
 - View complaint details + photos
-- Update status: open → in_progress → done
-- Send work report: description + result photos
+- Update status buttons
+- Send work report with photos
 - Chat with customer
-- Discuss with other technicians (all technicians can view)
+- Discuss with other technicians
+- WhatsApp integration
 ```
 
 ## 🗂️ API Endpoints
 
 ### **Authentication**
 - `POST /login` - User login
+- `POST /register` - Customer registration
 - `POST /logout` - User logout
 
 ### **Complaints**
-- `GET /complains?userId={id}` - Get user complaints
-- `GET /complains?status={status}` - Get complaints by status
-- `POST /complains` - Create new complaint (Multipart)
-- `PUT /complains/{id}` - Update complaint status
-- `GET /complains/{id}` - Get complaint details
+- `GET /complaints` - Get all complaints (with filters)
+- `GET /complaints/{id}` - Get complaint details
+- `GET /complaints/{id}/history` - Get complaint timeline history
+- `POST /complaints` - Create new complaint (Multipart)
+- `PUT /complaints/{id}` - Update complaint status
+- `DELETE /complaints/{id}` - Delete complaint
 
-### **Attendance**
+### **User Management**
+- `GET /users/{id}` - Get user details
+- `PUT /users/{id}` - Update user profile
+
+### **Attendance** (Planned)
 - `POST /attendance` - Technician attendance
 
 ### **Chat/Discussion**
@@ -132,70 +186,169 @@ GET → /complains?status=open
 
 ## 🎨 UI/UX Features
 
+### **NEW UI IMPROVEMENTS:**
+- **Dynamic Timeline**: Shows complaint progression with status-based colors
+- **Status Badges**: Color-coded badges (MENUNGGU, PROSES, SELESAI)
+- **Outline Colors**: Timeline cards have colored outlines matching status
+- **Dark Mode Support**: Full dark/light mode adaptation
+- **WhatsApp Integration**: Direct contact with technicians
+- **Responsive Layout**: Better spacing and visual hierarchy
+
 ### **Navigation**
 - Bottom Navigation (role-based)
 - Fragment transactions with back stack
 - Intent for activity navigation
+- Clickable history items → detail activity
 
 ### **Design Patterns**
-- Material Design components
+- Material Design components (MaterialCardView)
+- RecyclerView with custom adapters
 - Multipart file upload for images
 - Real-time chat interface
 - Role-based UI adaptation
+- Status-based color themes
 
 ## 🛠️ Technical Stack
 
 - **Language**: Java
-- **Architecture**: MVC with Fragments
-- **Network**: Retrofit + OkHttp
+- **Architecture**: MVC with Activities & Fragments
+- **Network**: Retrofit2 + OkHttp3 + Gson
+- **Authentication**: JWT with AuthInterceptor
 - **Storage**: SharedPreferences, Multipart File Upload
 - **Navigation**: BottomNavigationView + FragmentManager
+- **UI Components**: Material Design, RecyclerView, CardView
+- **Image Loading**: Native implementation
 
-## 📁 Project Architecture
+## 📁 Updated Project Architecture
 
 ```
 app/
-├── src/main/java/com/example/project_uts/
-│   ├── activity/
-│   │   ├── LoginActivity.java
-│   │   └── DashboardActivity.java
-│   ├── fragment/
-│   │   ├── KomplainFormFragment.java
-│   │   ├── StatusKomplainFragment.java
-│   │   ├── KomplainListFragment.java
-│   │   ├── KomplainDetailFragment.java
-│   │   ├── AbsenFragment.java
-│   │   ├── ProfilFragment.java
-│   │   └── DiskusiTeknisiFragment.java
+├── java/com/example/project_uts/
+│   ├── MainActivity.java (Customer)
+│   ├── LoginActivity.java
+│   ├── RegisterCustomerActivity.java
+│   ├── ComplaintDetailActivity.java (NEW)
+│   ├── MyApplication.java
+│   ├── ThemeTransitionHelper.java
+│   │
 │   ├── adapter/
-│   │   ├── KomplainAdapter.java
-│   │   └── ChatAdapter.java
-│   ├── model/
-│   │   ├── User.java
-│   │   ├── Komplain.java
-│   │   └── ChatMessage.java
-│   └── api/
-│       └── ApiClient.java
+│   │   ├── ComplaintGridAdapter.java
+│   │   ├── HistoryAdapter.java
+│   │   └── CustomerTimelineAdapter.java (NEW)
+│   │
+│   ├── fragment/
+│   │   ├── ComplaintDetailActivity.java (Legacy)
+│   │   ├── CustomerFragment.java
+│   │   ├── DashboardCustomerFragment.java
+│   │   ├── HistoryComplainFragment.java
+│   │   └── ProfilFragment.java
+│   │
+│   ├── models/
+│   │   ├── Complaint.java
+│   │   ├── ComplaintResponse.java
+│   │   ├── ApiResponse.java
+│   │   ├── LoginResponse.java
+│   │   └── User.java
+│   │
+│   ├── network/
+│   │   ├── ApiClient.java
+│   │   ├── ApiService.java
+│   │   ├── AuthInterceptor.java
+│   │   ├── AuthManager.java
+│   │   └── AppConfig.java
+│   │
+│   └── Teknisi/
+│       ├── Activity/
+│       │   ├── MainActivity.java
+│       │   └── KomplainDetailActivity.java
+│       │
+│       ├── Adapter/
+│       │   ├── KomplainAdapter.java
+│       │   ├── ProgressAdapter.java
+│       │   ├── CompletedAdapter.java
+│       │   └── DiskusiAdapter.java
+│       │
+│       ├── Fragment/
+│       │   ├── DashboardTeknisiFragment.java
+│       │   ├── KomplainFragment.java
+│       │   ├── ProgressFragment.java
+│       │   ├── CompletedFragment.java
+│       │   ├── DiskusiTeknisiFragment.java
+│       │   └── ProfilFragment.java
+│       │
+│       ├── Model/
+│       │   ├── Komplain.java
+│       │   ├── HistoryTeknisi.java
+│       │   └── TeknisiComplaintsResponse.java
+│       │
+│       └── Utils/
+│           └── WhatsAppHelper.java
 ```
 
 ## 🔄 Workflow Summary
 
 ### **Customer Journey**
 ```
-Login → Dashboard → Buat Komplain → Lihat Status → Chat dengan Teknisi
+Login/Register → Dashboard → Buat Komplain → Lihat History → Detail dengan Timeline → Chat via WhatsApp
 ```
 
 ### **Technician Journey**  
 ```
-Login → Dashboard → Absen → Lihat Daftar Komplain → Proses Komplain → Kirim Laporan → Chat dengan Customer
+Login → Dashboard → Lihat Komplain Baru → Proses Komplain → Update Status → Kirim Laporan → Chat dengan Customer
+```
+
+## 🚀 Recent Improvements
+
+### **Fixed Issues:**
+1. **Timeline Static → Dinamis**: Now shows 4 status stages from API history
+2. **Deskripsi NULL**: Fixed empty description display
+3. **Teknisi Tidak Muncul**: Technician card now visible with status
+4. **No Telepon Teknisi**: WhatsApp button works with fallback phone
+5. **Klik History Dashboard**: History items now navigate to detail
+6. **Status Badge Warna**: Color consistency for all status badges
+7. **Timeline Dark Mode**: Full dark/light mode support
+8. **Outline Tidak Muncul**: Cards now have colored outlines
+9. **Spacing Terlalu Mepet**: Better spacing for readability
+
+### **New Features:**
+- Dynamic complaint timeline with status-based colors
+- WhatsApp integration for direct technician contact
+- Dark mode support across all UI components
+- Improved visual hierarchy and spacing
+- Better error handling and fallback mechanisms
+
+## 📦 Dependencies
+
+```gradle
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.recyclerview:recyclerview:1.3.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    
+    // Networking
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.11.0'
+    
+    // Image Loading
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+}
 ```
 
 ## 🚀 Getting Started
 
 1. **Clone repository**
-2. **Configure API endpoints in `ApiClient.java`**
-3. **Build and run on Android Studio**
-4. **Test with different user roles**
+2. **Configure API endpoints in `AppConfig.java`**
+3. **Update base URL in `ApiClient.java`**
+4. **Build and run on Android Studio**
+5. **Test with different user roles**
+
+### **Testing Credentials:**
+- **Customer**: Username/Password from registration
+- **Teknisi**: Pre-configured in database
 
 ## 📞 Support
 
@@ -203,6 +356,7 @@ For technical issues or feature requests, contact the development team.
 
 ---
 
-**Version**: 1.0  
-**Last Updated**: 2025  
-**Developed By**: Dicky Pratama and Mikhael Agung
+**Version**: 2.0 (Updated)  
+**Last Updated**: January 2025  
+**Developed By**: Dicky Pratama and Mikhael Agung  
+**Recent Updates**: Timeline feature, Dark mode, WhatsApp integration, UI improvements
