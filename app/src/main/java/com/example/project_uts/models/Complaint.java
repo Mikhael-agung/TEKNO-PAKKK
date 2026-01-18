@@ -2,11 +2,14 @@ package com.example.project_uts.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class Complaint {
+public class Complaint implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @SerializedName("id")
     private String id;
 
@@ -52,6 +55,23 @@ public class Complaint {
     @SerializedName("catatan_alamat")
     private String catatan_alamat;
 
+    // Field dari relasi user
+    @SerializedName("user_name")
+    private String user_name;
+
+    @SerializedName("user_email")
+    private String user_email;
+
+    @SerializedName("user_phone")
+    private String user_phone;
+
+    // Field dari relasi teknisi
+    @SerializedName("teknisi_name")
+    private String teknisi_name;
+
+    @SerializedName("teknisi_phone")
+    private String teknisi_phone;
+
     public Complaint() {}
 
     // Getter dan Setter
@@ -71,7 +91,6 @@ public class Complaint {
         if (tanggal == null) return "";
         try {
             String datePart = tanggal.split("T")[0];
-            // Format: YYYY-MM-DD to DD-MM-YYYY
             String[] parts = datePart.split("-");
             return parts[2] + "/" + parts[1] + "/" + parts[0];
         } catch (Exception e) {
@@ -111,69 +130,56 @@ public class Complaint {
         this.resolution_notes = resolution_notes;
     }
 
-    public String getShortDate() {
-        if (tanggal == null) return "";
-        try {
-            // Format: "2024-12-10T10:30:00.000Z" → "15 Des"
-            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-            SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMM", new Locale("id", "ID"));
+    public String getUpdated_at() { return updated_at; }
+    public void setUpdated_at(String updated_at) { this.updated_at = updated_at; }
 
-            Date date = inputFormat.parse(tanggal.split("\\.")[0]);
-            return outputFormat.format(date);
-        } catch (Exception e) {
-            // Fallback ke format pendek
-            try {
-                String[] parts = getTanggal().split("/");
-                if (parts.length >= 2) {
-                    int day = Integer.parseInt(parts[0]);
-                    int month = Integer.parseInt(parts[1]);
-                    String[] monthNames = {"Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
-                            "Jul", "Agu", "Sep", "Okt", "Nov", "Des"};
-                    if (month >= 1 && month <= 12) {
-                        return day + " " + monthNames[month-1];
-                    }
-                }
-            } catch (Exception ex) {
-                // Ignore
-            }
-            return getTanggal();
-        }
+    public String getUser_name() { return user_name; }
+    public void setUser_name(String user_name) { this.user_name = user_name; }
+
+    public String getUser_email() { return user_email; }
+    public void setUser_email(String user_email) { this.user_email = user_email; }
+
+    public String getUser_phone() { return user_phone; }
+    public void setUser_phone(String user_phone) { this.user_phone = user_phone; }
+
+    public String getTeknisi_name() { return teknisi_name; }
+    public void setTeknisi_name(String teknisi_name) { this.teknisi_name = teknisi_name; }
+
+    public String getTeknisi_phone() { return teknisi_phone; }
+    public void setTeknisi_phone(String teknisi_phone) { this.teknisi_phone = teknisi_phone; }
+
+    // Helper methods untuk UI
+    public String getNama_pelapor() {
+        return user_name != null ? user_name : "Pelanggan";
     }
 
-    // Method untuk dapatkan judul yang lebih presentable
-    public String getPresentableTitle() {
-        if (judul != null && !judul.trim().isEmpty()) {
-            String cleanTitle = judul.trim();
-            // Jika judul terlalu pendek atau tidak jelas
-            if (cleanTitle.length() < 4 ||
-                    cleanTitle.equalsIgnoreCase("null") ||
-                    cleanTitle.matches(".*[0-9]{5,}.*")) { // jika berisi banyak angka
-                // Gunakan kategori sebagai fallback
-                if (kategori != null && !kategori.trim().isEmpty()) {
-                    return "Keluhan " + kategori;
-                }
-                return "Keluhan Layanan";
-            }
-            return cleanTitle;
-        }
-        // Fallback ke kategori
-        if (kategori != null && !kategori.trim().isEmpty()) {
-            return "Keluhan " + kategori;
-        }
-        return "Keluhan Layanan";
+    public String getTeknisi_nama() {
+        return teknisi_name != null ? teknisi_name :
+                (teknisi_id != null ? "Teknisi #" + teknisi_id : "Belum ditugaskan");
     }
 
-    // Method untuk deskripsi yang lebih baik
-    public String getCleanDescription() {
-        if (deskripsi != null && !deskripsi.trim().isEmpty()) {
-            String cleanDesc = deskripsi.trim();
-            // Hilangkan "null" string
-            if (cleanDesc.equalsIgnoreCase("null")) {
-                return "";
-            }
-            return cleanDesc;
+    public String getTanggal_update() {
+        return formatDate(updated_at);
+    }
+
+    public String getCatatan() {
+        return resolution_notes;
+    }
+
+    public String getFullAlamat() {
+        StringBuilder sb = new StringBuilder();
+        if (alamat != null) {
+            sb.append(alamat);
         }
-        return "";
+        if (kecamatan != null) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(kecamatan);
+        }
+        if (kota != null) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(kota);
+        }
+        return sb.length() > 0 ? sb.toString() : "Alamat tidak tersedia";
     }
 
     public String getFormattedDate() {
@@ -189,8 +195,61 @@ public class Complaint {
             return getTanggal(); // fallback ke format lama
         }
     }
-    public String getUpdated_at() { return updated_at; }
-    public void setUpdated_at(String updated_at) {
-        this.updated_at = updated_at;
+
+    public String getAlamatLengkap() {
+        StringBuilder sb = new StringBuilder();
+        if (alamat != null) {
+            sb.append(alamat);
+        }
+        if (kecamatan != null) {
+            sb.append("\nKec. ").append(kecamatan);
+        }
+        if (kota != null) {
+            sb.append("\n").append(kota);
+        }
+        if (telepon_alamat != null && !telepon_alamat.isEmpty()) {
+            sb.append("\n📱 ").append(telepon_alamat);
+        }
+        if (catatan_alamat != null && !catatan_alamat.isEmpty()) {
+            sb.append("\n📝 ").append(catatan_alamat);
+        }
+        return sb.toString();
+    }
+
+    public String getFormattedTimelineDate() {
+        if (tanggal == null) return "";
+        try {
+            // Format: "2024-12-10T10:30:00.000Z" → "25/12/2024 12:54"
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", new Locale("id", "ID"));
+            Date date = inputFormat.parse(tanggal.split("\\.")[0]);
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            return getTanggal();
+        }
+    }
+
+    public String getFormattedUpdatedDate() {
+        if (updated_at == null || updated_at.isEmpty()) return getFormattedTimelineDate();
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", new Locale("id", "ID"));
+            Date date = inputFormat.parse(updated_at.split("\\.")[0]);
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            return updated_at;
+        }
+    }
+
+    private String formatDate(String dateString) {
+        if (dateString == null || dateString.isEmpty()) return "";
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", new Locale("id", "ID"));
+            Date date = inputFormat.parse(dateString.split("\\.")[0]);
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            return dateString;
+        }
     }
 }

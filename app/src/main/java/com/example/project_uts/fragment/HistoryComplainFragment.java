@@ -172,7 +172,7 @@ public class HistoryComplainFragment extends Fragment {
                 break;
         }
 
-        Log.d("HISTORY_DEBUG", "Total after filter: " + complaints.size());
+        //Log.d("HISTORY_DEBUG", "Total after filter: " + complaints.size());
 
         if (adapter != null) {
             adapter.notifyDataSetChanged();
@@ -211,7 +211,6 @@ public class HistoryComplainFragment extends Fragment {
             @Override
             public void onResponse(Call<ApiResponse<ComplaintResponse>> call,
                                    Response<ApiResponse<ComplaintResponse>> response) {
-                // ✅ CHECK JIKA FRAGMENT MASIH ATTACHED
                 if (!isAdded() || getContext() == null) {
                     Log.e("HISTORY_DEBUG", "Fragment not attached, skipping response");
                     return;
@@ -229,13 +228,13 @@ public class HistoryComplainFragment extends Fragment {
                         allComplaints.clear();
                         allComplaints.addAll(allFromApi);
 
-                        // ✅ DAPATKAN USER ID DENGAN AMAN
+                        // DAPATKAN USER ID DENGAN AMAN
                         String currentUserId = getCurrentUserIdSafely();
 
                         Log.d("HISTORY_DEBUG", "API returned: " + allFromApi.size() + " complaints");
                         Log.d("HISTORY_DEBUG", "Current User ID: " + currentUserId);
 
-                        // ✅ PAKAI FILTER OTOMATIS (TANPA PANGGIL AuthManage DI SINI)
+                        //  AKAI FILTER OTOMATIS (TANPA PANGGIL AuthManage DI SINI)
                         filterComplaints("semua");
                         updateButtonStates(btnSemua);
 
@@ -261,7 +260,7 @@ public class HistoryComplainFragment extends Fragment {
                 return authManage.getUserId();
             }
         } catch (Exception e) {
-            Log.e("HISTORY_DEBUG", "Error getting user ID: " + e.getMessage());
+            //Log.e("HISTORY_DEBUG", "Error getting user ID: " + e.getMessage());
         }
         return null;
     }
@@ -349,7 +348,6 @@ public class HistoryComplainFragment extends Fragment {
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        // AMBIL DATA DETAIL LENGKAP DARI API
         ApiService apiService = ApiClient.getApiService();
         apiService.getComplaintDetail(complaint.getId()).enqueue(new Callback<ApiResponse<Complaint>>() {
             @Override

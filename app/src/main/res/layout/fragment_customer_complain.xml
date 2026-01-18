@@ -253,10 +253,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
+                    app:cardElevation="3dp"
                     app:cardBackgroundColor="?attr/colorSurface"
                     app:strokeColor="?attr/colorPrimary"
-                    app:strokeWidth="1dp"
+                    app:strokeWidth="0dp"
                     android:layout_marginBottom="20dp">
 
                     <LinearLayout
@@ -434,123 +434,7 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Foto Upload Section -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="?attr/colorSurface"
-                    app:strokeColor="?attr/colorPrimary"
-                    app:strokeWidth="1dp"
-                    android:layout_marginBottom="20dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@android:drawable/ic_menu_camera"
-                            app:tint="?attr/colorPrimary"
-                            android:layout_marginBottom="12dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Foto Barang Rusak"
-                            android:textColor="?attr/colorPrimary"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Unggah foto untuk membantu teknisi (opsional)"
-                            android:textColor="?attr/themeTextSecondary"
-                            android:textSize="12sp"
-                            android:layout_marginBottom="16dp" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btn_pilih_foto"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Pilih Foto"
-                            android:textColor="@color/white"
-                            app:backgroundTint="?attr/colorPrimary"
-                            app:cornerRadius="20dp"
-                            app:icon="@android:drawable/ic_menu_upload"
-                            app:iconTint="@color/white"
-                            style="@style/Widget.MaterialComponents.Button" />
-
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Foto Preview -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/card_foto_preview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="?attr/themeCardBackground"
-                    app:strokeColor="?attr/cardOutlineColor"
-                    app:strokeWidth="1dp"
-                    android:layout_marginBottom="20dp"
-                    android:visibility="gone">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="12dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Foto Terpilih"
-                                android:textColor="?attr/themeTextPrimary"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_hapus_foto"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Hapus"
-                                android:textColor="@color/red"
-                                app:icon="@android:drawable/ic_menu_delete"
-                                app:iconTint="@color/red"
-                                app:strokeColor="@color/red"
-                                app:strokeWidth="1dp"
-                                app:cornerRadius="8dp"
-                                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-                        </LinearLayout>
-
-                        <ImageView
-                            android:id="@+id/iv_foto"
-                            android:layout_width="match_parent"
-                            android:layout_height="200dp"
-                            android:scaleType="centerCrop"
-                            android:background="@drawable/btn_border"
-                            app:srcCompat="@android:drawable/ic_menu_gallery" />
-
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

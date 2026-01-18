@@ -2,17 +2,17 @@ package com.example.project_uts.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.project_uts.fragment.ComplaintDetailActivity;
 import com.example.project_uts.R;
 import com.example.project_uts.models.Complaint;
 import com.google.android.material.card.MaterialCardView;
@@ -24,8 +24,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     private List<Complaint> complaints;
     private OnItemClickListener listener;
-
-    private static final String WHATSAPP_NUMBER = "6285175346469";
 
     public HistoryAdapter(List<Complaint> complaints, OnItemClickListener listener) {
         this.complaints = complaints != null ? complaints : new ArrayList<>();
@@ -43,7 +41,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         try {
-            Complaint complaint = complaints.get(position);
+            final Complaint complaint = complaints.get(position);
 
             // Set basic data
             holder.tvTitle.setText(complaint.getJudul() != null ? complaint.getJudul() : "");
@@ -64,32 +62,34 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             setCategoryIcon(holder, complaint.getKategori());
 
             // Handle visibility based on status
-            handleVisibility(holder, status);
+            handleVisibility(holder, status, complaint);
 
-            // Set technician name jika ada
+            // ============ SET TEKNISI NAMA DARI DATA REAL ============
             if (holder.layoutTechnician.getVisibility() == View.VISIBLE) {
-                holder.tvTechnician.setText("Budi Santoso");
-            }
-
-            // Set rating jika ada
-            if (holder.layoutRating.getVisibility() == View.VISIBLE) {
-                holder.tvRating.setText("4.5/5");
-            }
-
-            // Set rejection reason jika ada
-            if (holder.tvRejectionReason.getVisibility() == View.VISIBLE) {
-                holder.tvRejectionReason.setText("Alasan: Kerusakan di luar cakupan layanan");
+                // Ambil nama teknisi dari Complaint object
+                String teknisiName = complaint.getTeknisi_name();
+                if (teknisiName != null && !teknisiName.isEmpty() &&
+                        !teknisiName.equalsIgnoreCase("Belum ditugaskan")) {
+                    holder.tvTechnician.setText(teknisiName);
+                } else {
+                    // Jika belum ada teknisi, sembunyikan layout
+                    holder.layoutTechnician.setVisibility(View.GONE);
+                }
             }
 
             // Button click listeners
             holder.btnDetail.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onItemClick(complaint);
-                }
+                Intent intent = new Intent(v.getContext(), ComplaintDetailActivity.class);
+                intent.putExtra("complaint", complaint);
+                v.getContext().startActivity(intent);
             });
 
+            // ✅ WHATSAPP FUNCTION REMOVED - User harus ke detail dulu
             holder.btnChat.setOnClickListener(v -> {
-                openWhatsApp(holder.itemView.getContext(), complaint);
+                // Navigate ke detail untuk hubungi teknisi
+                Intent intent = new Intent(v.getContext(), ComplaintDetailActivity.class);
+                intent.putExtra("complaint", complaint);
+                v.getContext().startActivity(intent);
             });
 
         } catch (Exception e) {
@@ -115,9 +115,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         } else if (statusLower.contains("selesai") || statusLower.contains("completed") ||
                 statusLower.contains("done")) {
             strokeColor = ContextCompat.getColor(context, R.color.status_completed); // #4CAF50
-        } else if (statusLower.contains("ditolak") || statusLower.contains("rejected")) {
-            strokeColor = ContextCompat.getColor(context, R.color.colorDitolak); // #C0392B
-        } else {
+        }  else {
             strokeColor = ContextCompat.getColor(context, R.color.status_default); // #666666
         }
 
@@ -157,38 +155,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         }
     }
 
-    /** WhatsApp integration (tetap sama) */
-    private void openWhatsApp(Context context, Complaint complaint) {
-        try {
-            String message = "Halo Teknisi TeknoServe,\n\n" +
-                    "Saya ingin bertanya tentang komplain saya:\n" +
-                    "• ID Komplain: " + (complaint.getId() != null ? complaint.getId() : "N/A") + "\n" +
-                    "• Judul: " + complaint.getJudul() + "\n" +
-                    "• Kategori: " + complaint.getKategori() + "\n" +
-                    "• Tanggal: " + complaint.getTanggal() + "\n" +
-                    "• Status: " + complaint.getStatus() + "\n\n" +
-                    "Bisa dibantu update progress-nya?";
-
-            String encodedMessage = Uri.encode(message);
-            Uri uri = Uri.parse("https://api.whatsapp.com/send?phone=" + WHATSAPP_NUMBER + "&text=" + encodedMessage);
-
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            intent.setPackage("com.whatsapp");
-
-            if (intent.resolveActivity(context.getPackageManager()) != null) {
-                context.startActivity(intent);
-            } else {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, uri);
-                context.startActivity(browserIntent);
-                Toast.makeText(context, "WhatsApp tidak terinstall, membuka browser", Toast.LENGTH_SHORT).show();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(context, "Error membuka WhatsApp", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private void setCategoryIcon(ViewHolder holder, String category) {
         if (category == null) {
             holder.ivCategory.setImageResource(android.R.drawable.ic_menu_help);
@@ -200,29 +166,29 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         // Gunakan icon Android built-in yang sesuai
         if (categoryLower.contains("elektronik") || categoryLower.contains("tv") || categoryLower.contains("laptop")) {
-            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_camera); // TV/Electronics
+            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_camera);
         } else if (categoryLower.contains("ac") || categoryLower.contains("pendingin")) {
-            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_compass); // AC
+            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_compass);
         } else if (categoryLower.contains("kulkas") || categoryLower.contains("freezer")) {
-            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_save); // Kulkas
+            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_save);
         } else if (categoryLower.contains("mesin") || categoryLower.contains("cuci")) {
-            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_rotate); // Mesin Cuci
+            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_rotate);
         } else if (categoryLower.contains("air") || categoryLower.contains("pipa") || categoryLower.contains("keran")) {
-            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_directions); // Pipa Air
+            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_directions);
         } else if (categoryLower.contains("listrik") || categoryLower.contains("lampu") || categoryLower.contains("stop")) {
-            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_my_calendar); // Listrik
+            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_my_calendar);
         } else if (categoryLower.contains("perabotan") || categoryLower.contains("meja") || categoryLower.contains("kursi")) {
-            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_edit); // Perabotan
+            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_edit);
         } else if (categoryLower.contains("internet") || categoryLower.contains("wifi") || categoryLower.contains("jaringan")) {
-            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_share); // Internet
+            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_share);
         } else if (categoryLower.contains("smartphone") || categoryLower.contains("hp") || categoryLower.contains("tablet")) {
-            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_call); // Smartphone
+            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_call);
         } else {
-            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_help); // Default
+            holder.ivCategory.setImageResource(android.R.drawable.ic_menu_help);
         }
     }
 
-    private void handleVisibility(ViewHolder holder, String status) {
+    private void handleVisibility(ViewHolder holder, String status, Complaint complaint) {
         if (status == null) return;
 
         String statusLower = status.toLowerCase();
@@ -232,17 +198,44 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.layoutRating.setVisibility(View.GONE);
         holder.tvRejectionReason.setVisibility(View.GONE);
 
-        // Tampilkan berdasarkan status
+        // ============ LOGIC VISIBILITY DARI DATA REAL ============
+        boolean hasTeknisi = complaint.getTeknisi_name() != null &&
+                !complaint.getTeknisi_name().isEmpty() &&
+                !complaint.getTeknisi_name().equalsIgnoreCase("Belum ditugaskan");
+
         switch (statusLower) {
             case "selesai":
+            case "completed":
+                // Tampilkan rating untuk komplain selesai
                 holder.layoutRating.setVisibility(View.VISIBLE);
-                holder.layoutTechnician.setVisibility(View.VISIBLE);
+
+                // Tampilkan teknisi jika ada
+                if (hasTeknisi) {
+                    holder.layoutTechnician.setVisibility(View.VISIBLE);
+                }
                 break;
+
             case "dalam proses":
-                holder.layoutTechnician.setVisibility(View.VISIBLE);
+            case "on_progress":
+            case "progress":
+            case "assigned":
+                // Tampilkan teknisi jika ada
+                if (hasTeknisi) {
+                    holder.layoutTechnician.setVisibility(View.VISIBLE);
+                }
                 break;
+
             case "ditolak":
+            case "rejected":
+                // Tampilkan alasan penolakan
                 holder.tvRejectionReason.setVisibility(View.VISIBLE);
+                break;
+
+            case "pending":
+                // Tampilkan teknisi jika sudah ditugaskan meski status pending
+                if (hasTeknisi) {
+                    holder.layoutTechnician.setVisibility(View.VISIBLE);
+                }
                 break;
         }
     }
@@ -263,7 +256,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        // TAMBAHKAN INI
         MaterialCardView cardComplaint;
         ImageView ivCategory;
         TextView tvTitle, tvCategory, tvDate, tvStatus, tvTechnician, tvRating, tvRejectionReason;
@@ -273,7 +265,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            // TAMBAHKAN INI - PASTIKAN ID DI XML 'card_complaint'
             cardComplaint = itemView.findViewById(R.id.card_complaint);
 
             // Initialize semua view
@@ -297,5 +288,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     public interface OnItemClickListener {
         void onItemClick(Complaint complaint);
+    }
+
+    // Method untuk update data
+    public void updateData(List<Complaint> newComplaints) {
+        complaints.clear();
+        complaints.addAll(newComplaints);
+        notifyDataSetChanged();
     }
 }

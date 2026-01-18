@@ -30,6 +30,11 @@
             android:exported="false"
             android:theme="@style/Theme.TeknoServe" />
 
+        <activity
+            android:name=".fragment.ComplaintDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TeknoServe" />
+
         <!-- TEKNISI MAIN ACTIVITY -->
         <activity
             android:name=".Teknisi.Activity.MainActivity"

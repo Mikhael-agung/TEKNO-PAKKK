@@ -94,12 +94,8 @@ public class CustomerFragment extends Fragment {
         etDeskripsi = view.findViewById(R.id.et_deskripsi);
         actvKategori = view.findViewById(R.id.actv_kategori);
         tilKategori = view.findViewById(R.id.til_kategori);
-        ivFoto = view.findViewById(R.id.iv_foto);
-        btnPilihFoto = view.findViewById(R.id.btn_pilih_foto);
         btnSubmit = view.findViewById(R.id.btn_submit);
         fabBack = view.findViewById(R.id.fab_back);
-        cardFotoPreview = view.findViewById(R.id.card_foto_preview);
-        btnHapusFoto = view.findViewById(R.id.btn_hapus_foto);
         etAlamat = view.findViewById(R.id.et_alamat);
         etKota = view.findViewById(R.id.et_kota);
         etKecamatan = view.findViewById(R.id.et_kecamatan);
@@ -138,9 +134,7 @@ public class CustomerFragment extends Fragment {
             navigateToDashboard();
         });
 
-        btnPilihFoto.setOnClickListener(v -> pilihFoto());
         btnSubmit.setOnClickListener(v -> submitKomplain());
-        btnHapusFoto.setOnClickListener(v -> hapusFoto());
     }
 
     /**
@@ -157,27 +151,6 @@ public class CustomerFragment extends Fragment {
             e.printStackTrace();
             // Fallback jika bottom nav tidak ditemukan
             requireActivity().onBackPressed();
-        }
-    }
-
-    private void pilihFoto() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            fotoUri = data.getData();
-            ivFoto.setImageURI(fotoUri);
-
-            if (cardFotoPreview != null) {
-                cardFotoPreview.setVisibility(View.VISIBLE);
-            }
-
-            Toast.makeText(requireContext(), "Foto berhasil dipilih", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -326,18 +299,6 @@ public class CustomerFragment extends Fragment {
         });
 
         dialog.show();
-    }
-
-    /**
-     * Hapus foto yang sudah dipilih
-     */
-    private void hapusFoto() {
-        if (cardFotoPreview != null) {
-            cardFotoPreview.setVisibility(View.GONE);
-        }
-        ivFoto.setImageDrawable(null);
-        fotoUri = null;
-        Toast.makeText(requireContext(), "Foto dihapus", Toast.LENGTH_SHORT).show();
     }
 
     private void resetForm() {

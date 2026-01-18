@@ -45,6 +45,38 @@ public class User {
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 
+    @SerializedName("telepon")
+    private String telepon;
+
+    @SerializedName("no_hp")
+    private String no_hp;
+
+    public String getTelepon() {
+        // Prioritas: telepon > phone > no_hp
+        if (telepon != null && !telepon.isEmpty()) {
+            return telepon;
+        } else if (phone != null && !phone.isEmpty()) {
+            return phone;
+        } else {
+            return no_hp != null ? no_hp : "";
+        }
+    }
+
+    public void setTelepon(String telepon) { this.telepon = telepon; }
+
+    public String getNo_hp() {
+        // Prioritas: no_hp > telepon > phone
+        if (no_hp != null && !no_hp.isEmpty()) {
+            return no_hp;
+        } else if (telepon != null && !telepon.isEmpty()) {
+            return telepon;
+        } else {
+            return phone != null ? phone : "";
+        }
+    }
+
+    public void setNo_hp(String no_hp) { this.no_hp = no_hp; }
+
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
 

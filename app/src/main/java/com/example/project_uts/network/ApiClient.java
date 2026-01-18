@@ -5,11 +5,11 @@ import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
 
 public class ApiClient {
     private static final String TAG = "ApiClient";
@@ -20,8 +20,6 @@ public class ApiClient {
     public static void init(Context context) {
         appContext = context.getApplicationContext();
         Log.d(TAG, "ApiClient initialized with context");
-
-
         retrofit = null;
     }
 
@@ -30,6 +28,44 @@ public class ApiClient {
             createRetrofitInstance();
         }
         return retrofit.create(ApiService.class);
+    }
+
+    // ✅ TAMBAH METHOD INI
+    public static ApiService getFreshApiService() {
+        Log.d(TAG, "🔄 Creating FRESH API service (no cache)");
+
+        // Force create new Retrofit instance dengan no-cache
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        // Buat OkHttpClient dengan no-cache
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new AuthInterceptor(appContext))
+                .addInterceptor(logging)
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .cache(null) // ✅ DISABLE CACHE
+                .addInterceptor(chain -> {
+                    // ✅ ADD NO-CACHE HEADERS
+                    okhttp3.Request original = chain.request();
+                    okhttp3.Request request = original.newBuilder()
+                            .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                            .header("Pragma", "no-cache")
+                            .header("Expires", "0")
+                            .method(original.method(), original.body())
+                            .build();
+                    return chain.proceed(request);
+                })
+                .build();
+
+        Retrofit freshRetrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build();
+
+        return freshRetrofit.create(ApiService.class);
     }
 
     private static void createRetrofitInstance() {
